@@ -11,8 +11,9 @@
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/rbac-php/v/stable.png)](https://packagist.org/packages/yiisoft/rbac-php)
 [![Total Downloads](https://poser.pugx.org/yiisoft/rbac-php/downloads.png)](https://packagist.org/packages/yiisoft/rbac-php)
-[![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/rbac-php/badges/coverage.png)](https://scrutinizer-ci.com/g/yiisoft/rbac-php/)
-[![Build Status](https://travis-ci.com/yiisoft/rbac-php.svg?branch=master)](https://travis-ci.com/yiisoft/rbac-php)
+[![Build status](https://github.com/yiisoft/rbac-php/workflows/build/badge.svg)](https://github.com/yiisoft/rbac-php/actions)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/rbac-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/rbac-php/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/rbac-php/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/rbac-php/?branch=master)
 
 
 [RBAC Package](https://github.com/yiisoft/rbac)
