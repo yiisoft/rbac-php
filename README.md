@@ -15,6 +15,8 @@
 [![Build Status](https://travis-ci.com/yiisoft/rbac-php.svg?branch=master)](https://travis-ci.com/yiisoft/rbac-php)
 
 
+[RBAC Package](https://github.com/yiisoft/rbac)
+
 ## Install:
 
 ```
