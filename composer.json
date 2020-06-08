@@ -1,0 +1,53 @@
+{
+    "name": "yiisoft/rbac-php",
+    "type": "library",
+    "description": "Yii RBAC PHP file storage",
+    "keywords": [
+        "yii",
+        "rbac",
+        "storage"
+    ],
+    "homepage": "http://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "source": "https://github.com/yiisoft/rbac",
+        "issues": "https://github.com/yiisoft/rbac/issues",
+        "forum": "http://www.yiiframework.com/forum/",
+        "wiki": "http://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^7.4",
+        "yiisoft/var-dumper": "^3.0@dev",
+        "yiisoft/rbac": "^3.0@dev"
+    },
+    "require-dev": {
+        "psr/log": "~1.1.0",
+        "phpunit/phpunit": "^9.0",
+        "yiisoft/files": "^3.0@dev"
+    },
+    "suggest": {
+        "yiisoft/rbac": "RBAC",
+        "yiisoft/rbac-db": "To store rules in database"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Rbac\\Php\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Rbac\\Php\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
