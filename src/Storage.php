@@ -334,7 +334,7 @@ final class Storage implements StorageInterface
         $assignmentsMtime = @filemtime($this->assignmentFile);
         foreach ($assignments as $userId => $roles) {
             foreach ($roles as $role) {
-                $this->assignments[$userId][$role] = new Assignment($userId, $role, $assignmentsMtime);
+                $this->assignments[$userId][$role] = new Assignment((string)$userId, $role, $assignmentsMtime);
             }
         }
     }
