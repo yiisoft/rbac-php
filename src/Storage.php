@@ -16,7 +16,7 @@ use Yiisoft\VarDumper\VarDumper;
  * Storage stores authorization data in three PHP files specified by {@see Storage::itemFile},
  * {@see Storage::assignmentFile} and {@see Storage::ruleFile}.
  *
- * It is mainly suitable for authorization data that is not too big (for example, the authorization data for
+ * It is suitable for authorization data that is not too big (for example, the authorization data for
  * a personal blog system).
  *
  * @package Yiisoft\Rbac\Php

@@ -9,8 +9,8 @@
 [RBAC]: https://en.wikipedia.org/wiki/Role-based_access_control
 [Yii Framework]: https://yiiframework.com
 
-This package provides storage for [Yii RBAC (Role-Based Access Control)](https://github.com/yiisoft/rbac) library. 
-It is used in Yii Framework but is supposed to be usable separately.
+This package provides storage for [RBAC (Role-Based Access Control)](https://github.com/yiisoft/rbac) package. 
+It is used in Yii Framework but is usable separately.
 
 For license information check the [LICENSE](LICENSE.md)-file.
 
@@ -33,9 +33,11 @@ composer require yiisoft/rbac-php
 ## General usage
 
 Storage stores authorization data in three PHP files specified by 
-`Storage::itemFile`, `Storage::assignmentFile`, `Storage::ruleFile`
+`Storage::$itemFile`, `Storage::$assignmentFile`, `Storage::$ruleFile`
 
-It is mainly suitable for authorization data that is not too big (for example, the authorization data for
+PHP should be able to read and write these files. Non-existing files will be created automatically on any save operation.
+
+It is suitable for authorization data that is not too big (for example, the authorization data for
  a personal blog system).
 
 
