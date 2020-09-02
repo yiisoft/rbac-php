@@ -410,7 +410,7 @@ final class Storage implements StorageInterface
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
 
-        file_put_contents($file, "<?php\nreturn " . VarDumper::create($data)->export() . ";\n", LOCK_EX);
+        file_put_contents($file, "<?php\n\nreturn " . VarDumper::create($data)->export() . ";\n", LOCK_EX);
         $this->invalidateScriptCache($file);
     }
 
