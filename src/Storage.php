@@ -193,8 +193,7 @@ final class Storage implements StorageInterface
     public function assignmentExist(string $name): bool
     {
         foreach ($this->getAssignments() as $assignmentInfo) {
-            $itemNames = array_keys($assignmentInfo);
-            foreach ($itemNames as $itemName) {
+            foreach ($assignmentInfo as $itemName => $assignment) {
                 if ($itemName === $name) {
                     return true;
                 }
