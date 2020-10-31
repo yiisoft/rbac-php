@@ -371,6 +371,9 @@ final class Storage implements StorageInterface
     private function loadFromFile(string $file): array
     {
         if (is_file($file)) {
+            /**
+             * @psalm-suppress UnresolvableInclude
+             */
             return require $file;
         }
 
@@ -479,7 +482,7 @@ final class Storage implements StorageInterface
      */
     private function removeAllItems(string $type): void
     {
-        foreach ($this->getItemsByType($type) as $name => $item) {
+        foreach ($this->getItemsByType($type) as $item) {
             $this->removeItem($item);
         }
     }

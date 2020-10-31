@@ -20,7 +20,7 @@ For license information check the [LICENSE](LICENSE.md)-file.
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/rbac-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/rbac-php/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/rbac-php/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/rbac-php/?branch=master)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Frbac-php%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/rbac-php/master)
-[![static analysis with phan](https://github.com/yiisoft/rbac-php/workflows/static%20analysis%20with%20phan/badge.svg)](https://github.com/yiisoft/rbac-php/actions?query=workflow%3A%22static+analysis+with+phan%22)
+[![static analysis](https://github.com/yiisoft/rbac-php/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/rbac-php/actions?query=workflow%3A%22static+analysis%22)
 
 ## Install:
 
@@ -40,4 +40,27 @@ PHP should be able to read and write these files. Non-existing files will be cre
 It is suitable for authorization data that is not too big (for example, the authorization data for
  a personal blog system).
 
+## Unit testing
+
+The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
+
+```php
+./vendor/bin/phpunit
+```
+
+## Mutation testing
+
+The package tests are checked with [Infection](https://infection.github.io/) mutation framework. To run it:
+
+```
+./vendor/bin/infection
+```
+
+## Static analysis
+
+The code is statically analyzed with [Psalm](https://psalm.dev/). To run static analysis:
+
+```php
+./vendor/bin/psalm
+```
 
