@@ -24,7 +24,7 @@
         "yiisoft/rbac": "^3.0@dev"
     },
     "require-dev": {
-        "infection/infection": "^0.16.3",
+        "infection/infection": "^0.20.1",
         "psr/log": "~1.1.0",
         "phpunit/phpunit": "^9.3",
         "vimeo/psalm": "^4.0",
