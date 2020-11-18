@@ -26,7 +26,7 @@
     "require-dev": {
         "infection/infection": "^0.16.3",
         "psr/log": "~1.1.0",
-        "phpunit/phpunit": "^9.3",
+        "phpunit/phpunit": "^9.4",
         "vimeo/psalm": "^4.0",
         "yiisoft/files": "^3.0@dev"
     },
