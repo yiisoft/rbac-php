@@ -180,14 +180,14 @@ final class StorageTest extends TestCase
             [
                 'createPost',
                 'updatePost',
-                'reader'
+                'reader',
             ],
             array_keys($children['author'])
         );
         $this->assertEquals(
             [
                 'author',
-                'updateAnyPost'
+                'updateAnyPost',
             ],
             array_keys($children['admin'])
         );
@@ -200,7 +200,7 @@ final class StorageTest extends TestCase
             [
                 'createPost',
                 'updatePost',
-                'reader'
+                'reader',
             ],
             array_keys($storage->getChildrenByName('author'))
         );
@@ -214,7 +214,7 @@ final class StorageTest extends TestCase
             [
                 'reader A',
                 'author B',
-                'admin C'
+                'admin C',
             ],
             array_keys($storage->getAssignments())
         );
@@ -226,7 +226,7 @@ final class StorageTest extends TestCase
         $this->assertEquals(
             [
                 'author',
-                'deletePost'
+                'deletePost',
             ],
             array_keys($storage->getUserAssignments('author B'))
         );
@@ -268,7 +268,7 @@ final class StorageTest extends TestCase
         $this->assertEquals(
             [
                 'readPost',
-                'createPost'
+                'createPost',
             ],
             array_keys($storage->getChildrenByName('reader'))
         );
@@ -311,7 +311,7 @@ final class StorageTest extends TestCase
             [
                 'Fast Metabolism',
                 'reader',
-                'author'
+                'author',
             ],
             array_keys($storage->getUserAssignments('reader A'))
         );
@@ -400,7 +400,7 @@ final class StorageTest extends TestCase
         $this->assertEquals(
             [
                 'isAuthor',
-                EasyRule::class
+                EasyRule::class,
             ],
             array_keys($storage->getRules())
         );

@@ -12,7 +12,7 @@ trait FixtureTrait
 
     private function getDataPath(): string
     {
-        return sys_get_temp_dir() . '/' . str_replace('\\', '_', get_class($this)) . uniqid('', false);
+        return sys_get_temp_dir() . '/' . str_replace('\\', '_', static::class) . uniqid('', false);
     }
 
     private function getFixturesDirectory(): string
