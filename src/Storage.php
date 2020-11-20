@@ -468,6 +468,7 @@ final class Storage implements StorageInterface
 
     /**
      * @param callable $callback
+     *
      * @return array|Item[]
      */
     private function filterItems(callable $callback): array
