@@ -29,7 +29,7 @@
         "roave/infection-static-analysis-plugin": "^1.5",
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^4.2",
-        "yiisoft/files": "^3.0@dev"
+        "yiisoft/files": "^1.0"
     },
     "suggest": {
         "yiisoft/rbac": "RBAC",
