@@ -21,7 +21,7 @@
     "require": {
         "php": "^7.4|^8.0",
         "yiisoft/rbac": "^3.0@dev",
-        "yiisoft/var-dumper": "^3.0@dev"
+        "yiisoft/var-dumper": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.4",
