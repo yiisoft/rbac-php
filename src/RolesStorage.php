@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Php;
 
-use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
+use Yiisoft\Rbac\RolesStorageInterface;
 use Yiisoft\Rbac\Rule;
-use Yiisoft\Rbac\StorageInterface;
 use Yiisoft\VarDumper\VarDumper;
 
 /**
- * Storage stores authorization data in three PHP files specified by {@see Storage::itemFile},
- * {@see Storage::assignmentFile} and {@see Storage::ruleFile}.
+ * Storage stores authorization data in three PHP files specified by {@see Storage::itemFile} and {@see Storage::ruleFile}.
  *
  * It is suitable for authorization data that is not too big (for example, the authorization data for
  * a personal blog system).
  *
  * @package Yiisoft\Rbac\Php
  */
-final class Storage implements StorageInterface
+final class RolesStorage implements RolesStorageInterface
 {
     /**
      * @var string The path of the PHP script that contains the authorization items.
@@ -33,16 +31,7 @@ final class Storage implements StorageInterface
      * @see saveToFile()
      */
     private string $itemFile;
-    /**
-     * @var string The path of the PHP script that contains the authorization assignments.
-     * This can be either a file path or a [path alias](guide:concept-aliases) to the file.
-     * Make sure this file is writable by the Web server process if the authorization needs to be changed
-     * online.
-     *
-     * @see loadFromFile()
-     * @see saveToFile()
-     */
-    private string $assignmentFile;
+
     /**
      * @var string The path of the PHP script that contains the authorization rules.
      * This can be either a file path or a [path alias](guide:concept-aliases) to the file.
@@ -67,12 +56,6 @@ final class Storage implements StorageInterface
     private array $children = [];
 
     /**
-     * @var array
-     * Format is [userId => [itemName => assignment]].
-     */
-    private array $assignments = [];
-
-    /**
      * @var Rule[]
      * Format is [ruleName => rule].
      */
@@ -81,11 +64,9 @@ final class Storage implements StorageInterface
     public function __construct(
         string $directory,
         string $itemFile = 'items.php',
-        string $assignmentFile = 'assignments.php',
         string $ruleFile = 'rules.php'
     ) {
         $this->itemFile = $directory . DIRECTORY_SEPARATOR . $itemFile;
-        $this->assignmentFile = $directory . DIRECTORY_SEPARATOR . $assignmentFile;
         $this->ruleFile = $directory . DIRECTORY_SEPARATOR . $ruleFile;
         $this->load();
     }
@@ -136,21 +117,6 @@ final class Storage implements StorageInterface
         return $this->children[$name] ?? [];
     }
 
-    public function getAssignments(): array
-    {
-        return $this->assignments;
-    }
-
-    public function getUserAssignments(string $userId): array
-    {
-        return $this->assignments[$userId] ?? [];
-    }
-
-    public function getUserAssignmentByName(string $userId, string $name): ?Assignment
-    {
-        return $this->getUserAssignments($userId)[$name] ?? null;
-    }
-
     public function getRules(): array
     {
         return $this->rules;
@@ -184,40 +150,10 @@ final class Storage implements StorageInterface
         $this->saveItems();
     }
 
-    public function addAssignment(string $userId, Item $item): void
-    {
-        $this->assignments[$userId][$item->getName()] = new Assignment($userId, $item->getName(), time());
-        $this->saveAssignments();
-    }
-
-    public function assignmentExist(string $name): bool
-    {
-        foreach ($this->getAssignments() as $assignmentInfo) {
-            foreach ($assignmentInfo as $itemName => $assignment) {
-                if ($itemName === $name) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public function removeAssignment(string $userId, Item $item): void
-    {
-        unset($this->assignments[$userId][$item->getName()]);
-        $this->saveAssignments();
-    }
-
-    public function removeAllAssignments(string $userId): void
-    {
-        $this->assignments[$userId] = [];
-        $this->saveAssignments();
-    }
-
     public function removeItem(Item $item): void
     {
-        $this->clearAssigmentFromItem($item);
-        $this->saveAssignments();
+//        $this->clearAssignmentsFromItem($item);
+//        $this->saveAssignments();
         $this->clearChildrenFromItem($item);
         $this->removeItemByName($item->getName());
         $this->saveItems();
@@ -263,12 +199,6 @@ final class Storage implements StorageInterface
         $this->saveRules();
     }
 
-    public function clearAssignments(): void
-    {
-        $this->assignments = [];
-        $this->saveAssignments();
-    }
-
     public function clearPermissions(): void
     {
         $this->removeAllItems(Item::TYPE_PERMISSION);
@@ -282,8 +212,6 @@ final class Storage implements StorageInterface
     private function updateItemName(string $name, Item $item): void
     {
         $this->updateChildrenForItemName($name, $item);
-        $this->updateAssignmentsForItemName($name, $item);
-        $this->saveAssignments();
     }
 
     /**
@@ -292,7 +220,6 @@ final class Storage implements StorageInterface
     private function save(): void
     {
         $this->saveItems();
-        $this->saveAssignments();
         $this->saveRules();
     }
 
@@ -303,7 +230,6 @@ final class Storage implements StorageInterface
     {
         $this->clearLoadedData();
         $this->loadItems();
-        $this->loadAssignments();
         $this->loadRules();
     }
 
@@ -328,17 +254,6 @@ final class Storage implements StorageInterface
         }
     }
 
-    private function loadAssignments(): void
-    {
-        $assignments = $this->loadFromFile($this->assignmentFile);
-        $assignmentsMtime = @filemtime($this->assignmentFile);
-        foreach ($assignments as $userId => $roles) {
-            foreach ($roles as $role) {
-                $this->assignments[$userId][$role] = new Assignment((string)$userId, $role, $assignmentsMtime);
-            }
-        }
-    }
-
     private function loadRules(): void
     {
         foreach ($this->loadFromFile($this->ruleFile) as $name => $ruleData) {
@@ -350,7 +265,6 @@ final class Storage implements StorageInterface
     {
         $this->children = [];
         $this->rules = [];
-        $this->assignments = [];
         $this->items = [];
     }
 
@@ -430,21 +344,6 @@ final class Storage implements StorageInterface
     }
 
     /**
-     * Saves assignments data into persistent storage.
-     */
-    private function saveAssignments(): void
-    {
-        $assignmentData = [];
-        foreach ($this->assignments as $userId => $assignments) {
-            foreach ($assignments as $assignment) {
-                /* @var $assignment Assignment */
-                $assignmentData[$userId][] = $assignment->getItemName();
-            }
-        }
-        $this->saveToFile($assignmentData, $this->assignmentFile);
-    }
-
-    /**
      * Saves rules data into persistent storage.
      */
     private function saveRules(): void
@@ -495,13 +394,6 @@ final class Storage implements StorageInterface
         }
     }
 
-    private function clearAssigmentFromItem(Item $item): void
-    {
-        foreach ($this->assignments as &$assignments) {
-            unset($assignments[$item->getName()]);
-        }
-    }
-
     private function getInstanceByTypeAndName(string $type, string $name): Item
     {
         return $type === Item::TYPE_PERMISSION ? new Permission($name) : new Role($name);
@@ -523,16 +415,6 @@ final class Storage implements StorageInterface
     private function unserializeRule(string $data): Rule
     {
         return unserialize($data, ['allowed_classes' => true]);
-    }
-
-    private function updateAssignmentsForItemName(string $name, Item $item): void
-    {
-        foreach ($this->assignments as &$assignments) {
-            if (isset($assignments[$name])) {
-                $assignments[$item->getName()] = $assignments[$name]->withItemName($item->getName());
-                unset($assignments[$name]);
-            }
-        }
     }
 
     private function updateChildrenForItemName(string $name, Item $item): void
