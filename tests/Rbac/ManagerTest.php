@@ -414,7 +414,7 @@ class ManagerTest extends TestCase
         $role = $this->rolesStorage->getRoleByName('reader')->withName('new reader');
 
         $this->assertNotNull($this->assignmentsStorage->getUserAssignmentByName('reader A', 'reader'));
-        $this->assertNull($this->assignmentsStorage->getUserAssignmentByName('reader A','new reader'));
+        $this->assertNull($this->assignmentsStorage->getUserAssignmentByName('reader A', 'new reader'));
 
         $this->manager->updateRole('reader', $role);
 
@@ -422,7 +422,7 @@ class ManagerTest extends TestCase
         $this->assertNotNull($this->rolesStorage->getRoleByName('new reader'));
 
         $this->assertNull($this->assignmentsStorage->getUserAssignmentByName('reader A', 'reader'));
-        $this->assertNotNull($this->assignmentsStorage->getUserAssignmentByName('reader A','new reader'));
+        $this->assertNotNull($this->assignmentsStorage->getUserAssignmentByName('reader A', 'new reader'));
     }
 
     public function testAddPermission(): void
@@ -446,7 +446,7 @@ class ManagerTest extends TestCase
             ->withName('newDeletePost');
 
         $this->assertNotNull($this->assignmentsStorage->getUserAssignmentByName('author B', 'deletePost'));
-        $this->assertNull($this->assignmentsStorage->getUserAssignmentByName('author B','newDeletePost'));
+        $this->assertNull($this->assignmentsStorage->getUserAssignmentByName('author B', 'newDeletePost'));
 
         $this->manager->updatePermission('deletePost', $permission);
 
@@ -454,7 +454,7 @@ class ManagerTest extends TestCase
         $this->assertNotNull($this->rolesStorage->getPermissionByName('newDeletePost'));
 
         $this->assertNull($this->assignmentsStorage->getUserAssignmentByName('author B', 'deletePost'));
-        $this->assertNotNull($this->assignmentsStorage->getUserAssignmentByName('author B','newDeletePost'));
+        $this->assertNotNull($this->assignmentsStorage->getUserAssignmentByName('author B', 'newDeletePost'));
     }
 
     public function testUpdatePermissionNameAlreadyUsed(): void

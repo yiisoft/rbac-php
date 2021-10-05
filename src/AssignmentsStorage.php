@@ -7,10 +7,6 @@ namespace Yiisoft\Rbac\Php;
 use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 use Yiisoft\Rbac\Item;
-use Yiisoft\Rbac\Permission;
-use Yiisoft\Rbac\Role;
-use Yiisoft\Rbac\Rule;
-use Yiisoft\Rbac\StorageInterface;
 use Yiisoft\VarDumper\VarDumper;
 
 /**
