@@ -18,7 +18,7 @@ use Yiisoft\VarDumper\VarDumper;
  *
  * @package Yiisoft\Rbac\Php
  */
-final class AssignmentsStorage implements AssignmentsStorageInterface
+final class AssignmentsStorage extends CommonStorage implements AssignmentsStorageInterface
 {
     /**
      * @var string The path of the PHP script that contains the authorization assignments.
@@ -129,59 +129,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             foreach ($roles as $role) {
                 $this->assignments[$userId][$role] = new Assignment((string)$userId, $role, $assignmentsMtime);
             }
-        }
-    }
-
-    /**
-     * Loads the authorization data from a PHP script file.
-     *
-     * @param string $file The file path.
-     *
-     * @return array The authorization data.
-     *
-     * @see saveToFile()
-     */
-    private function loadFromFile(string $file): array
-    {
-        if (is_file($file)) {
-            /**
-             * @psalm-suppress UnresolvableInclude
-             */
-            return require $file;
-        }
-
-        return [];
-    }
-
-    /**
-     * Saves the authorization data to a PHP script file.
-     *
-     * @param array $data The authorization data
-     * @param string $file The file path.
-     *
-     * @see loadFromFile()
-     */
-    private function saveToFile(array $data, string $file): void
-    {
-        if (!file_exists(dirname($file)) && !mkdir($concurrentDirectory = dirname($file)) && !is_dir(
-            $concurrentDirectory
-        )) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-        }
-
-        file_put_contents($file, "<?php\n\nreturn " . VarDumper::create($data)->export() . ";\n", LOCK_EX);
-        $this->invalidateScriptCache($file);
-    }
-
-    /**
-     * Invalidates precompiled script cache (such as OPCache) for the given file.
-     *
-     * @param string $file The file path.
-     */
-    private function invalidateScriptCache(string $file): void
-    {
-        if (function_exists('opcache_invalidate')) {
-            opcache_invalidate($file, true);
         }
     }
 

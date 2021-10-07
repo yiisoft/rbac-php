@@ -85,6 +85,18 @@ final class AssignmentsStorageTest extends TestCase
         $this->assertFalse($storage->assignmentExist('nonExistAssignment'));
     }
 
+    public function testAssigmentSave(): void
+    {
+        $storage = $this->createStorage();
+
+        $role = new Role('author');
+        $storage->addAssignment('reader A', $role);
+
+        $storageNew = $this->createStorage();
+
+        $this->assertEquals($storage->getAssignments(), $storageNew->getAssignments());
+    }
+
     public function testRemoveAssignment(): void
     {
         $storage = $this->createStorage();
@@ -126,5 +138,18 @@ final class AssignmentsStorageTest extends TestCase
     private function createStorage(): AssignmentsStorage
     {
         return new AssignmentsStorage($this->dataPath);
+    }
+
+    private function disableErrorHandling($skippedErrno, $skippedErrstr)
+    {
+        set_error_handler(function ($errno, $errstr, $errfile, $errline) use ($skippedErrno, $skippedErrstr) {
+            // skip not needed warning, notice or errors
+            return (bool)($errno == $skippedErrno && stristr($errstr, $skippedErrstr));
+        });
+    }
+
+    private function enableErrorHandling()
+    {
+        restore_error_handler();
     }
 }
