@@ -139,17 +139,4 @@ final class AssignmentsStorageTest extends TestCase
     {
         return new AssignmentsStorage($this->dataPath);
     }
-
-    private function disableErrorHandling($skippedErrno, $skippedErrstr)
-    {
-        set_error_handler(function ($errno, $errstr, $errfile, $errline) use ($skippedErrno, $skippedErrstr) {
-            // skip not needed warning, notice or errors
-            return (bool)($errno == $skippedErrno && stristr($errstr, $skippedErrstr));
-        });
-    }
-
-    private function enableErrorHandling()
-    {
-        restore_error_handler();
-    }
 }
