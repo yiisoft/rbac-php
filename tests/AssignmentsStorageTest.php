@@ -111,11 +111,6 @@ final class AssignmentsStorageTest extends TestCase
         $this->assertNull($storage->getUserAssignmentByName('author B', 'deletePost'));
     }
 
-//    public function testRemoveItem(): void
-//    {
-//        $this->assertNull($storage->getUserAssignmentByName('reader A', 'reader'));
-//    }
-
     protected function tearDown(): void
     {
         $this->clearFixturesFiles();

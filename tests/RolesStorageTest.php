@@ -282,8 +282,6 @@ final class RolesStorageTest extends TestCase
             ],
             array_keys($storage->getRoles())
         );
-
-//        $this->assertNull($storage->getUserAssignmentByName('reader A', 'reader'));
     }
 
     public function testUpdateItem(): void

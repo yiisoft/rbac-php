@@ -152,8 +152,6 @@ final class RolesStorage implements RolesStorageInterface
 
     public function removeItem(Item $item): void
     {
-//        $this->clearAssignmentsFromItem($item);
-//        $this->saveAssignments();
         $this->clearChildrenFromItem($item);
         $this->removeItemByName($item->getName());
         $this->saveItems();
