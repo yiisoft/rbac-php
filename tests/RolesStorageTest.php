@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Php\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\Permission;
-use Yiisoft\Rbac\Php\Storage;
+use Yiisoft\Rbac\Php\RolesStorage;
 use Yiisoft\Rbac\Role;
 
 /**
  * @group rbac
  */
-final class StorageTest extends TestCase
+final class RolesStorageTest extends TestCase
 {
     use FixtureTrait;
 
@@ -49,7 +48,6 @@ final class StorageTest extends TestCase
         $this->assertCount(0, $storage->getItems());
         $this->assertCount(0, $storage->getChildren());
         $this->assertCount(0, $storage->getRules());
-        $this->assertCount(0, $storage->getAssignments());
     }
 
     public function testClearRoles(): void
@@ -57,13 +55,6 @@ final class StorageTest extends TestCase
         $storage = $this->createStorage();
         $storage->clearRoles();
         $this->assertCount(6, $this->createStorage()->getItems());
-    }
-
-    public function testClearAssignments(): void
-    {
-        $storage = $this->createStorage();
-        $storage->clearAssignments();
-        $this->assertCount(0, $this->createStorage()->getAssignments());
     }
 
     public function testClearPermissions(): void
@@ -207,43 +198,6 @@ final class StorageTest extends TestCase
         $this->assertEmpty($storage->getChildrenByName('itemNotExist'));
     }
 
-    public function testGetAssignments(): void
-    {
-        $storage = $this->createStorage();
-        $this->assertEquals(
-            [
-                'reader A',
-                'author B',
-                'admin C',
-            ],
-            array_keys($storage->getAssignments())
-        );
-    }
-
-    public function testGetUserAssignments(): void
-    {
-        $storage = $this->createStorage();
-        $this->assertEquals(
-            [
-                'author',
-                'deletePost',
-            ],
-            array_keys($storage->getUserAssignments('author B'))
-        );
-        $this->assertEmpty($storage->getUserAssignments('unknown user'));
-    }
-
-    public function testGetUserAssignmentByName(): void
-    {
-        $storage = $this->createStorage();
-        $this->assertInstanceOf(
-            Assignment::class,
-            $storage->getUserAssignmentByName('author B', 'author')
-        );
-
-        $this->assertNull($storage->getUserAssignmentByName('author B', 'nonExistAssigment'));
-    }
-
     public function testGetRules(): void
     {
         $storage = $this->createStorage();
@@ -301,44 +255,6 @@ final class StorageTest extends TestCase
         $this->assertEmpty($storage->getChildrenByName('reader'));
     }
 
-    public function testAddAssignment(): void
-    {
-        $storage = $this->createStorage();
-        $role = $storage->getRoleByName('author');
-
-        $storage->addAssignment('reader A', $role);
-        $this->assertEquals(
-            [
-                'Fast Metabolism',
-                'reader',
-                'author',
-            ],
-            array_keys($storage->getUserAssignments('reader A'))
-        );
-    }
-
-    public function testAssignmentExist(): void
-    {
-        $storage = $this->createStorage();
-
-        $this->assertTrue($storage->assignmentExist('deletePost'));
-        $this->assertFalse($storage->assignmentExist('nonExistAssignment'));
-    }
-
-    public function testRemoveAssignment(): void
-    {
-        $storage = $this->createStorage();
-        $storage->removeAssignment('author B', $storage->getItemByName('deletePost'));
-        $this->assertEquals(['author'], array_keys($storage->getUserAssignments('author B')));
-    }
-
-    public function testRemoveAllAssignments(): void
-    {
-        $storage = $this->createStorage();
-        $storage->removeAllAssignments('author B');
-        $this->assertEmpty($storage->getUserAssignments('author B'));
-    }
-
     public function testRemoveItem(): void
     {
         $storage = $this->createStorage();
@@ -366,8 +282,6 @@ final class StorageTest extends TestCase
             ],
             array_keys($storage->getRoles())
         );
-
-        $this->assertNull($storage->getUserAssignmentByName('reader A', 'reader'));
     }
 
     public function testUpdateItem(): void
@@ -418,8 +332,8 @@ final class StorageTest extends TestCase
         parent::setUp();
     }
 
-    private function createStorage(): Storage
+    private function createStorage(): RolesStorage
     {
-        return new Storage($this->dataPath);
+        return new RolesStorage($this->dataPath);
     }
 }
