@@ -9,7 +9,6 @@ use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\RolesStorageInterface;
 use Yiisoft\Rbac\Rule;
-use Yiisoft\VarDumper\VarDumper;
 
 /**
  * Storage stores authorization data in three PHP files specified by {@see Storage::itemFile} and {@see Storage::ruleFile}.
