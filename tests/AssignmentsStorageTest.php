@@ -123,7 +123,7 @@ final class AssignmentsStorageTest extends TestCase
         $this->assertNull($storage->getUserAssignmentByName('author B', 'deletePost'));
     }
 
-    public function testUpdateAssignmentsForItemNameWithoutChangeName()
+    public function testUpdateAssignmentsForItemNameWithoutChangeName(): void
     {
         $storage = $this->createStorage();
 
