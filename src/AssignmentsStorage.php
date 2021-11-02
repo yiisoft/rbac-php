@@ -79,12 +79,17 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
 
     public function updateAssignmentsForItemName(string $name, Item $item): void
     {
+        if ($name === $item->getName()) {
+            return;
+        }
+
         foreach ($this->assignments as &$assignments) {
             if (isset($assignments[$name])) {
                 $assignments[$item->getName()] = $assignments[$name]->withItemName($item->getName());
                 unset($assignments[$name]);
             }
         }
+
         $this->saveAssignments();
     }
 

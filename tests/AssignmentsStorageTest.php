@@ -123,6 +123,23 @@ final class AssignmentsStorageTest extends TestCase
         $this->assertNull($storage->getUserAssignmentByName('author B', 'deletePost'));
     }
 
+    public function testUpdateAssignmentsForItemNameWithoutChangeName(): void
+    {
+        $storage = $this->createStorage();
+
+        $roleName = 'reader';
+        $userId = 'reader A';
+
+        $beforeAssignments = $storage->getUserAssignmentByName($userId, $roleName);
+
+        $role = (new Role($roleName))->withDescription('new description');
+        $storage->updateAssignmentsForItemName($roleName, $role);
+
+        $afterAssignments = $storage->getUserAssignmentByName($userId, $roleName);
+
+        $this->assertEquals($beforeAssignments, $afterAssignments);
+    }
+
     protected function tearDown(): void
     {
         $this->clearFixturesFiles();
