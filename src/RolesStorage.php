@@ -170,7 +170,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     {
         unset($this->rules[$name]);
         foreach ($this->getItemsByRuleName($name) as $item) {
-            $item = $item->withRuleName(null);
+            $item = $item->withRuleNames([]);
             $this->updateItem($item->getName(), $item);
         }
 
@@ -305,7 +305,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     private function getItemsByRuleName(string $ruleName): array
     {
         return $this->filterItems(
-            fn (Item $item) => $item->getRuleName() === $ruleName
+            fn (Item $item) => in_array($ruleName, $item->getRuleNames(), true)
         );
     }
 
@@ -348,7 +348,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         return $this
             ->getInstanceByTypeAndName($attributes['type'], $attributes['name'])
             ->withDescription($attributes['description'] ?? '')
-            ->withRuleName($attributes['ruleName'] ?? null);
+            ->withRuleNames($attributes['ruleNames'] ?? []);
     }
 
     private function serializeRules(): array
@@ -383,7 +383,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     private function clearItemsFromRules(): void
     {
         foreach ($this->items as &$item) {
-            $item = $item->withRuleName(null);
+            $item = $item->withRuleNames([]);
         }
     }
 }

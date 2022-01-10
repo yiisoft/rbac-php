@@ -139,9 +139,8 @@ class ManagerTest extends TestCase
     public function dataProviderUserHasPermissionWithFailUserId(): array
     {
         return [
-            [true],
-            [null],
-            [['test' => 1]],
+            'true' => [true],
+            'array' => [['test' => 1]],
         ];
     }
 
@@ -397,7 +396,7 @@ class ManagerTest extends TestCase
 
         $role = (new Role('new role'))
             ->withDescription('new role description')
-            ->withRuleName($rule->getName());
+            ->withRuleNames([$rule->getName()]);
 
         $this->manager->addRole($role);
         $this->assertNotNull($this->rolesStorage->getRoleByName('new role'));
@@ -552,7 +551,7 @@ class ManagerTest extends TestCase
         $storage->addItem(new Permission('createPost'));
         $storage->addItem(new Permission('readPost'));
         $storage->addItem(new Permission('deletePost'));
-        $storage->addItem((new Permission('updatePost'))->withRuleName('isAuthor'));
+        $storage->addItem((new Permission('updatePost'))->withRuleNames(['isAuthor']));
         $storage->addItem(new Permission('updateAnyPost'));
         $storage->addItem(new Role('withoutChildren'));
         $storage->addItem(new Role('reader'));
