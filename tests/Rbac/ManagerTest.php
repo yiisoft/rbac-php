@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Rbac\Php\Rbac\Tests;
+namespace Yiisoft\Rbac\Php\Tests\Rbac;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
@@ -140,7 +140,6 @@ class ManagerTest extends TestCase
     {
         return [
             [true],
-            [null],
             [['test' => 1]],
         ];
     }
