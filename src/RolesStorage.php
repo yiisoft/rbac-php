@@ -291,6 +291,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
 
     /**
      * Saves items data into persistent storage.
+     *
      * @psalm-suppress MixedArrayAssignment
      */
     private function saveItems(): void
@@ -318,6 +319,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
 
     /**
      * @param string $type
+     *
      * @return Item[]
      */
     private function getItemsByType(string $type): array
