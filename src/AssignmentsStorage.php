@@ -32,6 +32,7 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
 
     /**
      * @var array
+     * @psalm-var array<string, array<string, Assignment>>
      * Format is [userId => [itemName => assignment]].
      */
     private array $assignments = [];
@@ -68,7 +69,7 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
     public function assignmentExist(string $name): bool
     {
         foreach ($this->getAssignments() as $assignmentInfo) {
-            foreach ($assignmentInfo as $itemName => $assignment) {
+            foreach ($assignmentInfo as $itemName => $_assignment) {
                 if ($itemName === $name) {
                     return true;
                 }
@@ -129,9 +130,10 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
     {
         $assignments = $this->loadFromFile($this->assignmentFile);
         $assignmentsMtime = @filemtime($this->assignmentFile);
+        /** @var string[] $roles */
         foreach ($assignments as $userId => $roles) {
             foreach ($roles as $role) {
-                $this->assignments[$userId][$role] = new Assignment((string)$userId, $role, $assignmentsMtime);
+                $this->assignments[$userId][$role] = new Assignment($userId, $role, $assignmentsMtime);
             }
         }
     }
