@@ -7,13 +7,13 @@
         "rbac",
         "storage"
     ],
-    "homepage": "http://www.yiiframework.com/",
+    "homepage": "https://www.yiiframework.com/",
     "license": "BSD-3-Clause",
     "support": {
         "source": "https://github.com/yiisoft/rbac",
         "issues": "https://github.com/yiisoft/rbac/issues",
-        "forum": "http://www.yiiframework.com/forum/",
-        "wiki": "http://www.yiiframework.com/wiki/",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
         "irc": "irc://irc.freenode.net/yii"
     },
     "minimum-stability": "dev",
@@ -30,10 +30,6 @@
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^4.2",
         "yiisoft/files": "^1.0"
-    },
-    "suggest": {
-        "yiisoft/rbac": "RBAC",
-        "yiisoft/rbac-db": "To store rules in database"
     },
     "autoload": {
         "psr-4": {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Php;
 
+use RuntimeException;
 use Yiisoft\VarDumper\VarDumper;
 
 abstract class CommonStorage
@@ -14,6 +15,8 @@ abstract class CommonStorage
      * @param string $file The file path.
      *
      * @return array The authorization data.
+     * @psalm-return array<string,mixed>
+     * @psalm-suppress MixedInferredReturnType,  MixedReturnStatement
      *
      * @see saveToFile()
      */
@@ -42,7 +45,7 @@ abstract class CommonStorage
         $concurrentDirectory = dirname($file);
 
         if (!file_exists($concurrentDirectory) && !mkdir($concurrentDirectory) && !is_dir($concurrentDirectory)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
 
         file_put_contents($file, "<?php\n\nreturn " . VarDumper::create($data)->export() . ";\n", LOCK_EX);
