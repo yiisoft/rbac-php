@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Php\Tests;
 
-use Yiisoft\Rbac\Rule;
+use Yiisoft\Rbac\Item;
+use Yiisoft\Rbac\RuleInterface;
 
-class EasyRule extends Rule
+final class EasyRule implements RuleInterface
 {
-    public function __construct()
+    public function execute(string $userId, Item $item, array $parameters = []): bool
     {
-        parent::__construct(self::class);
+        return true;
+    }
+
+    public function getName(): string
+    {
+        return self::class;
     }
 }

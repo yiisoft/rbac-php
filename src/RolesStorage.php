@@ -8,7 +8,7 @@ use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\RolesStorageInterface;
-use Yiisoft\Rbac\Rule;
+use Yiisoft\Rbac\RuleInterface;
 
 /**
  * Storage stores authorization data in three PHP files specified by {@see Storage::itemFile} and {@see Storage::ruleFile}.
@@ -57,7 +57,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     private array $children = [];
 
     /**
-     * @var Rule[]
+     * @var RuleInterface[]
      * Format is [ruleName => rule].
      */
     private array $rules = [];
@@ -127,7 +127,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         return $this->rules;
     }
 
-    public function getRuleByName(string $name): ?Rule
+    public function getRuleByName(string $name): ?RuleInterface
     {
         return $this->rules[$name] ?? null;
     }
@@ -183,7 +183,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         $this->saveRules();
     }
 
-    public function addRule(Rule $rule): void
+    public function addRule(RuleInterface $rule): void
     {
         $this->rules[$rule->getName()] = $rule;
         $this->saveRules();
@@ -245,7 +245,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
          *         type: string,
          *         name: string,
          *         description?: string,
-         *         ruleName?: class-string<Rule>,
+         *         ruleName?: class-string<RuleInterface>,
          *         children?: string[]
          *     }
          * > $items
@@ -378,7 +378,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     }
 
     /**
-     * @psalm-param array{type: string, name: string, description?: string, ruleName?: class-string<Rule>} $attributes
+     * @psalm-param array{type: string, name: string, description?: string, ruleName?: class-string<RuleInterface>} $attributes
      */
     private function getInstanceFromAttributes(array $attributes): Item
     {
@@ -390,13 +390,13 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
 
     private function serializeRules(): array
     {
-        return array_map(static fn (Rule $rule): string => serialize($rule), $this->rules);
+        return array_map(static fn (RuleInterface $rule): string => serialize($rule), $this->rules);
     }
 
     /**
      * @psalm-suppress MixedInferredReturnType, MixedReturnStatement
      */
-    private function unserializeRule(string $data): Rule
+    private function unserializeRule(string $data): RuleInterface
     {
         return unserialize($data, ['allowed_classes' => true]);
     }
