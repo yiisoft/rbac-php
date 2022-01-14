@@ -72,6 +72,10 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         $this->load();
     }
 
+    /**
+     * @return Item[]
+     * @psalm-return array<string,Item>
+     */
     public function getItems(): array
     {
         return $this->items;
@@ -88,33 +92,21 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         $this->saveItems();
     }
 
-    /**
-     * @psalm-suppress MixedReturnTypeCoercion, MoreSpecificReturnType, LessSpecificReturnStatement
-     */
     public function getRoleByName(string $name): ?Role
     {
         return $this->getItemsByType(Item::TYPE_ROLE)[$name] ?? null;
     }
 
-    /**
-     * @psalm-suppress MixedReturnTypeCoercion, MoreSpecificReturnType, LessSpecificReturnStatement
-     */
     public function getRoles(): array
     {
         return $this->getItemsByType(Item::TYPE_ROLE);
     }
 
-    /**
-     * @psalm-suppress MixedReturnTypeCoercion, MoreSpecificReturnType, LessSpecificReturnStatement
-     */
     public function getPermissionByName(string $name): ?Permission
     {
         return $this->getItemsByType(Item::TYPE_PERMISSION)[$name] ?? null;
     }
 
-    /**
-     * @psalm-suppress MixedReturnTypeCoercion, MoreSpecificReturnType, LessSpecificReturnStatement
-     */
     public function getPermissions(): array
     {
         return $this->getItemsByType(Item::TYPE_PERMISSION);
@@ -184,7 +176,6 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     {
         unset($this->rules[$name]);
 
-        /** @var Item $item */
         foreach ($this->getItemsByRuleName($name) as $item) {
             $this->updateItem($item->getName(), $item->withRuleName(null));
         }
@@ -247,19 +238,28 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
 
     private function loadItems(): void
     {
+        /**
+         * @psalm-var array<
+         *     string,
+         *     array{
+         *         type: string,
+         *         name: string,
+         *         description?: string,
+         *         ruleName?: class-string<Rule>,
+         *         children?: string[]
+         *     }
+         * > $items
+         */
         $items = $this->loadFromFile($this->itemFile);
         $itemsMtime = @filemtime($this->itemFile);
-        /** @psalm-var array{type: string, name: string, description?: string, ruleName?: class-string<Rule>} $item */
         foreach ($items as $name => $item) {
             $this->items[$name] = $this->getInstanceFromAttributes($item)
                 ->withCreatedAt($itemsMtime)
                 ->withUpdatedAt($itemsMtime);
         }
 
-        /** @var array $item */
         foreach ($items as $name => $item) {
             if (isset($item['children'])) {
-                /** @var string $childName */
                 foreach ($item['children'] as $childName) {
                     if ($this->hasItem($childName)) {
                         $this->children[$name][$childName] = $this->items[$childName];
@@ -271,8 +271,9 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
 
     private function loadRules(): void
     {
-        /** @var string $ruleData */
-        foreach ($this->loadFromFile($this->ruleFile) as $name => $ruleData) {
+        /** @psalm-var array<string,string> $rulesData */
+        $rulesData = $this->loadFromFile($this->ruleFile);
+        foreach ($rulesData as $name => $ruleData) {
             $this->rules[$name] = $this->unserializeRule($ruleData);
         }
     }
@@ -291,13 +292,10 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
 
     /**
      * Saves items data into persistent storage.
-     *
-     * @psalm-suppress MixedArrayAssignment
      */
     private function saveItems(): void
     {
         $items = [];
-        /** @var string $name */
         foreach ($this->getItems() as $name => $item) {
             $items[$name] = array_filter($item->getAttributes());
             if ($this->hasChildren($name)) {
@@ -321,6 +319,11 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
      * @param string $type
      *
      * @return Item[]
+     *
+     * @psalm-return array<
+     *     array-key,
+     *     ($type is Item::TYPE_PERMISSION ? Permission : ($type is Item::TYPE_ROLE ? Role : Item))
+     * >
      */
     private function getItemsByType(string $type): array
     {
@@ -329,6 +332,9 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         );
     }
 
+    /**
+     * @return Item[]
+     */
     private function getItemsByRuleName(string $ruleName): array
     {
         return $this->filterItems(
