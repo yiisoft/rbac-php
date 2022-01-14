@@ -176,7 +176,6 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     {
         unset($this->rules[$name]);
 
-        /** @var Item $item */
         foreach ($this->getItemsByRuleName($name) as $item) {
             $this->updateItem($item->getName(), $item->withRuleName(null));
         }
@@ -239,19 +238,28 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
 
     private function loadItems(): void
     {
+        /**
+         * @psalm-var array<
+         *     string,
+         *     array{
+         *         type: string,
+         *         name: string,
+         *         description?: string,
+         *         ruleName?: class-string<Rule>,
+         *         children?: string[]
+         *     }
+         * > $items
+         */
         $items = $this->loadFromFile($this->itemFile);
         $itemsMtime = @filemtime($this->itemFile);
-        /** @psalm-var array{type: string, name: string, description?: string, ruleName?: class-string<Rule>} $item */
         foreach ($items as $name => $item) {
             $this->items[$name] = $this->getInstanceFromAttributes($item)
                 ->withCreatedAt($itemsMtime)
                 ->withUpdatedAt($itemsMtime);
         }
 
-        /** @var array $item */
         foreach ($items as $name => $item) {
             if (isset($item['children'])) {
-                /** @var string $childName */
                 foreach ($item['children'] as $childName) {
                     if ($this->hasItem($childName)) {
                         $this->children[$name][$childName] = $this->items[$childName];
@@ -263,8 +271,9 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
 
     private function loadRules(): void
     {
-        /** @var string $ruleData */
-        foreach ($this->loadFromFile($this->ruleFile) as $name => $ruleData) {
+        /** @psalm-var array<string,string> $rulesData */
+        $rulesData = $this->loadFromFile($this->ruleFile);
+        foreach ($rulesData as $name => $ruleData) {
             $this->rules[$name] = $this->unserializeRule($ruleData);
         }
     }
@@ -323,6 +332,9 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         );
     }
 
+    /**
+     * @return Item[]
+     */
     private function getItemsByRuleName(string $ruleName): array
     {
         return $this->filterItems(

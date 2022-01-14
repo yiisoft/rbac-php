@@ -14,9 +14,7 @@ abstract class CommonStorage
      *
      * @param string $file The file path.
      *
-     * @return array The authorization data.
-     * @psalm-return array<string,mixed>
-     * @psalm-suppress MixedInferredReturnType,  MixedReturnStatement
+     * @return mixed The authorization data.
      *
      * @see saveToFile()
      */
