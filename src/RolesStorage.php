@@ -72,6 +72,10 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         $this->load();
     }
 
+    /**
+     * @return Item[]
+     * @psalm-return array<string,Item>
+     */
     public function getItems(): array
     {
         return $this->items;
@@ -88,33 +92,21 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         $this->saveItems();
     }
 
-    /**
-     * @psalm-suppress MixedReturnTypeCoercion, MoreSpecificReturnType, LessSpecificReturnStatement
-     */
     public function getRoleByName(string $name): ?Role
     {
         return $this->getItemsByType(Item::TYPE_ROLE)[$name] ?? null;
     }
 
-    /**
-     * @psalm-suppress MixedReturnTypeCoercion, MoreSpecificReturnType, LessSpecificReturnStatement
-     */
     public function getRoles(): array
     {
         return $this->getItemsByType(Item::TYPE_ROLE);
     }
 
-    /**
-     * @psalm-suppress MixedReturnTypeCoercion, MoreSpecificReturnType, LessSpecificReturnStatement
-     */
     public function getPermissionByName(string $name): ?Permission
     {
         return $this->getItemsByType(Item::TYPE_PERMISSION)[$name] ?? null;
     }
 
-    /**
-     * @psalm-suppress MixedReturnTypeCoercion, MoreSpecificReturnType, LessSpecificReturnStatement
-     */
     public function getPermissions(): array
     {
         return $this->getItemsByType(Item::TYPE_PERMISSION);
@@ -291,13 +283,10 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
 
     /**
      * Saves items data into persistent storage.
-     *
-     * @psalm-suppress MixedArrayAssignment
      */
     private function saveItems(): void
     {
         $items = [];
-        /** @var string $name */
         foreach ($this->getItems() as $name => $item) {
             $items[$name] = array_filter($item->getAttributes());
             if ($this->hasChildren($name)) {
@@ -321,6 +310,11 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
      * @param string $type
      *
      * @return Item[]
+     *
+     * @psalm-return array<
+     *     array-key,
+     *     ($type is Item::TYPE_PERMISSION ? Permission : ($type is Item::TYPE_ROLE ? Role : Item))
+     * >
      */
     private function getItemsByType(string $type): array
     {
