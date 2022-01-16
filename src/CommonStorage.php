@@ -43,10 +43,22 @@ abstract class CommonStorage
      */
     protected function saveToFile(array $data, string $file): void
     {
-        $concurrentDirectory = dirname($file);
+        $directory = dirname($file);
 
-        if (!file_exists($concurrentDirectory) && !mkdir($concurrentDirectory) && !is_dir($concurrentDirectory)) {
-            throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        if (!is_dir($directory)) {
+            set_error_handler(static function (int $errorNumber, string $errorString) use ($directory): bool {
+                // Handle race condition.
+                // See https://github.com/kalessil/phpinspectionsea/blob/master/docs/probable-bugs.md#mkdir-race-condition
+                if (!is_dir($directory)) {
+                    throw new RuntimeException(
+                        sprintf('Failed to create directory "%s". ', $directory) . $errorString,
+                        $errorNumber
+                    );
+                }
+                return true;
+            });
+            mkdir($directory, 0775, true);
+            restore_error_handler();
         }
 
         file_put_contents($file, "<?php\n\nreturn " . VarDumper::create($data)->export() . ";\n", LOCK_EX);

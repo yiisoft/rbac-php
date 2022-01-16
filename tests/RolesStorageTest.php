@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Php\Tests;
 
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+use Yiisoft\Files\FileHelper;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Php\RolesStorage;
 use Yiisoft\Rbac\Role;
@@ -320,16 +322,49 @@ final class RolesStorageTest extends TestCase
         );
     }
 
+    public function testFailCreateDirectory(): void
+    {
+        $directory = __DIR__ . '/?*<>';
+
+        $storage = new RolesStorage($directory);
+
+        $rule = new EasyRule();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Failed to create directory "' . $directory . '". mkdir(): Invalid path');
+        $storage->addRule($rule);
+    }
+
+    public function testCreateNestedDirectory(): void
+    {
+        $directory = $this->getTempDirectory() . '/test/create/nested/directory';
+
+        $storage = new RolesStorage($directory);
+        $storage->addRule(new EasyRule());
+
+        $this->assertFileExists($directory . '/rules.php');
+    }
+
     protected function tearDown(): void
     {
+        FileHelper::removeDirectory($this->getTempDirectory());
+
         $this->clearFixturesFiles();
         parent::tearDown();
     }
 
     protected function setUp(): void
     {
+        FileHelper::ensureDirectory($this->getTempDirectory());
+        FileHelper::clearDirectory($this->getTempDirectory());
+
         $this->addFixturesFiles();
         parent::setUp();
+    }
+
+    private function getTempDirectory(): string
+    {
+        return __DIR__ . '/temp';
     }
 
     private function createStorage(): RolesStorage
