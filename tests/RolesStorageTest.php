@@ -324,7 +324,7 @@ final class RolesStorageTest extends TestCase
 
     public function testFailCreateDirectory(): void
     {
-        $directory = __DIR__ . '/?*<>';
+        $directory = '?*<>';
 
         $storage = new RolesStorage($directory);
 
