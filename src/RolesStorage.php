@@ -15,8 +15,6 @@ use Yiisoft\Rbac\RuleInterface;
  *
  * It is suitable for authorization data that is not too big (for example, the authorization data for
  * a personal blog system).
- *
- * @package Yiisoft\Rbac\Php
  */
 final class RolesStorage extends CommonStorage implements RolesStorageInterface
 {

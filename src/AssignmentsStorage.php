@@ -14,8 +14,6 @@ use Yiisoft\Rbac\Item;
  *
  * It is suitable for authorization data that is not too big (for example, the authorization data for
  * a personal blog system).
- *
- * @package Yiisoft\Rbac\Php
  */
 final class AssignmentsStorage extends CommonStorage implements AssignmentsStorageInterface
 {
