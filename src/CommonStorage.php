@@ -7,6 +7,9 @@ namespace Yiisoft\Rbac\Php;
 use RuntimeException;
 use Yiisoft\VarDumper\VarDumper;
 
+use function dirname;
+use function function_exists;
+
 abstract class CommonStorage
 {
     /**
