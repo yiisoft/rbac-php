@@ -324,14 +324,15 @@ final class RolesStorageTest extends TestCase
 
     public function testFailCreateDirectory(): void
     {
-        $directory = '?*<>';
+        $directory = $this->getTempDirectory() . '/file.txt';
+        touch($directory);
 
         $storage = new RolesStorage($directory);
 
         $rule = new EasyRule();
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Failed to create directory "' . $directory . '". mkdir(): Invalid path');
+        $this->expectExceptionMessage('Failed to create directory "' . $directory . '". mkdir(): File exists');
         $storage->addRule($rule);
     }
 
