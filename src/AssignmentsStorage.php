@@ -14,8 +14,6 @@ use Yiisoft\Rbac\Item;
  *
  * It is suitable for authorization data that is not too big (for example, the authorization data for
  * a personal blog system).
- *
- * @package Yiisoft\Rbac\Php
  */
 final class AssignmentsStorage extends CommonStorage implements AssignmentsStorageInterface
 {
@@ -42,7 +40,7 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         string $assignmentFile = 'assignments.php'
     ) {
         $this->assignmentFile = $directory . DIRECTORY_SEPARATOR . $assignmentFile;
-        $this->load();
+        $this->loadAssignments();
     }
 
     public function getAssignments(): array
@@ -108,7 +106,9 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
 
     public function removeAssignmentsFromItem(Item $item): void
     {
-        $this->clearAssignmentsFromItem($item);
+        foreach ($this->assignments as &$assignments) {
+            unset($assignments[$item->getName()]);
+        }
         $this->saveAssignments();
     }
 
@@ -121,19 +121,16 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
     /**
      * Loads authorization data from persistent storage.
      */
-    private function load(): void
-    {
-        $this->loadAssignments();
-    }
-
     private function loadAssignments(): void
     {
-        /** @psalm-var array<string,string[]> $assignments */
+        /**
+         * @psalm-var array<string,string[]> $assignments
+         */
         $assignments = $this->loadFromFile($this->assignmentFile);
-        $assignmentsMtime = @filemtime($this->assignmentFile);
+        $modifiedTime = @filemtime($this->assignmentFile);
         foreach ($assignments as $userId => $roles) {
             foreach ($roles as $role) {
-                $this->assignments[$userId][$role] = new Assignment($userId, $role, $assignmentsMtime);
+                $this->assignments[$userId][$role] = new Assignment($userId, $role, $modifiedTime);
             }
         }
     }
@@ -150,12 +147,5 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
             }
         }
         $this->saveToFile($assignmentData, $this->assignmentFile);
-    }
-
-    private function clearAssignmentsFromItem(Item $item): void
-    {
-        foreach ($this->assignments as &$assignments) {
-            unset($assignments[$item->getName()]);
-        }
     }
 }
