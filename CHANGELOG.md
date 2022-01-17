@@ -1,0 +1,5 @@
+# Yii RBAC PHP File Storage Change Log
+
+## 1.0.0 under development
+
+- Initial release.

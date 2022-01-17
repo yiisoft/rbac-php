@@ -1,8 +1,8 @@
 <p align="center">
     <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
+        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px">
     </a>
-    <h1 align="center">Yii RBAC PHP file storage</h1>
+    <h1 align="center">Yii RBAC PHP File Storage</h1>
     <br>
 </p>
 
@@ -15,10 +15,8 @@
 [![static analysis](https://github.com/yiisoft/rbac-php/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/rbac-php/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yiisoft/rbac-php/coverage.svg)](https://shepherd.dev/github/yiisoft/rbac-php)
 
-This package provides PHP file-based storage for [RBAC (Role-Based Access Control)](https://github.com/yiisoft/rbac) package. 
-
-[RBAC]: https://en.wikipedia.org/wiki/Role-based_access_control
-[Yii Framework]: https://yiiframework.com
+This package provides PHP file-based storage for [RBAC (Role-Based Access Control)](https://github.com/yiisoft/rbac)
+package.
 
 ## Requirements
 
@@ -42,7 +40,8 @@ a personal blog system) or for fairly static RBAC hierarchy.
 Authorization data is stored in three PHP files specified by `Storage::$itemFile`, `Storage::$assignmentFile`,
 and `Storage::$ruleFile`.
 
-PHP should be able to read and write these files. Non-existing files will be created automatically on any write operation.
+PHP should be able to read and write these files. Non-existing files will be created automatically on any write
+operation.
 
 ## Testing
 
