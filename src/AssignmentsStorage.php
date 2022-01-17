@@ -67,10 +67,8 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
     public function assignmentExist(string $name): bool
     {
         foreach ($this->getAssignments() as $assignmentInfo) {
-            foreach ($assignmentInfo as $itemName => $_assignment) {
-                if ($itemName === $name) {
-                    return true;
-                }
+            if (array_key_exists($name, $assignmentInfo)) {
+                return true;
             }
         }
         return false;

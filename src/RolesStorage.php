@@ -11,7 +11,8 @@ use Yiisoft\Rbac\RolesStorageInterface;
 use Yiisoft\Rbac\RuleInterface;
 
 /**
- * Storage stores authorization data in three PHP files specified by {@see Storage::itemFile} and {@see Storage::ruleFile}.
+ * Storage stores authorization data in three PHP files specified by {@see Storage::itemFile} and
+ * {@see Storage::ruleFile}.
  *
  * It is suitable for authorization data that is not too big (for example, the authorization data for
  * a personal blog system).
@@ -19,10 +20,9 @@ use Yiisoft\Rbac\RuleInterface;
 final class RolesStorage extends CommonStorage implements RolesStorageInterface
 {
     /**
-     * @var string The path of the PHP script that contains the authorization items.
-     * This can be either a file path or a [path alias](guide:concept-aliases) to the file.
-     * Make sure this file is writable by the Web server process if the authorization needs to be changed
-     * online.
+     * @var string The path of the PHP script that contains the authorization items. This can be either a file path or
+     * a {@link https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md path alias} to the file. Make
+     * sure this file is writable by the Web server process if the authorization needs to be changed online.
      *
      * @see loadFromFile()
      * @see saveToFile()
@@ -30,10 +30,9 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     private string $itemFile;
 
     /**
-     * @var string The path of the PHP script that contains the authorization rules.
-     * This can be either a file path or a [path alias](guide:concept-aliases) to the file.
-     * Make sure this file is writable by the Web server process if the authorization needs to be changed
-     * online.
+     * @var string The path of the PHP script that contains the authorization rules. This can be either a file path or
+     * a {@link https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md path alias} to the file. Make
+     * sure this file is writable by the Web server process if the authorization needs to be changed online.
      *
      * @see loadFromFile()
      * @see saveToFile()
@@ -243,7 +242,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
          *         type: string,
          *         name: string,
          *         description?: string,
-         *         ruleName?: class-string<RuleInterface>,
+         *         ruleName?: string,
          *         children?: string[]
          *     }
          * > $items
@@ -376,7 +375,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     }
 
     /**
-     * @psalm-param array{type: string, name: string, description?: string, ruleName?: class-string<RuleInterface>} $attributes
+     * @psalm-param array{type: string, name: string, description?: string, ruleName?: string} $attributes
      */
     private function getInstanceFromAttributes(array $attributes): Item
     {

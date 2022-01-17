@@ -36,7 +36,7 @@ abstract class CommonStorage
     /**
      * Saves the authorization data to a PHP script file.
      *
-     * @param array $data The authorization data
+     * @param array $data The authorization data.
      * @param string $file The file path.
      *
      * @see loadFromFile()
