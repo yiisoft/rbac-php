@@ -43,11 +43,18 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         $this->loadAssignments();
     }
 
+    /**
+     * @psalm-return array<string, array<string, Assignment>>
+     */
     public function getAssignments(): array
     {
         return $this->assignments;
     }
 
+    /**
+     * @return Assignment[]
+     * @psalm-return array<string, Assignment>
+     */
     public function getUserAssignments(string $userId): array
     {
         return $this->assignments[$userId] ?? [];
@@ -67,10 +74,8 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
     public function assignmentExist(string $name): bool
     {
         foreach ($this->getAssignments() as $assignmentInfo) {
-            foreach ($assignmentInfo as $itemName => $_assignment) {
-                if ($itemName === $name) {
-                    return true;
-                }
+            if (array_key_exists($name, $assignmentInfo)) {
+                return true;
             }
         }
         return false;
