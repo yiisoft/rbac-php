@@ -28,7 +28,7 @@ final class ManagerTest extends TestCase
 
     private function getDataPath(): string
     {
-        return sys_get_temp_dir() . '/' . str_replace('\\', '_', static::class) . uniqid('', false);
+        return sys_get_temp_dir() . '/' . str_replace('\\', '_', self::class) . uniqid('', false);
     }
 
     protected function setUp(): void
