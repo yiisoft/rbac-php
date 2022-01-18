@@ -16,7 +16,7 @@ use Yiisoft\Rbac\Php\Tests\AuthorRule;
 use Yiisoft\Rbac\Php\Tests\EasyRule;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\RolesStorageInterface;
-use Yiisoft\Rbac\RuleFactory\ClassNameRuleFactory;
+use Yiisoft\Rbac\ClassNameRuleFactory;
 
 /**
  * @group rbac
@@ -460,7 +460,8 @@ class ManagerTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            'Unable to change the item name. The name "createPost" is already used by another item.'
+            'Unable to change the role or the permission name. ' .
+            'The name "createPost" is already used by another role or permission.'
         );
 
         $permission = $this->rolesStorage->getPermissionByName('updatePost')
