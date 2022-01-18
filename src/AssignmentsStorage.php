@@ -82,7 +82,7 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
 
         foreach ($this->assignments as &$assignments) {
             if (isset($assignments[$name])) {
-                $assignments[$item->getName()] = $assignments[$name]->withItemName($item->getName());
+                $assignments[$item->getName()] = $assignments[$name]->withRoleName($item->getName());
                 unset($assignments[$name]);
             }
         }
@@ -141,7 +141,7 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         $assignmentData = [];
         foreach ($this->assignments as $userId => $assignments) {
             foreach ($assignments as $assignment) {
-                $assignmentData[$userId][] = $assignment->getItemName();
+                $assignmentData[$userId][] = $assignment->getRoleName();
             }
         }
         $this->saveToFile($assignmentData, $this->assignmentFile);
