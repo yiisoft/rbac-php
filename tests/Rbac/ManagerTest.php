@@ -146,7 +146,7 @@ class ManagerTest extends TestCase
 
     public function testUserHasPermissionReturnFalseForNonExistingUserAndNoDefaultRoles(): void
     {
-        $this->manager->setDefaultRoles([]);
+        $this->manager->setDefaultRoleNames([]);
         $this->assertFalse($this->manager->userHasPermission('unknown user', 'createPost'));
     }
 
@@ -504,21 +504,21 @@ class ManagerTest extends TestCase
 
     public function testDefaultRolesSetWithClosure(): void
     {
-        $this->manager->setDefaultRoles(
+        $this->manager->setDefaultRoleNames(
             static function () {
                 return ['newDefaultRole'];
             }
         );
 
-        $this->assertEquals(['newDefaultRole'], $this->manager->getDefaultRoles());
+        $this->assertEquals(['newDefaultRole'], $this->manager->getDefaultRoleNames());
     }
 
     public function testDefaultRolesWithClosureReturningNonArrayValue(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Default roles closure must return an array');
+        $this->expectExceptionMessage('Default role names closure must return an array');
 
-        $this->manager->setDefaultRoles(
+        $this->manager->setDefaultRoleNames(
             static function () {
                 return 'test';
             }
@@ -528,20 +528,20 @@ class ManagerTest extends TestCase
     public function testDefaultRolesWithNonArrayValue(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Default roles must be either an array or a closure');
+        $this->expectExceptionMessage('Default role names must be either an array or a closure');
 
-        $this->manager->setDefaultRoles('test');
+        $this->manager->setDefaultRoleNames('test');
     }
 
     public function testGetDefaultRoles(): void
     {
-        $this->assertEquals(['myDefaultRole'], $this->manager->getDefaultRoles());
+        $this->assertEquals(['myDefaultRole'], $this->manager->getDefaultRoleNames());
     }
 
     protected function createManager(RolesStorageInterface $rolesStorage, AssignmentsStorageInterface $assignmentsStorage): Manager
     {
         return (new Manager($rolesStorage, $assignmentsStorage, new ClassNameRuleFactory()))
-            ->setDefaultRoles(['myDefaultRole']);
+            ->setDefaultRoleNames(['myDefaultRole']);
     }
 
     protected function createRolesStorage(string $datapath): RolesStorageInterface
