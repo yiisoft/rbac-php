@@ -6,7 +6,6 @@ namespace Yiisoft\Rbac\Php;
 
 use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
-use Yiisoft\Rbac\Item;
 
 /**
  * Storage stores authorization data in three PHP files specified by {@see Storage::itemFile},

@@ -6,9 +6,7 @@ namespace Yiisoft\Rbac\Php\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Rbac\Assignment;
-use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Php\AssignmentsStorage;
-use Yiisoft\Rbac\Role;
 
 /**
  * @group rbac
