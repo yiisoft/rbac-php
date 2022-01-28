@@ -20,8 +20,8 @@ final class AssignmentsStorageTest extends TestCase
     public function testClearAssignments(): void
     {
         $storage = $this->createStorage();
-        $storage->clearAssignments();
-        $this->assertCount(0, $this->createStorage()->getAssignments());
+        $storage->clear();
+        $this->assertCount(0, $this->createStorage()->getAll());
     }
 
     public function testGetAssignments(): void
@@ -33,7 +33,7 @@ final class AssignmentsStorageTest extends TestCase
                 'author B',
                 'admin C',
             ],
-            array_keys($storage->getAssignments())
+            array_keys($storage->getAll())
         );
     }
 
@@ -55,18 +55,17 @@ final class AssignmentsStorageTest extends TestCase
         $storage = $this->createStorage();
         $this->assertInstanceOf(
             Assignment::class,
-            $storage->getUserAssignmentByName('author B', 'author')
+            $storage->get('author B', 'author')
         );
 
-        $this->assertNull($storage->getUserAssignmentByName('author B', 'nonExistAssigment'));
+        $this->assertNull($storage->get('author B', 'nonExistAssigment'));
     }
 
     public function testAddAssignment(): void
     {
         $storage = $this->createStorage();
-        $role = new Role('author');
 
-        $storage->addAssignment('reader A', $role);
+        $storage->add('reader A', 'author');
         $this->assertEquals(
             [
                 'Fast Metabolism',
@@ -81,46 +80,43 @@ final class AssignmentsStorageTest extends TestCase
     {
         $storage = $this->createStorage();
 
-        $this->assertTrue($storage->assignmentExist('deletePost'));
-        $this->assertFalse($storage->assignmentExist('nonExistAssignment'));
+        $this->assertTrue($storage->hasItem('deletePost'));
+        $this->assertFalse($storage->hasItem('nonExistAssignment'));
     }
 
     public function testAssigmentSave(): void
     {
         $storage = $this->createStorage();
 
-        $role = new Role('author');
-        $storage->addAssignment('reader A', $role);
+        $storage->add('reader A', 'author');
 
         $storageNew = $this->createStorage();
 
-        $this->assertEquals($storage->getAssignments(), $storageNew->getAssignments());
+        $this->assertEquals($storage->getAll(), $storageNew->getAll());
     }
 
     public function testRemoveAssignment(): void
     {
         $storage = $this->createStorage();
-        $permission = new Permission('deletePost');
 
-        $storage->removeAssignment('author B', $permission);
+        $storage->remove('author B', 'deletePost');
         $this->assertEquals(['author'], array_keys($storage->getUserAssignments('author B')));
     }
 
     public function testRemoveAllAssignments(): void
     {
         $storage = $this->createStorage();
-        $storage->removeAllAssignments('author B');
+        $storage->removeUserAssignments('author B');
         $this->assertEmpty($storage->getUserAssignments('author B'));
     }
 
     public function testRemoveAssignmentsFromItem(): void
     {
         $storage = $this->createStorage();
-        $permission = new Permission('deletePost');
 
-        $storage->removeAssignmentsFromItem($permission);
+        $storage->removeItemAssignments('deletePost');
 
-        $this->assertNull($storage->getUserAssignmentByName('author B', 'deletePost'));
+        $this->assertNull($storage->get('author B', 'deletePost'));
     }
 
     public function testUpdateAssignmentsForItemNameWithoutChangeName(): void
@@ -130,12 +126,11 @@ final class AssignmentsStorageTest extends TestCase
         $roleName = 'reader';
         $userId = 'reader A';
 
-        $beforeAssignments = $storage->getUserAssignmentByName($userId, $roleName);
+        $beforeAssignments = $storage->get($userId, $roleName);
 
-        $role = (new Role($roleName))->withDescription('new description');
-        $storage->updateAssignmentsForItemName($roleName, $role);
+        $storage->renameItem($roleName, $roleName);
 
-        $afterAssignments = $storage->getUserAssignmentByName($userId, $roleName);
+        $afterAssignments = $storage->get($userId, $roleName);
 
         $this->assertEquals($beforeAssignments, $afterAssignments);
     }

@@ -43,7 +43,7 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         $this->loadAssignments();
     }
 
-    public function getAssignments(): array
+    public function getAll(): array
     {
         return $this->assignments;
     }
@@ -53,20 +53,20 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         return $this->assignments[$userId] ?? [];
     }
 
-    public function getUserAssignmentByName(string $userId, string $name): ?Assignment
+    public function get(string $userId, string $name): ?Assignment
     {
         return $this->getUserAssignments($userId)[$name] ?? null;
     }
 
-    public function addAssignment(string $userId, Item $item): void
+    public function add(string $userId, string $itemName): void
     {
-        $this->assignments[$userId][$item->getName()] = new Assignment($userId, $item->getName(), time());
+        $this->assignments[$userId][$itemName] = new Assignment($userId, $itemName, time());
         $this->saveAssignments();
     }
 
-    public function assignmentExist(string $name): bool
+    public function hasItem(string $name): bool
     {
-        foreach ($this->getAssignments() as $assignmentInfo) {
+        foreach ($this->getAll() as $assignmentInfo) {
             if (array_key_exists($name, $assignmentInfo)) {
                 return true;
             }
@@ -74,43 +74,43 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         return false;
     }
 
-    public function updateAssignmentsForItemName(string $name, Item $item): void
+    public function renameItem(string $oldName, string $newName): void
     {
-        if ($name === $item->getName()) {
+        if ($oldName === $newName) {
             return;
         }
 
         foreach ($this->assignments as &$assignments) {
-            if (isset($assignments[$name])) {
-                $assignments[$item->getName()] = $assignments[$name]->withItemName($item->getName());
-                unset($assignments[$name]);
+            if (isset($assignments[$oldName])) {
+                $assignments[$newName] = $assignments[$oldName]->withItemName($newName);
+                unset($assignments[$oldName]);
             }
         }
 
         $this->saveAssignments();
     }
 
-    public function removeAssignment(string $userId, Item $item): void
+    public function remove(string $userId, string $itemName): void
     {
-        unset($this->assignments[$userId][$item->getName()]);
+        unset($this->assignments[$userId][$itemName]);
         $this->saveAssignments();
     }
 
-    public function removeAllAssignments(string $userId): void
+    public function removeUserAssignments(string $userId): void
     {
         $this->assignments[$userId] = [];
         $this->saveAssignments();
     }
 
-    public function removeAssignmentsFromItem(Item $item): void
+    public function removeItemAssignments(string $itemName): void
     {
         foreach ($this->assignments as &$assignments) {
-            unset($assignments[$item->getName()]);
+            unset($assignments[$itemName]);
         }
         $this->saveAssignments();
     }
 
-    public function clearAssignments(): void
+    public function clear(): void
     {
         $this->assignments = [];
         $this->saveAssignments();
