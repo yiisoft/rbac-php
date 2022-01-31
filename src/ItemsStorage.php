@@ -78,7 +78,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         return $this->items;
     }
 
-    public function getByName(string $name): ?Item
+    public function get(string $name): ?Item
     {
         return $this->items[$name] ?? null;
     }
@@ -89,7 +89,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         $this->saveItems();
     }
 
-    public function getRoleByName(string $name): ?Role
+    public function getRole(string $name): ?Role
     {
         return $this->getItemsByType(Item::TYPE_ROLE)[$name] ?? null;
     }
@@ -99,7 +99,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         return $this->getItemsByType(Item::TYPE_ROLE);
     }
 
-    public function getPermissionByName(string $name): ?Permission
+    public function getPermission(string $name): ?Permission
     {
         return $this->getItemsByType(Item::TYPE_PERMISSION)[$name] ?? null;
     }
@@ -124,14 +124,14 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         return $this->rules;
     }
 
-    public function getRuleByName(string $name): ?RuleInterface
+    public function getRule(string $name): ?RuleInterface
     {
         return $this->rules[$name] ?? null;
     }
 
-    public function addChild(Item $parent, Item $child): void
+    public function addChild(string $parentName, string $childName): void
     {
-        $this->children[$parent->getName()][$child->getName()] = $this->items[$child->getName()];
+        $this->children[$parentName][$childName] = $this->items[$childName];
         $this->saveItems();
     }
 
@@ -140,22 +140,22 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         return isset($this->children[$name]);
     }
 
-    public function removeChild(Item $parent, Item $child): void
+    public function removeChild(string $parentName, string $childName): void
     {
-        unset($this->children[$parent->getName()][$child->getName()]);
+        unset($this->children[$parentName][$childName]);
         $this->saveItems();
     }
 
-    public function removeChildren(Item $parent): void
+    public function removeChildren(string $parentName): void
     {
-        unset($this->children[$parent->getName()]);
+        unset($this->children[$parentName]);
         $this->saveItems();
     }
 
-    public function remove(Item $item): void
+    public function remove(string $name): void
     {
-        $this->clearChildrenFromItem($item);
-        $this->removeItemByName($item->getName());
+        $this->clearChildrenFromItem($name);
+        $this->removeItemByName($name);
         $this->saveItems();
     }
 
@@ -358,14 +358,14 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     private function removeAllItems(string $type): void
     {
         foreach ($this->getItemsByType($type) as $item) {
-            $this->remove($item);
+            $this->remove($item->getName());
         }
     }
 
-    private function clearChildrenFromItem(Item $item): void
+    private function clearChildrenFromItem(string $itemName): void
     {
         foreach ($this->children as &$children) {
-            unset($children[$item->getName()]);
+            unset($children[$itemName]);
         }
     }
 
