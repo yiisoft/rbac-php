@@ -43,9 +43,9 @@ final class AssignmentsStorageTest extends TestCase
                 'author',
                 'deletePost',
             ],
-            array_keys($storage->getUserAssignments('author B'))
+            array_keys($storage->getAllByUser('author B'))
         );
-        $this->assertEmpty($storage->getUserAssignments('unknown user'));
+        $this->assertEmpty($storage->getAllByUser('unknown user'));
     }
 
     public function testGetUserAssignmentByName(): void
@@ -70,7 +70,7 @@ final class AssignmentsStorageTest extends TestCase
                 'reader',
                 'author',
             ],
-            array_keys($storage->getUserAssignments('reader A'))
+            array_keys($storage->getAllByUser('reader A'))
         );
     }
 
@@ -97,22 +97,22 @@ final class AssignmentsStorageTest extends TestCase
     {
         $storage = $this->createStorage();
 
-        $storage->remove('author B', 'deletePost');
-        $this->assertEquals(['author'], array_keys($storage->getUserAssignments('author B')));
+        $storage->remove('deletePost', 'author B');
+        $this->assertEquals(['author'], array_keys($storage->getAllByUser('author B')));
     }
 
     public function testRemoveAllAssignments(): void
     {
         $storage = $this->createStorage();
-        $storage->removeUserAssignments('author B');
-        $this->assertEmpty($storage->getUserAssignments('author B'));
+        $storage->removeAllByUserId('author B');
+        $this->assertEmpty($storage->getAllByUser('author B'));
     }
 
     public function testRemoveAssignmentsFromItem(): void
     {
         $storage = $this->createStorage();
 
-        $storage->removeItemAssignments('deletePost');
+        $storage->removeAllByItemName('deletePost');
 
         $this->assertNull($storage->get('author B', 'deletePost'));
     }
