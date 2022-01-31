@@ -48,7 +48,7 @@ final class ItemsStorageTest extends TestCase
         $storage = $this->createStorage();
 
         $this->assertCount(0, $storage->getAll());
-        $this->assertCount(0, $storage->getChildren());
+        $this->assertCount(0, $storage->getAllChildren());
         $this->assertCount(0, $storage->getRules());
     }
 
@@ -166,7 +166,7 @@ final class ItemsStorageTest extends TestCase
 
     public function testGetChildren(): void
     {
-        $children = $this->createStorage()->getChildren();
+        $children = $this->createStorage()->getAllChildren();
 
         $this->assertEquals(['readPost'], array_keys($children['reader']));
         $this->assertEquals(
@@ -195,9 +195,9 @@ final class ItemsStorageTest extends TestCase
                 'updatePost',
                 'reader',
             ],
-            array_keys($storage->getChildrenByName('author'))
+            array_keys($storage->getChildren('author'))
         );
-        $this->assertEmpty($storage->getChildrenByName('itemNotExist'));
+        $this->assertEmpty($storage->getChildren('itemNotExist'));
     }
 
     public function testGetRules(): void
@@ -224,7 +224,7 @@ final class ItemsStorageTest extends TestCase
                 'readPost',
                 'createPost',
             ],
-            array_keys($storage->getChildrenByName('reader'))
+            array_keys($storage->getChildren('reader'))
         );
     }
 
@@ -241,7 +241,7 @@ final class ItemsStorageTest extends TestCase
         $storage = $this->createStorage();
 
         $storage->removeChild('reader', 'readPost');
-        $this->assertEmpty($storage->getChildrenByName('reader'));
+        $this->assertEmpty($storage->getChildren('reader'));
     }
 
     public function testRemoveChildren(): void
@@ -249,7 +249,7 @@ final class ItemsStorageTest extends TestCase
         $storage = $this->createStorage();
 
         $storage->removeChildren('reader');
-        $this->assertEmpty($storage->getChildrenByName('reader'));
+        $this->assertEmpty($storage->getChildren('reader'));
     }
 
     public function testRemoveItem(): void

@@ -109,12 +109,12 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         return $this->getItemsByType(Item::TYPE_PERMISSION);
     }
 
-    public function getChildren(): array
+    public function getAllChildren(): array
     {
         return $this->children;
     }
 
-    public function getChildrenByName(string $name): array
+    public function getChildren(string $name): array
     {
         return $this->children[$name] ?? [];
     }
@@ -296,7 +296,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         foreach ($this->getAll() as $name => $item) {
             $items[$name] = array_filter($item->getAttributes());
             if ($this->hasChildren($name)) {
-                foreach ($this->getChildrenByName($name) as $child) {
+                foreach ($this->getChildren($name) as $child) {
                     $items[$name]['children'][] = $child->getName();
                 }
             }
