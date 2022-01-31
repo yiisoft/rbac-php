@@ -38,10 +38,10 @@ class ManagerTest extends TestCase
     {
         parent::setUp();
 
-        $datapath = $this->getDataPath();
+        $dataPath = $this->getDataPath();
 
-        $this->itemsStorage = $this->createRolesStorage($datapath);
-        $this->assignmentsStorage = $this->createAssignmentsStorage($datapath);
+        $this->itemsStorage = $this->createItemsStorage($dataPath);
+        $this->assignmentsStorage = $this->createAssignmentsStorage($dataPath);
 
         $this->manager = $this->createManager($this->itemsStorage, $this->assignmentsStorage);
     }
@@ -528,9 +528,9 @@ class ManagerTest extends TestCase
             ->setDefaultRoleNames(['myDefaultRole']);
     }
 
-    protected function createRolesStorage(string $datapath): ItemsStorageInterface
+    protected function createItemsStorage(string $dataPath): ItemsStorageInterface
     {
-        $storage = new ItemsStorage($datapath);
+        $storage = new ItemsStorage($dataPath);
 
         $storage->add(new Permission('Fast Metabolism'));
         $storage->add(new Permission('createPost'));
@@ -542,6 +542,7 @@ class ManagerTest extends TestCase
         $storage->add(new Role('reader'));
         $storage->add(new Role('author'));
         $storage->add(new Role('admin'));
+        $storage->add(new Role('myDefaultRole'));
 
         $storage->addChild('reader', 'readPost');
         $storage->addChild('author', 'createPost');
@@ -555,9 +556,9 @@ class ManagerTest extends TestCase
         return $storage;
     }
 
-    protected function createAssignmentsStorage(string $datapath): AssignmentsStorageInterface
+    protected function createAssignmentsStorage(string $dataPath): AssignmentsStorageInterface
     {
-        $storage = new AssignmentsStorage($datapath);
+        $storage = new AssignmentsStorage($dataPath);
 
         $storage->add('reader A', 'Fast Metabolism');
         $storage->add('reader A', 'reader');
