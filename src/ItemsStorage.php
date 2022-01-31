@@ -11,8 +11,8 @@ use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\RuleInterface;
 
 /**
- * Storage stores authorization data in three PHP files specified by {@see Storage::itemFile} and
- * {@see Storage::ruleFile}.
+ * Storage stores authorization data in three PHP files specified by `itemFile` and
+ * `ruleFile`.
  *
  * It is suitable for authorization data that is not too big (for example, the authorization data for
  * a personal blog system).
@@ -20,9 +20,7 @@ use Yiisoft\Rbac\RuleInterface;
 final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 {
     /**
-     * @var string The path of the PHP script that contains the authorization items. This can be either a file path or
-     * a {@link https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md path alias} to the file. Make
-     * sure this file is writable by the Web server process if the authorization needs to be changed online.
+     * @var string The path of the PHP script that contains the authorization items.
      *
      * @see loadFromFile()
      * @see saveToFile()
@@ -30,9 +28,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     private string $itemFile;
 
     /**
-     * @var string The path of the PHP script that contains the authorization rules. This can be either a file path or
-     * a {@link https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md path alias} to the file. Make
-     * sure this file is writable by the Web server process if the authorization needs to be changed online.
+     * @var string The path of the PHP script that contains the authorization rules.
      *
      * @see loadFromFile()
      * @see saveToFile()
@@ -59,6 +55,13 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
      */
     private array $rules = [];
 
+    /**
+     * @param string $directory Base directory to append to itemFile and ruleFile.
+     * @param string $itemFile The path of the PHP script that contains the authorization items. Make
+     * sure this file is writable by the Web server process if the authorization needs to be changed online.
+     * @param string $ruleFile The path of the PHP script that contains the authorization rules. Make
+     * sure this file is writable by the Web server process if the authorization needs to be changed online.
+     */
     public function __construct(
         string $directory,
         string $itemFile = 'items.php',

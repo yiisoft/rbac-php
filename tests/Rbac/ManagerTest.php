@@ -576,7 +576,7 @@ class ManagerTest extends TestCase
             'reader A'
         );
 
-        $this->assertEquals(['Fast Metabolism'], array_keys($this->assignmentsStorage->getAllByUser('reader A')));
+        $this->assertEquals(['Fast Metabolism'], array_keys($this->assignmentsStorage->getByUserId('reader A')));
     }
 
     public function testRevokePermission(): void
@@ -586,12 +586,12 @@ class ManagerTest extends TestCase
             'author B'
         );
 
-        $this->assertEquals(['author'], array_keys($this->assignmentsStorage->getAllByUser('author B')));
+        $this->assertEquals(['author'], array_keys($this->assignmentsStorage->getByUserId('author B')));
     }
 
     public function testRevokeAll(): void
     {
         $this->manager->revokeAll('author B');
-        $this->assertEmpty($this->assignmentsStorage->getAllByUser('author B'));
+        $this->assertEmpty($this->assignmentsStorage->getByUserId('author B'));
     }
 }
