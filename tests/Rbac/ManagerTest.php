@@ -11,11 +11,11 @@ use Yiisoft\Rbac\AssignmentsStorageInterface;
 use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Php\AssignmentsStorage;
-use Yiisoft\Rbac\Php\RolesStorage;
+use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\Php\Tests\AuthorRule;
 use Yiisoft\Rbac\Php\Tests\EasyRule;
 use Yiisoft\Rbac\Role;
-use Yiisoft\Rbac\RolesStorageInterface;
+use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\ClassNameRuleFactory;
 
 /**
@@ -25,7 +25,7 @@ class ManagerTest extends TestCase
 {
     protected Manager $manager;
 
-    protected RolesStorageInterface $rolesStorage;
+    protected ItemsStorageInterface $rolesStorage;
 
     protected AssignmentsStorageInterface $assignmentsStorage;
 
@@ -538,26 +538,26 @@ class ManagerTest extends TestCase
         $this->assertEquals(['myDefaultRole'], $this->manager->getDefaultRoleNames());
     }
 
-    protected function createManager(RolesStorageInterface $rolesStorage, AssignmentsStorageInterface $assignmentsStorage): Manager
+    protected function createManager(ItemsStorageInterface $rolesStorage, AssignmentsStorageInterface $assignmentsStorage): Manager
     {
         return (new Manager($rolesStorage, $assignmentsStorage, new ClassNameRuleFactory()))
             ->setDefaultRoleNames(['myDefaultRole']);
     }
 
-    protected function createRolesStorage(string $datapath): RolesStorageInterface
+    protected function createRolesStorage(string $datapath): ItemsStorageInterface
     {
-        $storage = new RolesStorage($datapath);
+        $storage = new ItemsStorage($datapath);
 
-        $storage->addItem(new Permission('Fast Metabolism'));
-        $storage->addItem(new Permission('createPost'));
-        $storage->addItem(new Permission('readPost'));
-        $storage->addItem(new Permission('deletePost'));
-        $storage->addItem((new Permission('updatePost'))->withRuleName('isAuthor'));
-        $storage->addItem(new Permission('updateAnyPost'));
-        $storage->addItem(new Role('withoutChildren'));
-        $storage->addItem(new Role('reader'));
-        $storage->addItem(new Role('author'));
-        $storage->addItem(new Role('admin'));
+        $storage->add(new Permission('Fast Metabolism'));
+        $storage->add(new Permission('createPost'));
+        $storage->add(new Permission('readPost'));
+        $storage->add(new Permission('deletePost'));
+        $storage->add((new Permission('updatePost'))->withRuleName('isAuthor'));
+        $storage->add(new Permission('updateAnyPost'));
+        $storage->add(new Role('withoutChildren'));
+        $storage->add(new Role('reader'));
+        $storage->add(new Role('author'));
+        $storage->add(new Role('admin'));
 
         $storage->addChild(new Role('reader'), new Permission('readPost'));
         $storage->addChild(new Role('author'), new Permission('createPost'));

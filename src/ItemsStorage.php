@@ -7,7 +7,7 @@ namespace Yiisoft\Rbac\Php;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
-use Yiisoft\Rbac\RolesStorageInterface;
+use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\RuleInterface;
 
 /**
@@ -17,7 +17,7 @@ use Yiisoft\Rbac\RuleInterface;
  * It is suitable for authorization data that is not too big (for example, the authorization data for
  * a personal blog system).
  */
-final class RolesStorage extends CommonStorage implements RolesStorageInterface
+final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 {
     /**
      * @var string The path of the PHP script that contains the authorization items. This can be either a file path or
@@ -73,17 +73,17 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
      * @return Item[]
      * @psalm-return array<string,Item>
      */
-    public function getItems(): array
+    public function getAll(): array
     {
         return $this->items;
     }
 
-    public function getItemByName(string $name): ?Item
+    public function getByName(string $name): ?Item
     {
         return $this->items[$name] ?? null;
     }
 
-    public function addItem(Item $item): void
+    public function add(Item $item): void
     {
         $this->items[$item->getName()] = $item;
         $this->saveItems();
@@ -152,21 +152,21 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         $this->saveItems();
     }
 
-    public function removeItem(Item $item): void
+    public function remove(Item $item): void
     {
         $this->clearChildrenFromItem($item);
         $this->removeItemByName($item->getName());
         $this->saveItems();
     }
 
-    public function updateItem(string $name, Item $item): void
+    public function update(string $name, Item $item): void
     {
         if ($item->getName() !== $name) {
             $this->updateItemName($name, $item);
             $this->removeItemByName($name);
         }
 
-        $this->addItem($item);
+        $this->add($item);
     }
 
     public function removeRule(string $name): void
@@ -174,7 +174,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         unset($this->rules[$name]);
 
         foreach ($this->getItemsByRuleName($name) as $item) {
-            $this->updateItem($item->getName(), $item->withRuleName(null));
+            $this->update($item->getName(), $item->withRuleName(null));
         }
 
         $this->saveRules();
@@ -293,7 +293,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     private function saveItems(): void
     {
         $items = [];
-        foreach ($this->getItems() as $name => $item) {
+        foreach ($this->getAll() as $name => $item) {
             $items[$name] = array_filter($item->getAttributes());
             if ($this->hasChildren($name)) {
                 foreach ($this->getChildrenByName($name) as $child) {
@@ -347,7 +347,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
      */
     private function filterItems(callable $callback): array
     {
-        return array_filter($this->getItems(), $callback);
+        return array_filter($this->getAll(), $callback);
     }
 
     /**
@@ -358,7 +358,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     private function removeAllItems(string $type): void
     {
         foreach ($this->getItemsByType($type) as $item) {
-            $this->removeItem($item);
+            $this->remove($item);
         }
     }
 

@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Rbac\Permission;
-use Yiisoft\Rbac\Php\RolesStorage;
+use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\Role;
 
 /**
@@ -18,9 +18,9 @@ final class RolesStorageTest extends TestCase
 {
     use FixtureTrait;
 
-    public function testGetItems(): void
+    public function testGetAll(): void
     {
-        $items = $this->createStorage()->getItems();
+        $items = $this->createStorage()->getAll();
 
         $this->assertCount(10, $items);
         $this->assertEquals(
@@ -47,7 +47,7 @@ final class RolesStorageTest extends TestCase
 
         $storage = $this->createStorage();
 
-        $this->assertCount(0, $storage->getItems());
+        $this->assertCount(0, $storage->getAll());
         $this->assertCount(0, $storage->getChildren());
         $this->assertCount(0, $storage->getRules());
     }
@@ -56,7 +56,7 @@ final class RolesStorageTest extends TestCase
     {
         $storage = $this->createStorage();
         $storage->clearRoles();
-        $this->assertCount(6, $this->createStorage()->getItems());
+        $this->assertCount(6, $this->createStorage()->getAll());
     }
 
     public function testClearPermissions(): void
@@ -66,7 +66,7 @@ final class RolesStorageTest extends TestCase
 
         $storage = $this->createStorage();
         $this->assertCount(0, $storage->getPermissions());
-        $this->assertCount(4, $storage->getItems());
+        $this->assertCount(4, $storage->getAll());
     }
 
     public function testClearRules(): void
@@ -82,16 +82,16 @@ final class RolesStorageTest extends TestCase
     {
         $storage = $this->createStorage();
 
-        $this->assertInstanceOf(Permission::class, $storage->getItemByName('createPost'));
-        $this->assertNull($storage->getItemByName('nonExistPermission'));
+        $this->assertInstanceOf(Permission::class, $storage->getByName('createPost'));
+        $this->assertNull($storage->getByName('nonExistPermission'));
     }
 
     public function testGetRoleItemByName(): void
     {
         $storage = $this->createStorage();
 
-        $this->assertInstanceOf(Role::class, $storage->getItemByName('reader'));
-        $this->assertNull($storage->getItemByName('nonExistRole'));
+        $this->assertInstanceOf(Role::class, $storage->getByName('reader'));
+        $this->assertNull($storage->getByName('nonExistRole'));
     }
 
     public function testAddPermissionItem(): void
@@ -99,9 +99,9 @@ final class RolesStorageTest extends TestCase
         $storage = $this->createStorage();
 
         $item = new Permission('testAddedPermission');
-        $storage->addItem($item);
+        $storage->add($item);
 
-        $this->assertCount(11, $storage->getItems());
+        $this->assertCount(11, $storage->getAll());
         $this->assertNotNull($storage->getPermissionByName('testAddedPermission'));
     }
 
@@ -110,9 +110,9 @@ final class RolesStorageTest extends TestCase
         $storage = $this->createStorage();
 
         $item = new Role('testAddedRole');
-        $storage->addItem($item);
+        $storage->add($item);
 
-        $this->assertCount(11, $storage->getItems());
+        $this->assertCount(11, $storage->getAll());
         $this->assertNotNull($storage->getRoleByName('testAddedRole'));
     }
 
@@ -260,7 +260,7 @@ final class RolesStorageTest extends TestCase
     public function testRemoveItem(): void
     {
         $storage = $this->createStorage();
-        $storage->removeItem($storage->getItemByName('reader'));
+        $storage->remove($storage->getByName('reader'));
         $this->assertEquals(
             [
                 'Fast Metabolism',
@@ -273,7 +273,7 @@ final class RolesStorageTest extends TestCase
                 'author',
                 'admin',
             ],
-            array_keys($storage->getItems())
+            array_keys($storage->getAll())
         );
 
         $this->assertEquals(
@@ -289,7 +289,7 @@ final class RolesStorageTest extends TestCase
     public function testUpdateItem(): void
     {
         $storage = $this->createStorage();
-        $storage->updateItem('reader', $storage->getItemByName('reader')->withName('new reader'));
+        $storage->update('reader', $storage->getByName('reader')->withName('new reader'));
         $this->assertEquals(
             [
                 'withoutChildren',
@@ -327,7 +327,7 @@ final class RolesStorageTest extends TestCase
         $directory = $this->getTempDirectory() . '/file.txt';
         touch($directory);
 
-        $storage = new RolesStorage($directory);
+        $storage = new ItemsStorage($directory);
 
         $rule = new EasyRule();
 
@@ -340,7 +340,7 @@ final class RolesStorageTest extends TestCase
     {
         $directory = $this->getTempDirectory() . '/test/create/nested/directory';
 
-        $storage = new RolesStorage($directory);
+        $storage = new ItemsStorage($directory);
         $storage->addRule(new EasyRule());
 
         $this->assertFileExists($directory . '/rules.php');
@@ -368,8 +368,8 @@ final class RolesStorageTest extends TestCase
         return __DIR__ . '/temp';
     }
 
-    private function createStorage(): RolesStorage
+    private function createStorage(): ItemsStorage
     {
-        return new RolesStorage($this->dataPath);
+        return new ItemsStorage($this->dataPath);
     }
 }
