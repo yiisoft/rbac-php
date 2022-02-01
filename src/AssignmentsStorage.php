@@ -127,6 +127,7 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         $modifiedTime = @filemtime($this->assignmentFile);
         foreach ($assignments as $userId => $roles) {
             foreach ($roles as $role) {
+                /** @psalm-suppress InvalidPropertyAssignmentValue */
                 $this->assignments[$userId][$role] = new Assignment((string)$userId, $role, $modifiedTime);
             }
         }
