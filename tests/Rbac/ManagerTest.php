@@ -396,16 +396,16 @@ class ManagerTest extends TestCase
     {
         $role = $this->itemsStorage->getRole('reader')->withName('new reader');
 
-        $this->assertNotNull($this->assignmentsStorage->get('reader A', 'reader'));
-        $this->assertNull($this->assignmentsStorage->get('reader A', 'new reader'));
+        $this->assertNotNull($this->assignmentsStorage->get('reader', 'reader A'));
+        $this->assertNull($this->assignmentsStorage->get('new reader', 'reader A'));
 
         $this->manager->updateRole('reader', $role);
 
         $this->assertNull($this->itemsStorage->getRole('reader'));
         $this->assertNotNull($this->itemsStorage->getRole('new reader'));
 
-        $this->assertNull($this->assignmentsStorage->get('reader A', 'reader'));
-        $this->assertNotNull($this->assignmentsStorage->get('reader A', 'new reader'));
+        $this->assertNull($this->assignmentsStorage->get('reader', 'reader A'));
+        $this->assertNotNull($this->assignmentsStorage->get('new reader', 'reader A'));
     }
 
     public function testAddPermission(): void
@@ -428,16 +428,16 @@ class ManagerTest extends TestCase
         $permission = $this->itemsStorage->getPermission('deletePost')
             ->withName('newDeletePost');
 
-        $this->assertNotNull($this->assignmentsStorage->get('author B', 'deletePost'));
-        $this->assertNull($this->assignmentsStorage->get('author B', 'newDeletePost'));
+        $this->assertNotNull($this->assignmentsStorage->get('deletePost', 'author B'));
+        $this->assertNull($this->assignmentsStorage->get('newDeletePost', 'author B'));
 
         $this->manager->updatePermission('deletePost', $permission);
 
         $this->assertNull($this->itemsStorage->getPermission('deletePost'));
         $this->assertNotNull($this->itemsStorage->getPermission('newDeletePost'));
 
-        $this->assertNull($this->assignmentsStorage->get('author B', 'deletePost'));
-        $this->assertNotNull($this->assignmentsStorage->get('author B', 'newDeletePost'));
+        $this->assertNull($this->assignmentsStorage->get('deletePost', 'author B'));
+        $this->assertNotNull($this->assignmentsStorage->get('newDeletePost', 'author B'));
     }
 
     public function testUpdatePermissionNameAlreadyUsed(): void
@@ -560,11 +560,11 @@ class ManagerTest extends TestCase
     {
         $storage = new AssignmentsStorage($dataPath);
 
-        $storage->add('reader A', 'Fast Metabolism');
-        $storage->add('reader A', 'reader');
-        $storage->add('author B', 'author');
-        $storage->add('author B', 'deletePost');
-        $storage->add('admin C', 'admin');
+        $storage->add('Fast Metabolism', 'reader A');
+        $storage->add('reader', 'reader A');
+        $storage->add('author', 'author B');
+        $storage->add('deletePost', 'author B');
+        $storage->add('admin', 'admin C');
 
         return $storage;
     }

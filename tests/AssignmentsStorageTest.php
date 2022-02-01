@@ -53,17 +53,17 @@ final class AssignmentsStorageTest extends TestCase
         $storage = $this->createStorage();
         $this->assertInstanceOf(
             Assignment::class,
-            $storage->get('author B', 'author')
+            $storage->get('author', 'author B')
         );
 
-        $this->assertNull($storage->get('author B', 'nonExistAssigment'));
+        $this->assertNull($storage->get('nonExistAssigment', 'author B'));
     }
 
     public function testAddAssignment(): void
     {
         $storage = $this->createStorage();
 
-        $storage->add('reader A', 'author');
+        $storage->add('author', 'reader A');
         $this->assertEquals(
             [
                 'Fast Metabolism',
@@ -86,7 +86,7 @@ final class AssignmentsStorageTest extends TestCase
     {
         $storage = $this->createStorage();
 
-        $storage->add('reader A', 'author');
+        $storage->add('author', 'reader A');
 
         $storageNew = $this->createStorage();
 
@@ -114,7 +114,7 @@ final class AssignmentsStorageTest extends TestCase
 
         $storage->removeByItemName('deletePost');
 
-        $this->assertNull($storage->get('author B', 'deletePost'));
+        $this->assertNull($storage->get('deletePost', 'author B'));
     }
 
     public function testUpdateAssignmentsForItemNameWithoutChangeName(): void
@@ -124,11 +124,11 @@ final class AssignmentsStorageTest extends TestCase
         $roleName = 'reader';
         $userId = 'reader A';
 
-        $beforeAssignments = $storage->get($userId, $roleName);
+        $beforeAssignments = $storage->get($roleName, $userId);
 
         $storage->renameItem($roleName, $roleName);
 
-        $afterAssignments = $storage->get($userId, $roleName);
+        $afterAssignments = $storage->get($roleName, $userId);
 
         $this->assertEquals($beforeAssignments, $afterAssignments);
     }

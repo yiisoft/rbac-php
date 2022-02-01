@@ -52,12 +52,12 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         return $this->assignments[$userId] ?? [];
     }
 
-    public function get(string $userId, string $itemName): ?Assignment
+    public function get(string $itemName, string $userId): ?Assignment
     {
         return $this->getByUserId($userId)[$itemName] ?? null;
     }
 
-    public function add(string $userId, string $itemName): void
+    public function add(string $itemName, string $userId): void
     {
         $this->assignments[$userId][$itemName] = new Assignment($userId, $itemName, time());
         $this->saveAssignments();
