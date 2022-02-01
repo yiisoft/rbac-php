@@ -47,17 +47,17 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         return $this->assignments;
     }
 
-    public function getUserAssignments(string $userId): array
+    public function getByUserId(string $userId): array
     {
         return $this->assignments[$userId] ?? [];
     }
 
-    public function get(string $userId, string $name): ?Assignment
+    public function get(string $itemName, string $userId): ?Assignment
     {
-        return $this->getUserAssignments($userId)[$name] ?? null;
+        return $this->getByUserId($userId)[$itemName] ?? null;
     }
 
-    public function add(string $userId, string $itemName): void
+    public function add(string $itemName, string $userId): void
     {
         $this->assignments[$userId][$itemName] = new Assignment($userId, $itemName, time());
         $this->saveAssignments();
@@ -89,19 +89,19 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         $this->saveAssignments();
     }
 
-    public function remove(string $userId, string $itemName): void
+    public function remove(string $itemName, string $userId): void
     {
         unset($this->assignments[$userId][$itemName]);
         $this->saveAssignments();
     }
 
-    public function removeUserAssignments(string $userId): void
+    public function removeByUserId(string $userId): void
     {
         $this->assignments[$userId] = [];
         $this->saveAssignments();
     }
 
-    public function removeItemAssignments(string $itemName): void
+    public function removeByItemName(string $itemName): void
     {
         foreach ($this->assignments as &$assignments) {
             unset($assignments[$itemName]);

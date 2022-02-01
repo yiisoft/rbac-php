@@ -7,22 +7,20 @@ namespace Yiisoft\Rbac\Php;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
-use Yiisoft\Rbac\RolesStorageInterface;
+use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\RuleInterface;
 
 /**
- * Storage stores authorization data in three PHP files specified by {@see Storage::itemFile} and
- * {@see Storage::ruleFile}.
+ * Storage stores authorization data in three PHP files specified by `itemFile` and
+ * `ruleFile`.
  *
  * It is suitable for authorization data that is not too big (for example, the authorization data for
  * a personal blog system).
  */
-final class RolesStorage extends CommonStorage implements RolesStorageInterface
+final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 {
     /**
-     * @var string The path of the PHP script that contains the authorization items. This can be either a file path or
-     * a {@link https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md path alias} to the file. Make
-     * sure this file is writable by the Web server process if the authorization needs to be changed online.
+     * @var string The path of the PHP script that contains the authorization items.
      *
      * @see loadFromFile()
      * @see saveToFile()
@@ -30,9 +28,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     private string $itemFile;
 
     /**
-     * @var string The path of the PHP script that contains the authorization rules. This can be either a file path or
-     * a {@link https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md path alias} to the file. Make
-     * sure this file is writable by the Web server process if the authorization needs to be changed online.
+     * @var string The path of the PHP script that contains the authorization rules.
      *
      * @see loadFromFile()
      * @see saveToFile()
@@ -59,6 +55,13 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
      */
     private array $rules = [];
 
+    /**
+     * @param string $directory Base directory to append to itemFile and ruleFile.
+     * @param string $itemFile The path of the PHP script that contains the authorization items. Make
+     * sure this file is writable by the Web server process if the authorization needs to be changed online.
+     * @param string $ruleFile The path of the PHP script that contains the authorization rules. Make
+     * sure this file is writable by the Web server process if the authorization needs to be changed online.
+     */
     public function __construct(
         string $directory,
         string $itemFile = 'items.php',
@@ -73,23 +76,23 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
      * @return Item[]
      * @psalm-return array<string,Item>
      */
-    public function getItems(): array
+    public function getAll(): array
     {
         return $this->items;
     }
 
-    public function getItemByName(string $name): ?Item
+    public function get(string $name): ?Item
     {
         return $this->items[$name] ?? null;
     }
 
-    public function addItem(Item $item): void
+    public function add(Item $item): void
     {
         $this->items[$item->getName()] = $item;
         $this->saveItems();
     }
 
-    public function getRoleByName(string $name): ?Role
+    public function getRole(string $name): ?Role
     {
         return $this->getItemsByType(Item::TYPE_ROLE)[$name] ?? null;
     }
@@ -99,7 +102,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         return $this->getItemsByType(Item::TYPE_ROLE);
     }
 
-    public function getPermissionByName(string $name): ?Permission
+    public function getPermission(string $name): ?Permission
     {
         return $this->getItemsByType(Item::TYPE_PERMISSION)[$name] ?? null;
     }
@@ -109,12 +112,12 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         return $this->getItemsByType(Item::TYPE_PERMISSION);
     }
 
-    public function getChildren(): array
+    public function getAllChildren(): array
     {
         return $this->children;
     }
 
-    public function getChildrenByName(string $name): array
+    public function getChildren(string $name): array
     {
         return $this->children[$name] ?? [];
     }
@@ -124,14 +127,14 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         return $this->rules;
     }
 
-    public function getRuleByName(string $name): ?RuleInterface
+    public function getRule(string $name): ?RuleInterface
     {
         return $this->rules[$name] ?? null;
     }
 
-    public function addChild(Item $parent, Item $child): void
+    public function addChild(string $parentName, string $childName): void
     {
-        $this->children[$parent->getName()][$child->getName()] = $this->items[$child->getName()];
+        $this->children[$parentName][$childName] = $this->items[$childName];
         $this->saveItems();
     }
 
@@ -140,33 +143,33 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         return isset($this->children[$name]);
     }
 
-    public function removeChild(Item $parent, Item $child): void
+    public function removeChild(string $parentName, string $childName): void
     {
-        unset($this->children[$parent->getName()][$child->getName()]);
+        unset($this->children[$parentName][$childName]);
         $this->saveItems();
     }
 
-    public function removeChildren(Item $parent): void
+    public function removeChildren(string $parentName): void
     {
-        unset($this->children[$parent->getName()]);
+        unset($this->children[$parentName]);
         $this->saveItems();
     }
 
-    public function removeItem(Item $item): void
+    public function remove(string $name): void
     {
-        $this->clearChildrenFromItem($item);
-        $this->removeItemByName($item->getName());
+        $this->clearChildrenFromItem($name);
+        $this->removeItemByName($name);
         $this->saveItems();
     }
 
-    public function updateItem(string $name, Item $item): void
+    public function update(string $name, Item $item): void
     {
         if ($item->getName() !== $name) {
             $this->updateItemName($name, $item);
             $this->removeItemByName($name);
         }
 
-        $this->addItem($item);
+        $this->add($item);
     }
 
     public function removeRule(string $name): void
@@ -174,7 +177,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
         unset($this->rules[$name]);
 
         foreach ($this->getItemsByRuleName($name) as $item) {
-            $this->updateItem($item->getName(), $item->withRuleName(null));
+            $this->update($item->getName(), $item->withRuleName(null));
         }
 
         $this->saveRules();
@@ -293,10 +296,10 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     private function saveItems(): void
     {
         $items = [];
-        foreach ($this->getItems() as $name => $item) {
+        foreach ($this->getAll() as $name => $item) {
             $items[$name] = array_filter($item->getAttributes());
             if ($this->hasChildren($name)) {
-                foreach ($this->getChildrenByName($name) as $child) {
+                foreach ($this->getChildren($name) as $child) {
                     $items[$name]['children'][] = $child->getName();
                 }
             }
@@ -347,7 +350,7 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
      */
     private function filterItems(callable $callback): array
     {
-        return array_filter($this->getItems(), $callback);
+        return array_filter($this->getAll(), $callback);
     }
 
     /**
@@ -358,14 +361,14 @@ final class RolesStorage extends CommonStorage implements RolesStorageInterface
     private function removeAllItems(string $type): void
     {
         foreach ($this->getItemsByType($type) as $item) {
-            $this->removeItem($item);
+            $this->remove($item->getName());
         }
     }
 
-    private function clearChildrenFromItem(Item $item): void
+    private function clearChildrenFromItem(string $itemName): void
     {
         foreach ($this->children as &$children) {
-            unset($children[$item->getName()]);
+            unset($children[$itemName]);
         }
     }
 
