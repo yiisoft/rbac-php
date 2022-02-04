@@ -45,10 +45,9 @@ final class ItemsStorageTest extends TestCase
         $storage = $this->createStorage();
         $storage->clear();
 
-        $storage = $this->createStorage();
-
         $this->assertCount(0, $storage->getAll());
-        $this->assertCount(0, $storage->getAllChildren());
+        $this->assertCount(0, $storage->getRoles());
+        $this->assertCount(0, $storage->getPermissions());
         $this->assertCount(0, $storage->getRules());
     }
 
@@ -164,29 +163,27 @@ final class ItemsStorageTest extends TestCase
         );
     }
 
-    public function testGetChildren(): void
+    public function dataGetParents(): array
     {
-        $children = $this->createStorage()->getAllChildren();
-
-        $this->assertEquals(['readPost'], array_keys($children['reader']));
-        $this->assertEquals(
-            [
-                'createPost',
-                'updatePost',
-                'reader',
-            ],
-            array_keys($children['author'])
-        );
-        $this->assertEquals(
-            [
-                'author',
-                'updateAnyPost',
-            ],
-            array_keys($children['admin'])
-        );
+        return [
+            [[], 'non-exists'],
+            [[], 'deletePost'],
+            [['admin'], 'updateAnyPost'],
+            [['author', 'admin'], 'reader'],
+        ];
     }
 
-    public function testGetChildrenByName(): void
+    /**
+     * @dataProvider dataGetParents
+     */
+    public function testGetParents(array $expected, string $name): void
+    {
+        $storage = $this->createStorage();
+
+        $this->assertSame($expected, array_keys($storage->getParents($name)));
+    }
+
+    public function testGetChildren(): void
     {
         $storage = $this->createStorage();
         $this->assertEquals(
