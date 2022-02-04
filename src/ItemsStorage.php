@@ -112,9 +112,11 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         return $this->getItemsByType(Item::TYPE_PERMISSION);
     }
 
-    public function getAllChildren(): array
+    public function getParents(string $name): array
     {
-        return $this->children;
+        $result = [];
+        $this->getParentsRecursive($name, $result);
+        return $result;
     }
 
     public function getChildren(string $name): array
@@ -424,6 +426,19 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     {
         foreach ($this->items as &$item) {
             $item = $item->withRuleName(null);
+        }
+    }
+
+    private function getParentsRecursive(string $name, array &$result): void
+    {
+        foreach ($this->children as $parentName => $items) {
+            foreach ($items as $item) {
+                if ($item->getName() === $name) {
+                    $result[$parentName] = $this->items[$name];
+                    $this->getParentsRecursive($parentName, $result);
+                    break;
+                }
+            }
         }
     }
 }
