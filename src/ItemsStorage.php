@@ -429,6 +429,9 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         }
     }
 
+    /**
+     * @psalm-param array<string,Item> $result
+     */
     private function getParentsRecursive(string $name, array &$result): void
     {
         foreach ($this->children as $parentName => $items) {
