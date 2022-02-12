@@ -14,7 +14,7 @@ use Yiisoft\Rbac\Php\AssignmentsStorage;
 use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\Php\Tests\AuthorRule;
 use Yiisoft\Rbac\Php\Tests\EasyRule;
-use Yiisoft\Rbac\Php\Tests\Support\SimpleRuleContainer;
+use Yiisoft\Rbac\Php\Tests\Support\SimpleRulesFactory;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\ItemsStorageInterface;
 
@@ -490,10 +490,10 @@ class ManagerTest extends TestCase
 
     protected function createManager(ItemsStorageInterface $rolesStorage, AssignmentsStorageInterface $assignmentsStorage): Manager
     {
-        $rulesContainer = new SimpleRuleContainer([
+        $rulesFactory = new SimpleRulesFactory([
             'isAuthor' => new AuthorRule(),
         ]);
-        return (new Manager($rolesStorage, $assignmentsStorage, $rulesContainer))
+        return (new Manager($rolesStorage, $assignmentsStorage, $rulesFactory))
             ->setDefaultRoleNames(['myDefaultRole']);
     }
 
