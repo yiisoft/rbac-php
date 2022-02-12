@@ -48,7 +48,6 @@ final class ItemsStorageTest extends TestCase
         $this->assertCount(0, $storage->getAll());
         $this->assertCount(0, $storage->getRoles());
         $this->assertCount(0, $storage->getPermissions());
-        $this->assertCount(0, $storage->getRules());
     }
 
     public function testClearRoles(): void
@@ -66,15 +65,6 @@ final class ItemsStorageTest extends TestCase
         $storage = $this->createStorage();
         $this->assertCount(0, $storage->getPermissions());
         $this->assertCount(4, $storage->getAll());
-    }
-
-    public function testClearRules(): void
-    {
-        $storage = $this->createStorage();
-        $storage->clearRules();
-
-        $storage = $this->createStorage();
-        $this->assertCount(0, $storage->getRules());
     }
 
     public function testGetPermissionItemByName(): void
@@ -197,20 +187,6 @@ final class ItemsStorageTest extends TestCase
         $this->assertEmpty($storage->getChildren('itemNotExist'));
     }
 
-    public function testGetRules(): void
-    {
-        $storage = $this->createStorage();
-        $this->assertEquals(['isAuthor'], array_keys($storage->getRules()));
-    }
-
-    public function testGetRuleByName(): void
-    {
-        $storage = $this->createStorage();
-
-        $this->assertInstanceOf(AuthorRule::class, $storage->getRule('isAuthor'));
-        $this->assertNull($storage->getRule('nonExistRule'));
-    }
-
     public function testAddChild(): void
     {
         $storage = $this->createStorage();
@@ -294,38 +270,17 @@ final class ItemsStorageTest extends TestCase
         $this->assertNull($storage->getRole('reader'));
     }
 
-    public function testRemoveRule(): void
-    {
-        $storage = $this->createStorage();
-        $storage->removeRule('isAuthor');
-        $this->assertEmpty($storage->getRules());
-    }
-
-    public function testAddRule(): void
-    {
-        $storage = $this->createStorage();
-        $storage->addRule(new EasyRule());
-        $this->assertEquals(
-            [
-                'isAuthor',
-                EasyRule::class,
-            ],
-            array_keys($storage->getRules())
-        );
-    }
-
     public function testFailCreateDirectory(): void
     {
         $directory = $this->getTempDirectory() . '/file.txt';
         touch($directory);
 
         $storage = new ItemsStorage($directory);
-
-        $rule = new EasyRule();
+        $permission = new Permission('createPost');
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Failed to create directory "' . $directory . '". mkdir(): File exists');
-        $storage->addRule($rule);
+        $storage->add($permission);
     }
 
     public function testCreateNestedDirectory(): void
@@ -333,9 +288,9 @@ final class ItemsStorageTest extends TestCase
         $directory = $this->getTempDirectory() . '/test/create/nested/directory';
 
         $storage = new ItemsStorage($directory);
-        $storage->addRule(new EasyRule());
+        $storage->add(new Permission('createPost'));
 
-        $this->assertFileExists($directory . '/rules.php');
+        $this->assertFileExists($directory . '/items.php');
     }
 
     protected function tearDown(): void
