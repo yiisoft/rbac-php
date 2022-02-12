@@ -8,14 +8,12 @@ use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\ItemsStorageInterface;
-use Yiisoft\Rbac\RuleInterface;
 
 /**
- * Storage stores authorization data in three PHP files specified by `itemFile` and
- * `ruleFile`.
+ * Storage stores roles and permissions in PHP file specified by `itemFile`.
  *
- * It is suitable for authorization data that is not too big (for example, the authorization data for
- * a personal blog system).
+ * It is suitable for authorization data that is not too big (for example, the authorization data for a personal blog
+ * system).
  */
 final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 {
@@ -26,14 +24,6 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
      * @see saveToFile()
      */
     private string $itemFile;
-
-    /**
-     * @var string The path of the PHP script that contains the authorization rules.
-     *
-     * @see loadFromFile()
-     * @see saveToFile()
-     */
-    private string $ruleFile;
 
     /**
      * @var Item[]
@@ -50,25 +40,13 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     private array $children = [];
 
     /**
-     * @var RuleInterface[]
-     * Format is [ruleName => rule].
-     */
-    private array $rules = [];
-
-    /**
-     * @param string $directory Base directory to append to itemFile and ruleFile.
+     * @param string $directory Base directory to append to `$itemFile`.
      * @param string $itemFile The path of the PHP script that contains the authorization items. Make
      * sure this file is writable by the Web server process if the authorization needs to be changed online.
-     * @param string $ruleFile The path of the PHP script that contains the authorization rules. Make
-     * sure this file is writable by the Web server process if the authorization needs to be changed online.
      */
-    public function __construct(
-        string $directory,
-        string $itemFile = 'items.php',
-        string $ruleFile = 'rules.php'
-    ) {
+    public function __construct(string $directory, string $itemFile = 'items.php')
+    {
         $this->itemFile = $directory . DIRECTORY_SEPARATOR . $itemFile;
-        $this->ruleFile = $directory . DIRECTORY_SEPARATOR . $ruleFile;
         $this->load();
     }
 
@@ -89,7 +67,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     public function add(Item $item): void
     {
         $this->items[$item->getName()] = $item;
-        $this->saveItems();
+        $this->save();
     }
 
     public function getRole(string $name): ?Role
@@ -124,20 +102,10 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         return $this->children[$name] ?? [];
     }
 
-    public function getRules(): array
-    {
-        return $this->rules;
-    }
-
-    public function getRule(string $name): ?RuleInterface
-    {
-        return $this->rules[$name] ?? null;
-    }
-
     public function addChild(string $parentName, string $childName): void
     {
         $this->children[$parentName][$childName] = $this->items[$childName];
-        $this->saveItems();
+        $this->save();
     }
 
     public function hasChildren(string $name): bool
@@ -148,20 +116,20 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     public function removeChild(string $parentName, string $childName): void
     {
         unset($this->children[$parentName][$childName]);
-        $this->saveItems();
+        $this->save();
     }
 
     public function removeChildren(string $parentName): void
     {
         unset($this->children[$parentName]);
-        $this->saveItems();
+        $this->save();
     }
 
     public function remove(string $name): void
     {
         $this->clearChildrenFromItem($name);
         $this->removeItemByName($name);
-        $this->saveItems();
+        $this->save();
     }
 
     public function update(string $name, Item $item): void
@@ -174,34 +142,10 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         $this->add($item);
     }
 
-    public function removeRule(string $name): void
-    {
-        unset($this->rules[$name]);
-
-        foreach ($this->getItemsByRuleName($name) as $item) {
-            $this->update($item->getName(), $item->withRuleName(null));
-        }
-
-        $this->saveRules();
-    }
-
-    public function addRule(RuleInterface $rule): void
-    {
-        $this->rules[$rule->getName()] = $rule;
-        $this->saveRules();
-    }
-
     public function clear(): void
     {
         $this->clearLoadedData();
         $this->save();
-    }
-
-    public function clearRules(): void
-    {
-        $this->clearItemsFromRules();
-        $this->rules = [];
-        $this->saveRules();
     }
 
     public function clearPermissions(): void
@@ -224,8 +168,16 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
      */
     private function save(): void
     {
-        $this->saveItems();
-        $this->saveRules();
+        $items = [];
+        foreach ($this->getAll() as $name => $item) {
+            $items[$name] = array_filter($item->getAttributes());
+            if ($this->hasChildren($name)) {
+                foreach ($this->getChildren($name) as $child) {
+                    $items[$name]['children'][] = $child->getName();
+                }
+            }
+        }
+        $this->saveToFile($items, $this->itemFile);
     }
 
     /**
@@ -235,7 +187,6 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     {
         $this->clearLoadedData();
         $this->loadItems();
-        $this->loadRules();
     }
 
     private function loadItems(): void
@@ -271,50 +222,15 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         }
     }
 
-    private function loadRules(): void
-    {
-        /** @psalm-var array<string,string> $rulesData */
-        $rulesData = $this->loadFromFile($this->ruleFile);
-        foreach ($rulesData as $name => $ruleData) {
-            $this->rules[$name] = $this->unserializeRule($ruleData);
-        }
-    }
-
     private function clearLoadedData(): void
     {
         $this->children = [];
-        $this->rules = [];
         $this->items = [];
     }
 
     private function hasItem(string $name): bool
     {
         return isset($this->items[$name]);
-    }
-
-    /**
-     * Saves items data into persistent storage.
-     */
-    private function saveItems(): void
-    {
-        $items = [];
-        foreach ($this->getAll() as $name => $item) {
-            $items[$name] = array_filter($item->getAttributes());
-            if ($this->hasChildren($name)) {
-                foreach ($this->getChildren($name) as $child) {
-                    $items[$name]['children'][] = $child->getName();
-                }
-            }
-        }
-        $this->saveToFile($items, $this->itemFile);
-    }
-
-    /**
-     * Saves rules data into persistent storage.
-     */
-    private function saveRules(): void
-    {
-        $this->saveToFile($this->serializeRules(), $this->ruleFile);
     }
 
     /**
@@ -331,16 +247,6 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     {
         return $this->filterItems(
             fn (Item $item) => $item->getType() === $type
-        );
-    }
-
-    /**
-     * @return Item[]
-     */
-    private function getItemsByRuleName(string $ruleName): array
-    {
-        return $this->filterItems(
-            fn (Item $item) => $item->getRuleName() === $ruleName
         );
     }
 
@@ -390,19 +296,6 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
             ->withRuleName($attributes['ruleName'] ?? null);
     }
 
-    private function serializeRules(): array
-    {
-        return array_map(static fn (RuleInterface $rule): string => serialize($rule), $this->rules);
-    }
-
-    /**
-     * @psalm-suppress MixedInferredReturnType, MixedReturnStatement
-     */
-    private function unserializeRule(string $data): RuleInterface
-    {
-        return unserialize($data, ['allowed_classes' => true]);
-    }
-
     private function updateChildrenForItemName(string $name, Item $item): void
     {
         if ($this->hasChildren($name)) {
@@ -420,13 +313,6 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     private function removeItemByName(string $name): void
     {
         unset($this->items[$name]);
-    }
-
-    private function clearItemsFromRules(): void
-    {
-        foreach ($this->items as &$item) {
-            $item = $item->withRuleName(null);
-        }
     }
 
     /**

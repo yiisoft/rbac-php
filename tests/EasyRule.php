@@ -13,9 +13,4 @@ final class EasyRule implements RuleInterface
     {
         return true;
     }
-
-    public function getName(): string
-    {
-        return self::class;
-    }
 }

@@ -14,9 +14,9 @@ use Yiisoft\Rbac\Php\AssignmentsStorage;
 use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\Php\Tests\AuthorRule;
 use Yiisoft\Rbac\Php\Tests\EasyRule;
+use Yiisoft\Rbac\Php\Tests\Support\SimpleRuleContainer;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\ItemsStorageInterface;
-use Yiisoft\Rbac\ClassNameRuleFactory;
 
 /**
  * @group rbac
@@ -376,11 +376,9 @@ class ManagerTest extends TestCase
 
     public function testAddRole(): void
     {
-        $rule = new EasyRule();
-
         $role = (new Role('new role'))
             ->withDescription('new role description')
-            ->withRuleName($rule->getName());
+            ->withRuleName(EasyRule::class);
 
         $this->manager->addRole($role);
         $this->assertNotNull($this->itemsStorage->getRole('new role'));
@@ -454,38 +452,6 @@ class ManagerTest extends TestCase
         $this->manager->updatePermission('updatePost', $permission);
     }
 
-    public function testAddRule(): void
-    {
-        $ruleName = 'isReallyReallyAuthor';
-        $rule = new AuthorRule($ruleName, true);
-
-        $this->manager->addRule($rule);
-
-        $rule = $this->itemsStorage->getRule($ruleName);
-        $this->assertEquals($ruleName, $rule->getName());
-        $this->assertTrue($rule->isReallyReally());
-    }
-
-    public function testRemoveRule(): void
-    {
-        $this->manager->removeRule(
-            $this->itemsStorage->getRule('isAuthor')
-        );
-
-        $this->assertNull($this->itemsStorage->getRule('isAuthor'));
-    }
-
-    public function testUpdateRule(): void
-    {
-        $rule = $this->itemsStorage->getRule('isAuthor')
-            ->withName('newName')
-            ->withReallyReally(false);
-
-        $this->manager->updateRule('isAuthor', $rule);
-        $this->assertNull($this->itemsStorage->getRule('isAuthor'));
-        $this->assertNotNull($this->itemsStorage->getRule('newName'));
-    }
-
     public function testDefaultRolesSetWithClosure(): void
     {
         $this->manager->setDefaultRoleNames(
@@ -524,7 +490,10 @@ class ManagerTest extends TestCase
 
     protected function createManager(ItemsStorageInterface $rolesStorage, AssignmentsStorageInterface $assignmentsStorage): Manager
     {
-        return (new Manager($rolesStorage, $assignmentsStorage, new ClassNameRuleFactory()))
+        $rulesContainer = new SimpleRuleContainer([
+            'isAuthor' => new AuthorRule(),
+        ]);
+        return (new Manager($rolesStorage, $assignmentsStorage, $rulesContainer))
             ->setDefaultRoleNames(['myDefaultRole']);
     }
 
@@ -550,8 +519,6 @@ class ManagerTest extends TestCase
         $storage->addChild('author', 'reader');
         $storage->addChild('admin', 'author');
         $storage->addChild('admin', 'updateAnyPost');
-
-        $storage->addRule(new AuthorRule('isAuthor'));
 
         return $storage;
     }

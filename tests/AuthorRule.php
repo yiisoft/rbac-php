@@ -5,37 +5,15 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Php\Tests;
 
 use Yiisoft\Rbac\Item;
-use Yiisoft\Rbac\Rule;
+use Yiisoft\Rbac\RuleInterface;
 
 /**
- * Checks if authorID matches userID passed via params.
+ * Checks if user ID matches `authorID` passed via parameters.
  */
-class AuthorRule extends Rule
+final class AuthorRule implements RuleInterface
 {
-    private const NAME = 'isAuthor';
-
-    private bool $reallyReally;
-
-    public function __construct($name = self::NAME, $reallyReally = false)
-    {
-        parent::__construct($name);
-        $this->reallyReally = $reallyReally;
-    }
-
     public function execute(string $userId, Item $item, array $parameters = []): bool
     {
-        return $parameters['authorID'] == $userId;
-    }
-
-    public function withReallyReally(bool $reallyReally): self
-    {
-        $new = clone $this;
-        $new->reallyReally = $reallyReally;
-        return $new;
-    }
-
-    public function isReallyReally(): bool
-    {
-        return $this->reallyReally;
+        return $parameters['authorID'] === $userId;
     }
 }
