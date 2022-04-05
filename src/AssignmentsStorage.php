@@ -30,7 +30,6 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
     /**
      * @var array Array in format is `[userId => [itemName => assignment]]`.
      * @psalm-var array<string, array<string, Assignment>>
-     *
      */
     private array $assignments = [];
 
