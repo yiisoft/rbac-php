@@ -41,8 +41,8 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     /**
      * @param string $directory Base directory to append to `$itemFile`.
-     * @param string $itemFile The path of the PHP script that contains the authorization items. Make
-     * sure this file is writable by the Web server process if the authorization needs to be changed online.
+     * @param string $itemFile The path of the PHP script that contains the authorization items. Make sure this file is
+     * writable by the Web server process if the authorization needs to be changed online.
      */
     public function __construct(string $directory, string $itemFile = 'items.php')
     {
@@ -304,7 +304,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         }
         foreach ($this->children as &$children) {
             if (isset($children[$name])) {
-                $children[$item->getName()] = $children[$name];
+                $children[$item->getName()] = $item;
                 unset($children[$name]);
             }
         }

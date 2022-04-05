@@ -258,7 +258,10 @@ final class ItemsStorageTest extends TestCase
     {
         $storage = $this->createStorage();
         $storage->update('reader', $storage->get('reader')->withName('new reader'));
-        $this->assertEquals(
+
+        $children = $storage->getChildren('author');
+
+        $this->assertSame(
             [
                 'withoutChildren',
                 'author',
@@ -268,6 +271,15 @@ final class ItemsStorageTest extends TestCase
             array_keys($storage->getRoles())
         );
         $this->assertNull($storage->getRole('reader'));
+        $this->assertSame(
+            [
+                'createPost',
+                'updatePost',
+                'new reader',
+            ],
+            array_keys($children)
+        );
+        $this->assertSame('new reader', $children['new reader']->getName());
     }
 
     public function testFailCreateDirectory(): void

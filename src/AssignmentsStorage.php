@@ -7,20 +7,20 @@ namespace Yiisoft\Rbac\Php;
 use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 
+use function array_key_exists;
+
 /**
  * Storage stores authorization data in three PHP files specified by {@see Storage::itemFile},
  * {@see Storage::assignmentFile} and {@see Storage::ruleFile}.
  *
- * It is suitable for authorization data that is not too big (for example, the authorization data for
- * a personal blog system).
+ * It is suitable for authorization data that is not too big (for example, the authorization data for a personal blog
+ * system).
  */
 final class AssignmentsStorage extends CommonStorage implements AssignmentsStorageInterface
 {
     /**
-     * @var string The path of the PHP script that contains the authorization assignments.
-     * This can be either a file path or a [path alias](guide:concept-aliases) to the file.
-     * Make sure this file is writable by the Web server process if the authorization needs to be changed
-     * online.
+     * @var string The path of the PHP script that contains the authorization assignments. Make sure this file is
+     * writable by the web server process if the authorization needs to be changed online.
      *
      * @see loadFromFile()
      * @see saveToFile()
@@ -28,9 +28,8 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
     private string $assignmentFile;
 
     /**
-     * @var array
+     * @var array Array in format is `[userId => [itemName => assignment]]`.
      * @psalm-var array<string, array<string, Assignment>>
-     * Format is [userId => [itemName => assignment]].
      */
     private array $assignments = [];
 
