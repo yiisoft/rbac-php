@@ -31,7 +31,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.4|^8.0",
-        "yiisoft/rbac": "^3.0@dev",
+        "yiisoft/rbac": "^9999999-dev@dev",
         "yiisoft/var-dumper": "^1.0"
     },
     "require-dev": {
