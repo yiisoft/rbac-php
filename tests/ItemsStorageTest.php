@@ -83,6 +83,14 @@ final class ItemsStorageTest extends TestCase
         $this->assertNull($storage->get('nonExistRole'));
     }
 
+    public function testExists(): void
+    {
+        $storage = $this->createStorage();
+
+        $this->assertTrue($storage->exists('reader'));
+        $this->assertFalse($storage->exists('chicken'));
+    }
+
     public function testAddPermissionItem(): void
     {
         $storage = $this->createStorage();

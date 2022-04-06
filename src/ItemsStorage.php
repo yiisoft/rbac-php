@@ -64,6 +64,11 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         return $this->items[$name] ?? null;
     }
 
+    public function exists(string $name): bool
+    {
+        return array_key_exists($name, $this->items);
+    }
+
     public function add(Item $item): void
     {
         $this->items[$item->getName()] = $item;
@@ -252,6 +257,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     /**
      * @param callable $callback
+     *
      * @psalm-param callable(mixed, mixed=):scalar $callback
      *
      * @return Item[]
