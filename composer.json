@@ -27,11 +27,9 @@
             "url": "https://github.com/sponsors/yiisoft"
         }
     ],
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "require": {
         "php": "^7.4|^8.0",
-        "yiisoft/rbac": "dev-master",
+        "yiisoft/rbac": "^1.0",
         "yiisoft/var-dumper": "^1.0"
     },
     "require-dev": {
@@ -50,11 +48,6 @@
     "autoload-dev": {
         "psr-4": {
             "Yiisoft\\Rbac\\Php\\Tests\\": "tests"
-        }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "3.0.x-dev"
         }
     },
     "config": {
