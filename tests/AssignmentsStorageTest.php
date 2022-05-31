@@ -19,7 +19,9 @@ final class AssignmentsStorageTest extends TestCase
     {
         $storage = $this->createStorage();
         $storage->clear();
-        $this->assertCount(0, $this->createStorage()->getAll());
+        $this->assertCount(0, $this
+            ->createStorage()
+            ->getAll());
     }
 
     public function testGetAssignments(): void

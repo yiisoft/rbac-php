@@ -20,7 +20,9 @@ final class ItemsStorageTest extends TestCase
 
     public function testGetAll(): void
     {
-        $items = $this->createStorage()->getAll();
+        $items = $this
+            ->createStorage()
+            ->getAll();
 
         $this->assertCount(10, $items);
         $this->assertEquals(
@@ -54,7 +56,9 @@ final class ItemsStorageTest extends TestCase
     {
         $storage = $this->createStorage();
         $storage->clearRoles();
-        $this->assertCount(6, $this->createStorage()->getAll());
+        $this->assertCount(6, $this
+            ->createStorage()
+            ->getAll());
     }
 
     public function testClearPermissions(): void
@@ -265,7 +269,9 @@ final class ItemsStorageTest extends TestCase
     public function testUpdateItem(): void
     {
         $storage = $this->createStorage();
-        $storage->update('reader', $storage->get('reader')->withName('new reader'));
+        $storage->update('reader', $storage
+            ->get('reader')
+            ->withName('new reader'));
 
         $children = $storage->getChildren('author');
 
