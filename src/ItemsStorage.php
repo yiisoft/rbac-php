@@ -211,7 +211,8 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         $items = $this->loadFromFile($this->itemFile);
         $itemsMtime = @filemtime($this->itemFile);
         foreach ($items as $name => $item) {
-            $this->items[$name] = $this->getInstanceFromAttributes($item)
+            $this->items[$name] = $this
+                ->getInstanceFromAttributes($item)
                 ->withCreatedAt($itemsMtime)
                 ->withUpdatedAt($itemsMtime);
         }

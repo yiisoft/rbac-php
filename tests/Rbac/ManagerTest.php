@@ -392,7 +392,9 @@ class ManagerTest extends TestCase
 
     public function testUpdateRoleNameAndRule(): void
     {
-        $role = $this->itemsStorage->getRole('reader')->withName('new reader');
+        $role = $this->itemsStorage
+            ->getRole('reader')
+            ->withName('new reader');
 
         $this->assertNotNull($this->assignmentsStorage->get('reader', 'reader A'));
         $this->assertNull($this->assignmentsStorage->get('new reader', 'reader A'));
@@ -423,7 +425,8 @@ class ManagerTest extends TestCase
 
     public function testUpdatePermission(): void
     {
-        $permission = $this->itemsStorage->getPermission('deletePost')
+        $permission = $this->itemsStorage
+            ->getPermission('deletePost')
             ->withName('newDeletePost');
 
         $this->assertNotNull($this->assignmentsStorage->get('deletePost', 'author B'));
@@ -446,7 +449,8 @@ class ManagerTest extends TestCase
             'The name "createPost" is already used by another role or permission.'
         );
 
-        $permission = $this->itemsStorage->getPermission('updatePost')
+        $permission = $this->itemsStorage
+            ->getPermission('updatePost')
             ->withName('createPost');
 
         $this->manager->updatePermission('updatePost', $permission);
