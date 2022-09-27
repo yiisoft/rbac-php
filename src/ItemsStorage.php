@@ -240,7 +240,6 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     }
 
     /**
-     *
      * @return Item[]
      * @psalm-return array<
      *     array-key,
@@ -255,8 +254,8 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     }
 
     /**
-     *
      * @psalm-param callable(mixed, mixed=):scalar $callback
+     *
      * @return Item[]
      */
     private function filterItems(callable $callback): array

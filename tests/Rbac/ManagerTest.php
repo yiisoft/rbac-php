@@ -459,7 +459,7 @@ class ManagerTest extends TestCase
     public function testDefaultRolesSetWithClosure(): void
     {
         $this->manager->setDefaultRoleNames(
-            static fn() => ['newDefaultRole']
+            static fn () => ['newDefaultRole']
         );
 
         $this->assertEquals(['newDefaultRole'], $this->manager->getDefaultRoleNames());
@@ -471,7 +471,7 @@ class ManagerTest extends TestCase
         $this->expectExceptionMessage('Default role names closure must return an array');
 
         $this->manager->setDefaultRoleNames(
-            static fn() => 'test'
+            static fn () => 'test'
         );
     }
 
