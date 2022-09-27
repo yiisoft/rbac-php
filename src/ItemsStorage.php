@@ -240,10 +240,8 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     }
 
     /**
-     * @param string $type
      *
      * @return Item[]
-     *
      * @psalm-return array<
      *     array-key,
      *     ($type is Item::TYPE_PERMISSION ? Permission : ($type is Item::TYPE_ROLE ? Role : Item))
@@ -257,10 +255,8 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     }
 
     /**
-     * @param callable $callback
      *
      * @psalm-param callable(mixed, mixed=):scalar $callback
-     *
      * @return Item[]
      */
     private function filterItems(callable $callback): array
