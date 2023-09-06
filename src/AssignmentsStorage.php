@@ -90,6 +90,10 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
 
     public function remove(string $itemName, string $userId): void
     {
+        if (!$this->exists($itemName, $userId)) {
+            return;
+        }
+
         unset($this->assignments[$userId][$itemName]);
         $this->saveAssignments();
     }

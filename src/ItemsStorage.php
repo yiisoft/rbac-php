@@ -120,12 +120,20 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     public function removeChild(string $parentName, string $childName): void
     {
+        if (!$this->hasDirectChild($parentName, $childName)) {
+            return;
+        }
+
         unset($this->children[$parentName][$childName]);
         $this->save();
     }
 
     public function removeChildren(string $parentName): void
     {
+        if ($this->hasChildren($parentName)) {
+            return;
+        }
+
         unset($this->children[$parentName]);
         $this->save();
     }
