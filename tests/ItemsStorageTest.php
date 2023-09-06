@@ -194,9 +194,9 @@ final class ItemsStorageTest extends TestCase
                 'updatePost',
                 'reader',
             ],
-            array_keys($storage->getChildren('author'))
+            array_keys($storage->getDirectChildren('author'))
         );
-        $this->assertEmpty($storage->getChildren('itemNotExist'));
+        $this->assertEmpty($storage->getDirectChildren('itemNotExist'));
     }
 
     public function testAddChild(): void
@@ -209,7 +209,7 @@ final class ItemsStorageTest extends TestCase
                 'readPost',
                 'createPost',
             ],
-            array_keys($storage->getChildren('reader'))
+            array_keys($storage->getDirectChildren('reader'))
         );
     }
 
@@ -226,7 +226,7 @@ final class ItemsStorageTest extends TestCase
         $storage = $this->createStorage();
 
         $storage->removeChild('reader', 'readPost');
-        $this->assertEmpty($storage->getChildren('reader'));
+        $this->assertEmpty($storage->getDirectChildren('reader'));
     }
 
     public function testRemoveChildren(): void
@@ -234,7 +234,7 @@ final class ItemsStorageTest extends TestCase
         $storage = $this->createStorage();
 
         $storage->removeChildren('reader');
-        $this->assertEmpty($storage->getChildren('reader'));
+        $this->assertEmpty($storage->getDirectChildren('reader'));
     }
 
     public function testRemoveItem(): void
@@ -273,7 +273,7 @@ final class ItemsStorageTest extends TestCase
             ->get('reader')
             ->withName('new reader'));
 
-        $children = $storage->getChildren('author');
+        $children = $storage->getDirectChildren('author');
 
         $this->assertSame(
             [
