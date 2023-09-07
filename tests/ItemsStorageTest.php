@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Rbac\Item;
+use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\Php\ItemsStorage;
@@ -72,7 +73,7 @@ final class ItemsStorageTest extends TestCase
         }
     }
 
-    private function getStorage(): ItemsStorage
+    private function getStorage(): ItemsStorageInterface
     {
         return new ItemsStorage($this->getDataPath());
     }
