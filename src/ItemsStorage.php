@@ -337,9 +337,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     private function clearChildrenFromItem(string $itemName): void
     {
-        foreach ($this->children as &$children) {
-            unset($children[$itemName]);
-        }
+        unset($this->children[$itemName]);
     }
 
     private function getInstanceByTypeAndName(string $type, string $name): Item

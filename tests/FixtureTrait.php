@@ -8,11 +8,16 @@ use Yiisoft\Files\FileHelper;
 
 trait FixtureTrait
 {
-    private string $dataPath;
+    private ?string $dataPath = null;
 
     private function getDataPath(): string
     {
-        return sys_get_temp_dir() . '/' . str_replace('\\', '_', static::class) . uniqid('', false);
+        if ($this->dataPath === null) {
+            $uniqueId = uniqid('', more_entropy: false);;
+            $this->dataPath = sys_get_temp_dir() . '/' . str_replace('\\', '_', static::class) . $uniqueId;
+        }
+
+        return $this->dataPath;
     }
 
     private function getFixturesDirectory(): string
@@ -22,12 +27,11 @@ trait FixtureTrait
 
     private function addFixturesFiles(): void
     {
-        $this->dataPath = $this->getDataPath();
-        FileHelper::copyDirectory($this->getFixturesDirectory(), $this->dataPath);
+        FileHelper::copyDirectory($this->getFixturesDirectory(), $this->getDataPath());
     }
 
     private function clearFixturesFiles(): void
     {
-        FileHelper::removeDirectory($this->dataPath);
+        FileHelper::removeDirectory($this->getDataPath());
     }
 }
