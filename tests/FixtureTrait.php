@@ -13,7 +13,7 @@ trait FixtureTrait
     private function getDataPath(): string
     {
         if ($this->dataPath === null) {
-            $uniqueId = uniqid('', more_entropy: false);;
+            $uniqueId = uniqid('', more_entropy: false);
             $this->dataPath = sys_get_temp_dir() . '/' . str_replace('\\', '_', static::class) . $uniqueId;
         }
 
