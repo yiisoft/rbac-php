@@ -16,8 +16,8 @@ use Yiisoft\Rbac\Tests\Common\AssignmentsStorageTestTrait;
 
 final class AssignmentsStorageTest extends TestCase
 {
-    use FixtureTrait;
     use AssignmentsStorageTestTrait;
+    use FixtureTrait;
 
     protected function setUp(): void
     {
