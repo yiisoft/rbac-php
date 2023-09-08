@@ -383,7 +383,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     {
         foreach ($this->children as $parentName => $childItems) {
             foreach ($childItems as $childItem) {
-                if ($childItem->getName() === $name) {
+                if ($childItem->getName() !== $name) {
                     continue;
                 }
 
