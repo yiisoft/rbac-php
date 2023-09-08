@@ -92,6 +92,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     public function getRolesByNames(array $names): array
     {
+        /** @psalm-var array<string, Role> */
         return array_filter(
             $this->getAll(),
             static fn (Item $item): bool => $item->getType() === Item::TYPE_ROLE && in_array($item->getName(), $names),
@@ -112,6 +113,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     {
         $permissionType = Item::TYPE_PERMISSION;
 
+        /** @psalm-var array<string, Permission> */
         return array_filter(
             $this->getAll(),
             static fn (Item $item): bool => $item->getType() === $permissionType && in_array($item->getName(), $names),
@@ -306,17 +308,14 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     }
 
     /**
-     * @param string $type
+     * @psalm-param Item::TYPE_* $type
      *
      * @return Item[]
-     *
-     * @psalm-return array<
-     *     array-key,
-     *     ($type is Item::TYPE_PERMISSION ? Permission : ($type is Item::TYPE_ROLE ? Role : Item))
-     * >
+     * @psalm-return ($type is Item::TYPE_PERMISSION ? array<string, Permission> : array<string, Role>)
      */
     private function getItemsByType(string $type): array
     {
+        /** @psalm-var array<string, Permission> | array<string, Role> */
         return array_filter(
             $this->getAll(),
             static fn (Item $item): bool => $item->getType() === $type,
@@ -327,6 +326,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
      * Removes all auth items of the specified type.
      *
      * @param string $type The auth item type (either {@see Item::TYPE_PERMISSION} or {@see Item::TYPE_ROLE}).
+     * @psalm-param Item::TYPE_* $type
      */
     private function removeAllItems(string $type): void
     {
@@ -375,25 +375,43 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         unset($this->items[$name]);
     }
 
+    /**
+     * @psalm-param array<string, Item> $result
+     * @psalm-param-out array<string, Item> $result
+     */
     private function fillParentsRecursive(string $name, array &$result): void
     {
         foreach ($this->children as $parentName => $childItems) {
             foreach ($childItems as $childItem) {
                 if ($childItem->getName() === $name) {
-                    $result[$parentName] = $this->get($parentName);
-                    $this->fillParentsRecursive($parentName, $result);
-
-                    break;
+                    continue;
                 }
+
+                $parent = $this->get($parentName);
+                if ($parent !== null) {
+                    $result[$parentName] = $parent;
+                }
+
+                $this->fillParentsRecursive($parentName, $result);
+
+                break;
             }
         }
     }
 
+    /**
+     * @psalm-param array<string, Item> $result
+     * @psalm-param-out array<string, Item> $result
+     */
     private function fillChildrenRecursive(string $name, array &$result): void
     {
         $children = $this->children[$name] ?? [];
         foreach ($children as $childName => $_childItem) {
-            $result[$childName] = $this->get($childName);
+            $child = $this->get($childName);
+            if ($child !== null) {
+                $result[$childName] = $child;
+            }
+
             $this->fillChildrenRecursive($childName, $result);
         }
     }
