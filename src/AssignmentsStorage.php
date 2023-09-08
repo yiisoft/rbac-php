@@ -83,8 +83,8 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
             return false;
         }
 
-        foreach ($itemNames as $permissionName) {
-            if (array_key_exists($permissionName, $assignments)) {
+        foreach ($itemNames as $itemName) {
+            if (array_key_exists($itemName, $assignments)) {
                 return true;
             }
         }

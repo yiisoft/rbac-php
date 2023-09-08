@@ -392,7 +392,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     private function fillChildrenRecursive(string $name, array &$result): void
     {
         $children = $this->children[$name] ?? [];
-        foreach ($children as $childName => $childItem) {
+        foreach ($children as $childName => $_childItem) {
             $result[$childName] = $this->get($childName);
             $this->fillChildrenRecursive($childName, $result);
         }
