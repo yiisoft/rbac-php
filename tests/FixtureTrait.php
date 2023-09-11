@@ -20,16 +20,6 @@ trait FixtureTrait
         return $this->dataPath;
     }
 
-    private function getFixturesDirectory(): string
-    {
-        return __DIR__ . '/Fixtures/';
-    }
-
-    private function addFixturesFiles(): void
-    {
-        FileHelper::copyDirectory($this->getFixturesDirectory(), $this->getDataPath());
-    }
-
     private function clearFixturesFiles(): void
     {
         FileHelper::removeDirectory($this->getDataPath());
