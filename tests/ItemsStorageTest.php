@@ -68,9 +68,6 @@ final class ItemsStorageTest extends TestCase
         foreach ($fixtures['items'] as $itemData) {
             $name = $itemData['name'];
             $item = $itemData['type'] === Item::TYPE_PERMISSION ? new Permission($name) : new Role($name);
-            $item = $item
-                ->withCreatedAt($itemData['createdAt'])
-                ->withUpdatedAt($itemData['updatedAt']);
             $storage->add($item);
         }
 
