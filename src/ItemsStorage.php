@@ -170,7 +170,22 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     public function hasChild(string $parentName, string $childName): bool
     {
-        return $this->hasLoop($childName, $parentName);
+        if ($parentName === $childName) {
+            return true;
+        }
+
+        $children = $this->getDirectChildren($parentName);
+        if (empty($children)) {
+            return false;
+        }
+
+        foreach ($children as $groupChild) {
+            if ($this->hasChild($groupChild->getName(), $childName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function hasDirectChild(string $parentName, string $childName): bool
@@ -449,33 +464,5 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         }
 
         return $permissions;
-    }
-
-    /**
-     * Checks whether there is a loop in the item hierarchy.
-     *
-     * @param string $parentName Name of the parent item.
-     * @param string $childName Name of the child item that is to be added to the hierarchy.
-     *
-     * @return bool Whether a loop exists.
-     */
-    private function hasLoop(string $parentName, string $childName): bool
-    {
-        if ($parentName === $childName) {
-            return true;
-        }
-
-        $children = $this->getDirectChildren($childName);
-        if (empty($children)) {
-            return false;
-        }
-
-        foreach ($children as $groupChild) {
-            if ($this->hasLoop($parentName, $groupChild->getName())) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

@@ -7,17 +7,17 @@ namespace Yiisoft\Rbac\Php\Tests;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Yiisoft\Files\FileHelper;
-use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
-use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
 final class ItemsStorageTest extends TestCase
 {
+    use ItemsStorageTestTrait {
+        setUp as protected traitSetUp;
+    }
     use FixtureTrait;
-    use ItemsStorageTestTrait;
 
     protected function setUp(): void
     {
@@ -26,7 +26,7 @@ final class ItemsStorageTest extends TestCase
             FileHelper::clearDirectory($this->getTempDirectory());
         }
 
-        $this->populateStorage();
+        $this->traitSetUp();
     }
 
     protected function tearDown(): void
@@ -61,25 +61,7 @@ final class ItemsStorageTest extends TestCase
         $this->assertFileExists($directory . '/items.php');
     }
 
-    private function populateStorage(): void
-    {
-        $storage = $this->getStorage();
-        $fixtures = $this->getFixtures();
-        foreach ($fixtures['items'] as $itemData) {
-            $name = $itemData['name'];
-            $item = $itemData['type'] === Item::TYPE_PERMISSION ? new Permission($name) : new Role($name);
-            $item = $item
-                ->withCreatedAt($itemData['createdAt'])
-                ->withUpdatedAt($itemData['updatedAt']);
-            $storage->add($item);
-        }
-
-        foreach ($fixtures['itemsChildren'] as $itemChildData) {
-            $storage->addChild($itemChildData['parent'], $itemChildData['child']);
-        }
-    }
-
-    private function getStorage(): ItemsStorageInterface
+    protected function createItemsStorage(): ItemsStorageInterface
     {
         return new ItemsStorage($this->getDataPath());
     }
