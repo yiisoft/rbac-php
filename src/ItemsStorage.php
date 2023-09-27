@@ -110,12 +110,12 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     public function getPermissionsByNames(array $names): array
     {
-        $permissionType = Item::TYPE_PERMISSION;
-
         /** @psalm-var array<string, Permission> */
         return array_filter(
             $this->getAll(),
-            static fn (Item $item): bool => $item->getType() === $permissionType && in_array($item->getName(), $names),
+            static function (Item $item) use ($names): bool {
+                return $item->getType() === Item::TYPE_PERMISSION && in_array($item->getName(), $names);
+            },
         );
     }
 
