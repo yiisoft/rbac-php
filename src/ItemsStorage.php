@@ -33,7 +33,6 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     private array $items = [];
 
     /**
-     * @var array
      * @psalm-var array<string, array<string, Item>>
      * Format is [itemName => [childName => child]].
      */
