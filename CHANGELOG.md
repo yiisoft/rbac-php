@@ -1,8 +1,9 @@
 # Yii RBAC PHP File Storage Change Log
 
-## 1.0.1 under development
+## 2.0.0 under development
 
-- no changes in this release.
+- Chg #63: Raise PHP version to 8.0 (@arogachev)
+- Enh #63: Improve perfomance (@arogachev)
 
 ## 1.0.0 April 08, 2022
 

@@ -27,15 +27,18 @@
             "url": "https://github.com/sponsors/yiisoft"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
-        "php": "^7.4|^8.0",
-        "yiisoft/rbac": "^1.0",
+        "php": "^8.0",
+        "yiisoft/rbac": "dev-master",
         "yiisoft/var-dumper": "^1.0"
     },
     "require-dev": {
+        "ext-uopz": "*",
         "phpunit/phpunit": "^9.5",
         "psr/log": "^1.1.3",
         "roave/infection-static-analysis-plugin": "^1.18",
+        "slope-it/clock-mock": "0.3.8",
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^4.22",
         "yiisoft/files": "^1.0"
@@ -47,7 +50,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Yiisoft\\Rbac\\Php\\Tests\\": "tests"
+            "Yiisoft\\Rbac\\Php\\Tests\\": "tests",
+            "Yiisoft\\Rbac\\Tests\\": "vendor/yiisoft/rbac/tests"
         }
     },
     "config": {
