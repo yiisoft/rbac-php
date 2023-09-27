@@ -14,10 +14,10 @@ use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
 final class ItemsStorageTest extends TestCase
 {
+    use FixtureTrait;
     use ItemsStorageTestTrait {
         setUp as protected traitSetUp;
     }
-    use FixtureTrait;
 
     protected function setUp(): void
     {
