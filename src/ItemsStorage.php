@@ -28,7 +28,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     private string $itemFile;
 
     /**
-     * @var Permission[] | Role[]
+     * @var Permission[]|Role[]
      * @psalm-var ItemsIndexedByName
      * Format is [itemName => item].
      */
@@ -366,7 +366,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
      */
     private function getInstanceFromAttributes(array $attributes): Permission|Role
     {
-        $item =  $this->getInstanceByTypeAndName($attributes['type'], $attributes['name']);
+        $item = $this->getInstanceByTypeAndName($attributes['type'], $attributes['name']);
 
         $description = $attributes['description'] ?? null;
         if ($description !== null) {
