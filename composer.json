@@ -30,7 +30,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": "^8.0",
-        "yiisoft/rbac": "dev-master",
+        "yiisoft/rbac": "dev-more-specific-types",
         "yiisoft/var-dumper": "^1.0"
     },
     "require-dev": {
