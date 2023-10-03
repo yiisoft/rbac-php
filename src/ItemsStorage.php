@@ -14,6 +14,8 @@ use Yiisoft\Rbac\ItemsStorageInterface;
  *
  * It is suitable for authorization data that is not too big (for example, the authorization data for a personal blog
  * system).
+ *
+ * @psalm-import-type ItemsIndexedByName from ItemsStorageInterface
  */
 final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 {
@@ -26,14 +28,14 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     private string $itemFile;
 
     /**
-     * @var Item[]
-     * @psalm-var array<string, Item>
+     * @var Permission[]|Role[]
+     * @psalm-var ItemsIndexedByName
      * Format is [itemName => item].
      */
     private array $items = [];
 
     /**
-     * @psalm-var array<string, array<string, Item>>
+     * @psalm-var array<string, ItemsIndexedByName>
      * Format is [itemName => [childName => child]].
      */
     private array $children = [];
@@ -58,7 +60,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         return $this->items;
     }
 
-    public function get(string $name): ?Item
+    public function get(string $name): Permission|Role|null
     {
         return $this->items[$name] ?? null;
     }
@@ -73,7 +75,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         return isset($this->getItemsByType(Item::TYPE_ROLE)[$name]);
     }
 
-    public function add(Item $item): void
+    public function add(Permission|Role $item): void
     {
         $this->items[$item->getName()] = $item;
         $this->save();
@@ -219,7 +221,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         $this->save();
     }
 
-    public function update(string $name, Item $item): void
+    public function update(string $name, Permission|Role $item): void
     {
         if ($item->getName() !== $name) {
             $this->updateItemName($name, $item);
@@ -354,7 +356,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         unset($this->children[$itemName]);
     }
 
-    private function getInstanceByTypeAndName(string $type, string $name): Item
+    private function getInstanceByTypeAndName(string $type, string $name): Permission|Role
     {
         return $type === Item::TYPE_PERMISSION ? new Permission($name) : new Role($name);
     }
@@ -362,12 +364,21 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     /**
      * @psalm-param array{type: string, name: string, description?: string, ruleName?: string} $attributes
      */
-    private function getInstanceFromAttributes(array $attributes): Item
+    private function getInstanceFromAttributes(array $attributes): Permission|Role
     {
-        return $this
-            ->getInstanceByTypeAndName($attributes['type'], $attributes['name'])
-            ->withDescription($attributes['description'] ?? '')
-            ->withRuleName($attributes['ruleName'] ?? null);
+        $item = $this->getInstanceByTypeAndName($attributes['type'], $attributes['name']);
+
+        $description = $attributes['description'] ?? null;
+        if ($description !== null) {
+            $item = $item->withDescription($description);
+        }
+
+        $ruleName = $attributes['ruleName'] ?? null;
+        if ($ruleName !== null) {
+            $item = $item->withRuleName($ruleName);
+        }
+
+        return $item;
     }
 
     private function updateChildrenForItemName(string $name, Item $item): void
@@ -390,8 +401,8 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     }
 
     /**
-     * @psalm-param array<string, Item> $result
-     * @psalm-param-out array<string, Item> $result
+     * @psalm-param array<string, Permission|Role> $result
+     * @psalm-param-out array<string, Permission|Role> $result
      */
     private function fillParentsRecursive(string $name, array &$result): void
     {
