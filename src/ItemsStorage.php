@@ -16,6 +16,7 @@ use Yiisoft\Rbac\ItemsStorageInterface;
  * system).
  *
  * @psalm-import-type ItemsIndexedByName from ItemsStorageInterface
+ * @psalm-import-type AccessTree from ItemsStorageInterface
  */
 final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 {
@@ -51,13 +52,14 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         $this->load();
     }
 
-    /**
-     * @return Item[]
-     * @psalm-return array<string, Item>
-     */
     public function getAll(): array
     {
         return $this->items;
+    }
+
+    public function getByNames(array $names): array
+    {
+        return array_filter($this->getAll(), static fn (Item $item): bool => in_array($item->getName(), $names));
     }
 
     public function get(string $name): Permission|Role|null
@@ -129,31 +131,39 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         return $result;
     }
 
+    public function getAccessTree(string $name): array
+    {
+        $result = [$name => ['item' => $this->items[$name], 'children' => []]];
+        $this->fillAccessTreeRecursive($name, $result);
+
+        return $result;
+    }
+
     public function getDirectChildren(string $name): array
     {
         return $this->children[$name] ?? [];
     }
 
-    public function getAllChildren(string $name): array
+    public function getAllChildren(string|array $names): array
     {
         $result = [];
-        $this->fillChildrenRecursive($name, $result);
+        $this->getAllChildrenInternal($names, $result);
 
         return $result;
     }
 
-    public function getAllChildRoles(string $name): array
+    public function getAllChildRoles(string|array $names): array
     {
         $result = [];
-        $this->fillChildrenRecursive($name, $result);
+        $this->getAllChildrenInternal($names, $result);
 
         return $this->filterRoles($result);
     }
 
-    public function getAllChildPermissions(string $name): array
+    public function getAllChildPermissions(string|array $names): array
     {
         $result = [];
-        $this->fillChildrenRecursive($name, $result);
+        $this->getAllChildrenInternal($names, $result);
 
         return $this->filterPermissions($result);
     }
@@ -425,8 +435,52 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     }
 
     /**
-     * @psalm-param array<string, Item> $result
-     * @psalm-param-out array<string, Item> $result
+     * @psalm-param AccessTree $result
+     * @psalm-param-out non-empty-array<non-empty-string, array{
+     *      item: Permission|Role,
+     *      children: array<non-empty-string, Permission|Role>
+     *  }> $result
+     */
+    private function fillAccessTreeRecursive(string $name, array &$result, array $addedChildItems = []): void
+    {
+        foreach ($this->children as $parentName => $childItems) {
+            foreach ($childItems as $childItem) {
+                if ($childItem->getName() !== $name) {
+                    continue;
+                }
+
+                $parent = $this->get($parentName);
+                if ($parent !== null) {
+                    $result[$parentName]['item'] = $this->items[$parentName];
+
+                    $addedChildItems[$childItem->getName()] = $childItem;
+                    $result[$parentName]['children'] = $addedChildItems;
+                }
+
+                $this->fillAccessTreeRecursive($parentName, $result, $addedChildItems);
+
+                break;
+            }
+        }
+    }
+
+    /**
+     * @param string|string[] $names
+     *
+     * @psalm-param ItemsIndexedByName $result
+     * @psalm-param-out ItemsIndexedByName $result
+     */
+    private function getAllChildrenInternal(string|array $names, array &$result): void
+    {
+        $names = (array) $names;
+        foreach ($names as $name) {
+            $this->fillChildrenRecursive($name, $result);
+        }
+    }
+
+    /**
+     * @psalm-param ItemsIndexedByName $result
+     * @psalm-param-out array<string, Permission|Role> $result
      */
     private function fillChildrenRecursive(string $name, array &$result): void
     {
@@ -442,37 +496,30 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     }
 
     /**
-     * @param Item[] $array
-     * @psalm-param array<string, Item> $array
+     * @psalm-param ItemsIndexedByName $items
      *
      * @return Role[]
      * @psalm-return array<string, Role>
      */
-    private function filterRoles(array $array): array
+    private function filterRoles(array $items): array
     {
         return array_filter(
             $this->getRoles(),
-            static fn (Role $roleItem): bool => array_key_exists($roleItem->getName(), $array),
+            static fn (Permission|Role $item): bool => array_key_exists($item->getName(), $items),
         );
     }
 
     /**
-     * @param Item[] $items
-     * @psalm-param array<string, Item> $items
+     * @psalm-param ItemsIndexedByName $items
      *
      * @return Permission[]
      * @psalm-return array<string, Permission>
      */
     private function filterPermissions(array $items): array
     {
-        $permissions = [];
-        foreach (array_keys($items) as $permissionName) {
-            $permission = $this->getPermission($permissionName);
-            if ($permission !== null) {
-                $permissions[$permissionName] = $permission;
-            }
-        }
-
-        return $permissions;
+        return array_filter(
+            $this->getPermissions(),
+            static fn (Permission|Role $permissionItem): bool => array_key_exists($permissionItem->getName(), $items),
+        );
     }
 }
