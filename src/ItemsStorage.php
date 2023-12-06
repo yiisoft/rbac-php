@@ -95,10 +95,9 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     public function getRolesByNames(array $names): array
     {
-        /** @psalm-var array<string, Role> */
         return array_filter(
             $this->getAll(),
-            static fn (Item $item): bool => $item->getType() === Item::TYPE_ROLE && in_array($item->getName(), $names),
+            static fn (Permission|Role $item): bool => $item instanceof Role && in_array($item->getName(), $names),
         );
     }
 
@@ -114,11 +113,10 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     public function getPermissionsByNames(array $names): array
     {
-        /** @psalm-var array<string, Permission> */
         return array_filter(
             $this->getAll(),
-            static function (Item $item) use ($names): bool {
-                return $item->getType() === Item::TYPE_PERMISSION && in_array($item->getName(), $names);
+            static function (Permission|Role $item) use ($names): bool {
+                return $item instanceof Permission && in_array($item->getName(), $names);
             },
         );
     }
@@ -336,15 +334,13 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     /**
      * @psalm-param Item::TYPE_* $type
      *
-     * @return Item[]
      * @psalm-return ($type is Item::TYPE_PERMISSION ? array<string, Permission> : array<string, Role>)
      */
     private function getItemsByType(string $type): array
     {
-        /** @psalm-var array<string, Permission> | array<string, Role> */
         return array_filter(
             $this->getAll(),
-            static fn (Item $item): bool => $item->getType() === $type,
+            static fn (Permission|Role $item): bool => $item->getType() === $type,
         );
     }
 
