@@ -432,10 +432,12 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     /**
      * @psalm-param AccessTree $result
-     * @psalm-param-out non-empty-array<non-empty-string, array{
+     * @psalm-param-out non-empty-array<string, array{
      *      item: Permission|Role,
-     *      children: array<non-empty-string, Permission|Role>
+     *      children: array<string, Permission|Role>
      *  }> $result
+     *
+     * @psalm-param ItemsIndexedByName $addedChildItems
      */
     private function fillAccessTreeRecursive(string $name, array &$result, array $addedChildItems = []): void
     {
