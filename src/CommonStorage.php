@@ -49,13 +49,15 @@ abstract class CommonStorage
         $directory = dirname($file);
 
         if (!is_dir($directory)) {
-            set_error_handler(static function (int $errorNumber, string $errorString) use ($directory): void {
+            set_error_handler(static function (int $errorNumber, string $errorString) use ($directory): bool {
                 if (!is_dir($directory)) {
                     throw new RuntimeException(
                         sprintf('Failed to create directory "%s". ', $directory) . $errorString,
                         $errorNumber
                     );
                 }
+
+                return true;
             });
             mkdir($directory, 0775, true);
             restore_error_handler();
