@@ -17,7 +17,9 @@ abstract class CommonStorage
      *
      * @param string $file The file path.
      *
-     * @return mixed The authorization data.
+     * @return array The authorization data.
+     * @psalm-suppress MixedInferredReturnType
+     * @link https://github.com/yiisoft/rbac-php/issues/72
      *
      * @see saveToFile()
      */
@@ -25,7 +27,8 @@ abstract class CommonStorage
     {
         if (is_file($file)) {
             /**
-             * @psalm-suppress UnresolvableInclude
+             * @psalm-suppress MixedReturnStatement
+             * @link https://github.com/yiisoft/rbac-php/issues/72
              */
             return require $file;
         }
@@ -46,16 +49,13 @@ abstract class CommonStorage
         $directory = dirname($file);
 
         if (!is_dir($directory)) {
-            set_error_handler(static function (int $errorNumber, string $errorString) use ($directory): bool {
-                // Handle race condition.
-                // See https://github.com/kalessil/phpinspectionsea/blob/master/docs/probable-bugs.md#mkdir-race-condition
+            set_error_handler(static function (int $errorNumber, string $errorString) use ($directory): void {
                 if (!is_dir($directory)) {
                     throw new RuntimeException(
                         sprintf('Failed to create directory "%s". ', $directory) . $errorString,
                         $errorNumber
                     );
                 }
-                return true;
             });
             mkdir($directory, 0775, true);
             restore_error_handler();

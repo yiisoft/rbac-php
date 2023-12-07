@@ -15,6 +15,14 @@ use Yiisoft\Rbac\ItemsStorageInterface;
  * It is suitable for authorization data that is not too big (for example, the authorization data for a personal blog
  * system).
  *
+ * @psalm-type RawItem = array{
+ *      type: string,
+ *      name: string,
+ *      description?: string,
+ *      ruleName?: string,
+ *      children?: string[]
+ *  }
+ *
  * @psalm-import-type ItemsIndexedByName from ItemsStorageInterface
  * @psalm-import-type AccessTree from ItemsStorageInterface
  */
@@ -288,18 +296,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     private function loadItems(): void
     {
-        /**
-         * @psalm-var array<
-         *     string,
-         *     array{
-         *         type: string,
-         *         name: string,
-         *         description?: string,
-         *         ruleName?: string,
-         *         children?: string[]
-         *     }
-         * > $items
-         */
+        /** @psalm-var array<string, RawItem> $items */
         $items = $this->loadFromFile($this->itemFile);
         $itemsMtime = @filemtime($this->itemFile);
         foreach ($items as $name => $item) {
@@ -368,7 +365,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
     }
 
     /**
-     * @psalm-param array{type: string, name: string, description?: string, ruleName?: string} $attributes
+     * @psalm-param RawItem $attributes
      */
     private function getInstanceFromAttributes(array $attributes): Permission|Role
     {
@@ -432,10 +429,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     /**
      * @psalm-param AccessTree $result
-     * @psalm-param-out non-empty-array<string, array{
-     *      item: Permission|Role,
-     *      children: array<string, Permission|Role>
-     *  }> $result
+     * @psalm-param-out AccessTree $result
      *
      * @psalm-param ItemsIndexedByName $addedChildItems
      */
@@ -449,6 +443,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
                 $parent = $this->get($parentName);
                 if ($parent !== null) {
+                    /** @psalm-var AccessTree $result Imported type in `psalm-param-out` is not resolved. */
                     $result[$parentName]['item'] = $this->items[$parentName];
 
                     $addedChildItems[$childItem->getName()] = $childItem;
@@ -478,7 +473,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
 
     /**
      * @psalm-param ItemsIndexedByName $result
-     * @psalm-param-out array<string, Permission|Role> $result
+     * @psalm-param-out ItemsIndexedByName $result
      */
     private function fillChildrenRecursive(string $name, array &$result): void
     {
@@ -486,6 +481,7 @@ final class ItemsStorage extends CommonStorage implements ItemsStorageInterface
         foreach ($children as $childName => $_childItem) {
             $child = $this->get($childName);
             if ($child !== null) {
+                /** @psalm-var ItemsIndexedByName $result Imported type in `psalm-param-out` is not resolved. */
                 $result[$childName] = $child;
             }
 

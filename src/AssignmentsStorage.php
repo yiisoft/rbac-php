@@ -176,9 +176,7 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
      */
     private function loadAssignments(): void
     {
-        /**
-         * @psalm-var array<string|int,string[]> $assignments
-         */
+        /** @psalm-var array<string|int, string[]> $assignments */
         $assignments = $this->loadFromFile($this->assignmentFile);
         $modifiedTime = @filemtime($this->assignmentFile);
         foreach ($assignments as $userId => $roles) {
