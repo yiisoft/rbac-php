@@ -92,6 +92,23 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         return false;
     }
 
+    public function filterUserItemNames(string $userId, array $itemNames): array
+    {
+        $assignments = $this->getByUserId($userId);
+        if (empty($assignments)) {
+            return [];
+        }
+
+        $userItemNames = [];
+        foreach ($itemNames as $itemName) {
+            if (array_key_exists($itemName, $assignments)) {
+                $userItemNames[] = $itemName;
+            }
+        }
+
+        return $userItemNames;
+    }
+
     public function add(Assignment $assignment): void
     {
         $this->assignments[$assignment->getUserId()][$assignment->getItemName()] = $assignment;
@@ -159,9 +176,7 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
      */
     private function loadAssignments(): void
     {
-        /**
-         * @psalm-var array<string|int,string[]> $assignments
-         */
+        /** @psalm-var array<string|int, string[]> $assignments */
         $assignments = $this->loadFromFile($this->assignmentFile);
         $modifiedTime = @filemtime($this->assignmentFile);
         foreach ($assignments as $userId => $roles) {
