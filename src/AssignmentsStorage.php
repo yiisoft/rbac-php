@@ -5,19 +5,18 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Php;
 
 use Yiisoft\Rbac\Assignment;
-use Yiisoft\Rbac\AssignmentsStorageInterface;
-
-use function array_key_exists;
+use Yiisoft\Rbac\SimpleAssignmentsStorage;
 
 /**
- * Storage stores authorization data in three PHP files specified by {@see Storage::itemFile},
- * {@see Storage::assignmentFile} and {@see Storage::ruleFile}.
+ * Storage stores roles and permissions in PHP file specified in {@see AssignmentsStorage::$assignmentFile}.
  *
  * It is suitable for authorization data that is not too big (for example, the authorization data for a personal blog
  * system).
  */
-final class AssignmentsStorage extends CommonStorage implements AssignmentsStorageInterface
+final class AssignmentsStorage extends SimpleAssignmentsStorage
 {
+    use FileStorageTrait;
+
     /**
      * @var string The path of the PHP script that contains the authorization assignments. Make sure this file is
      * writable by the web server process if the authorization needs to be changed online.
@@ -27,12 +26,6 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
      */
     private string $assignmentFile;
 
-    /**
-     * @var array Array in format is `[userId => [itemName => assignment]]`.
-     * @psalm-var array<string, array<string, Assignment>>
-     */
-    private array $assignments = [];
-
     public function __construct(
         string $directory,
         string $assignmentFile = 'assignments.php'
@@ -41,88 +34,11 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         $this->loadAssignments();
     }
 
-    public function getAll(): array
-    {
-        return $this->assignments;
-    }
-
-    public function getByUserId(string $userId): array
-    {
-        return $this->assignments[$userId] ?? [];
-    }
-
-    public function getByItemNames(array $itemNames): array
-    {
-        $result = [];
-
-        foreach ($this->assignments as $assignments) {
-            foreach ($assignments as $userAssignment) {
-                if (in_array($userAssignment->getItemName(), $itemNames, true)) {
-                    $result[] = $userAssignment;
-                }
-            }
-        }
-
-        return $result;
-    }
-
-    public function get(string $itemName, string $userId): ?Assignment
-    {
-        return $this->getByUserId($userId)[$itemName] ?? null;
-    }
-
-    public function exists(string $itemName, string $userId): bool
-    {
-        return isset($this->getByUserId($userId)[$itemName]);
-    }
-
-    public function userHasItem(string $userId, array $itemNames): bool
-    {
-        $assignments = $this->getByUserId($userId);
-        if (empty($assignments)) {
-            return false;
-        }
-
-        foreach ($itemNames as $itemName) {
-            if (array_key_exists($itemName, $assignments)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public function filterUserItemNames(string $userId, array $itemNames): array
-    {
-        $assignments = $this->getByUserId($userId);
-        if (empty($assignments)) {
-            return [];
-        }
-
-        $userItemNames = [];
-        foreach ($itemNames as $itemName) {
-            if (array_key_exists($itemName, $assignments)) {
-                $userItemNames[] = $itemName;
-            }
-        }
-
-        return $userItemNames;
-    }
-
     public function add(Assignment $assignment): void
     {
-        $this->assignments[$assignment->getUserId()][$assignment->getItemName()] = $assignment;
-        $this->saveAssignments();
-    }
+        parent::add($assignment);
 
-    public function hasItem(string $name): bool
-    {
-        foreach ($this->getAll() as $assignmentInfo) {
-            if (array_key_exists($name, $assignmentInfo)) {
-                return true;
-            }
-        }
-        return false;
+        $this->saveAssignments();
     }
 
     public function renameItem(string $oldName, string $newName): void
@@ -131,12 +47,7 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
             return;
         }
 
-        foreach ($this->assignments as &$assignments) {
-            if (isset($assignments[$oldName])) {
-                $assignments[$newName] = $assignments[$oldName]->withItemName($newName);
-                unset($assignments[$oldName]);
-            }
-        }
+        parent::renameItem($oldName, $newName);
 
         $this->saveAssignments();
     }
@@ -147,33 +58,32 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
             return;
         }
 
-        unset($this->assignments[$userId][$itemName]);
+        parent::remove($itemName, $userId);
+
         $this->saveAssignments();
     }
 
     public function removeByUserId(string $userId): void
     {
-        $this->assignments[$userId] = [];
+        parent::removeByUserId($userId);
+
         $this->saveAssignments();
     }
 
     public function removeByItemName(string $itemName): void
     {
-        foreach ($this->assignments as &$assignments) {
-            unset($assignments[$itemName]);
-        }
+        parent::removeByItemName($itemName);
+
         $this->saveAssignments();
     }
 
     public function clear(): void
     {
-        $this->assignments = [];
+        parent::clear();
+
         $this->saveAssignments();
     }
 
-    /**
-     * Loads authorization data from persistent storage.
-     */
     private function loadAssignments(): void
     {
         /** @psalm-var array<string|int, string[]> $assignments */
@@ -187,9 +97,6 @@ final class AssignmentsStorage extends CommonStorage implements AssignmentsStora
         }
     }
 
-    /**
-     * Saves assignments data into persistent storage.
-     */
     private function saveAssignments(): void
     {
         $assignmentData = [];

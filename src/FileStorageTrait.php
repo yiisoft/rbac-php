@@ -10,7 +10,7 @@ use Yiisoft\VarDumper\VarDumper;
 use function dirname;
 use function function_exists;
 
-abstract class CommonStorage
+trait FileStorageTrait
 {
     /**
      * Loads the authorization data from a PHP script file.
