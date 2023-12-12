@@ -142,7 +142,7 @@ final class ItemsStorage extends SimpleItemsStorage
     /**
      * @psalm-param Item::TYPE_* $type
      *
-     * @psalm-return ($type is Item::TYPE_PERMISSION ? array<string, Permission> : array<string, Role>)
+     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)
      */
     private function getInstanceByTypeAndName(string $type, string $name): Permission|Role
     {
