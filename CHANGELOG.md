@@ -8,6 +8,8 @@
 - Enh #70: Implement `filterUserItemNames()` method in `AssignmentsStorage` (@arogachev)
 - Chg #70: Rename `$name` argument to `$names` and allow array type for it in `getAllChildren()`, `getAllChildRoles()`,
   `getAllChildPermissions()` methods in `ItemsStorage` (@arogachev)
+- Enh #76: Use simple storages for items and assignments from the base `rbac` package (@arogachev)
+- Chg #76: Raise PHP version to 8.1 (@arogachev)
 
 ## 1.0.0 April 08, 2022
 
