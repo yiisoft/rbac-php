@@ -21,7 +21,7 @@ final class ItemsStorageTest extends TestCase
 
     protected function setUp(): void
     {
-        if ($this->getName() === 'testFailCreateDirectory' || $this->getName() === 'testCreateNestedDirectory') {
+        if ($this->name() === 'testFailCreateDirectory' || $this->name() === 'testCreateNestedDirectory') {
             FileHelper::ensureDirectory($this->getTempDirectory());
             FileHelper::clearDirectory($this->getTempDirectory());
         }
@@ -31,7 +31,7 @@ final class ItemsStorageTest extends TestCase
 
     protected function tearDown(): void
     {
-        if ($this->getName() === 'testFailCreateDirectory' || $this->getName() === 'testCreateNestedDirectory') {
+        if ($this->name() === 'testFailCreateDirectory' || $this->name() === 'testCreateNestedDirectory') {
             FileHelper::removeDirectory($this->getTempDirectory());
         }
 
