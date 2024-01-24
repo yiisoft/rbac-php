@@ -66,6 +66,11 @@ final class ItemsStorageTest extends TestCase
         return new ItemsStorage($this->getDataPath());
     }
 
+    protected function getItemsStorageForModificationAssertions(): ItemsStorageInterface
+    {
+        return $this->createItemsStorage();
+    }
+
     private function getTempDirectory(): string
     {
         return __DIR__ . '/temp';

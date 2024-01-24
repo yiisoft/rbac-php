@@ -37,4 +37,9 @@ final class AssignmentsStorageTest extends TestCase
     {
         return new AssignmentsStorage($this->getDataPath());
     }
+
+    protected function getAssignmentsStorageForModificationAssertions(): AssignmentsStorageInterface
+    {
+        return $this->createAssignmentsStorage();
+    }
 }
