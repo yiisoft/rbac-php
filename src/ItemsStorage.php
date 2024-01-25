@@ -94,13 +94,16 @@ final class ItemsStorage extends SimpleItemsStorage
     {
         $items = [];
         foreach ($this->getAll() as $name => $item) {
-            $items[$name] = array_filter($item->getAttributes());
+            $data = array_filter($item->getAttributes());
             if ($this->hasChildren($name)) {
                 foreach ($this->getDirectChildren($name) as $child) {
-                    $items[$name]['children'][] = $child->getName();
+                    $data['children'][] = $child->getName();
                 }
             }
+
+            $items[] = $data;
         }
+
         $this->saveToFile($items, $this->itemFile);
     }
 
@@ -116,19 +119,17 @@ final class ItemsStorage extends SimpleItemsStorage
         /** @psalm-var array<string, RawItem> $items */
         $items = $this->loadFromFile($this->itemFile);
         $itemsMtime = @filemtime($this->itemFile);
-        foreach ($items as $name => $item) {
-            $this->items[$name] = $this
+        foreach ($items as $item) {
+            $this->items[$item['name']] = $this
                 ->getInstanceFromAttributes($item)
-                ->withCreatedAt($itemsMtime)
-                ->withUpdatedAt($itemsMtime);
+                ->withCreatedAt($item['created_at'] ?? $itemsMtime)
+                ->withUpdatedAt($item['updated_at'] ?? $itemsMtime);
         }
 
-        foreach ($items as $name => $item) {
-            if (isset($item['children'])) {
-                foreach ($item['children'] as $childName) {
-                    if ($this->hasItem($childName)) {
-                        $this->children[$name][$childName] = $this->items[$childName];
-                    }
+        foreach ($items as $item) {
+            foreach ($item['children'] ?? [] as $childName) {
+                if ($this->hasItem($childName)) {
+                    $this->children[$item['name']][$childName] = $this->items[$childName];
                 }
             }
         }
@@ -161,7 +162,7 @@ final class ItemsStorage extends SimpleItemsStorage
             $item = $item->withDescription($description);
         }
 
-        $ruleName = $attributes['ruleName'] ?? null;
+        $ruleName = $attributes['rule_name'] ?? null;
         if ($ruleName !== null) {
             $item = $item->withRuleName($ruleName);
         }
