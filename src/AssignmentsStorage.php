@@ -12,6 +12,8 @@ use Yiisoft\Rbac\SimpleAssignmentsStorage;
  *
  * It is suitable for authorization data that is not too big (for example, the authorization data for a personal blog
  * system).
+ *
+ * @psalm-import-type RawAssignment from SimpleAssignmentsStorage
  */
 final class AssignmentsStorage extends SimpleAssignmentsStorage
 {
@@ -86,25 +88,28 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage
 
     private function loadAssignments(): void
     {
-        /** @psalm-var array<string|int, string[]> $assignments */
+        /** @psalm-var list<RawAssignment> $assignments */
         $assignments = $this->loadFromFile($this->assignmentFile);
         $modifiedTime = @filemtime($this->assignmentFile);
-        foreach ($assignments as $userId => $roles) {
-            foreach ($roles as $role) {
-                /** @psalm-suppress InvalidPropertyAssignmentValue */
-                $this->assignments[$userId][$role] = new Assignment((string)$userId, $role, $modifiedTime);
-            }
+        foreach ($assignments as $assignment) {
+            /** @psalm-suppress InvalidPropertyAssignmentValue */
+            $this->assignments[$assignment['user_id']][$assignment['item_name']] = new Assignment(
+                userId: $assignment['user_id'],
+                itemName: $assignment['item_name'],
+                createdAt: $assignment['created_at'] ?? $modifiedTime
+            );
         }
     }
 
     private function saveAssignments(): void
     {
         $assignmentData = [];
-        foreach ($this->assignments as $userId => $assignments) {
-            foreach ($assignments as $assignment) {
-                $assignmentData[$userId][] = $assignment->getItemName();
+        foreach ($this->assignments as $userAssignments) {
+            foreach ($userAssignments as $userAssignment) {
+                $assignmentData[] = $userAssignment->getAttributes();
             }
         }
+
         $this->saveToFile($assignmentData, $this->assignmentFile);
     }
 }
