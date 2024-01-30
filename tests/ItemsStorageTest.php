@@ -63,7 +63,7 @@ final class ItemsStorageTest extends TestCase
 
     protected function createItemsStorage(): ItemsStorageInterface
     {
-        return new ItemsStorage($this->getDataPath());
+        return new ItemsStorage($this->getDataPath(), enableConcurrencyHandling: true);
     }
 
     protected function getItemsStorageForModificationAssertions(): ItemsStorageInterface

@@ -22,29 +22,135 @@ final class ItemsStorage extends SimpleItemsStorage
     use FileStorageTrait;
 
     /**
-     * @var string The path of the PHP script that contains the authorization items.
-     *
-     * @see loadFromFile()
-     * @see saveToFile()
-     */
-    private string $itemFile;
-
-    /**
      * @param string $directory Base directory to append to `$itemFile`.
      * @param string $itemFile The path of the PHP script that contains the authorization items. Make sure this file is
      * writable by the Web server process if the authorization needs to be changed online.
      */
-    public function __construct(string $directory, string $itemFile = 'items.php')
+    public function __construct(
+        string $directory,
+        string $itemFile = 'items.php',
+        ?callable $getFileUpdatedAt = null,
+        bool $enableConcurrencyHandling = false,
+    )
     {
-        $this->itemFile = $directory . DIRECTORY_SEPARATOR . $itemFile;
+        $this->initFileProperties($directory, $itemFile, $getFileUpdatedAt, $enableConcurrencyHandling);
         $this->load();
+    }
+
+    public function clear(): void
+    {
+        parent::clear();
+        $this->save();
+    }
+
+    public function getAll(): array
+    {
+        $this->reload();
+
+        return parent::getAll();
+    }
+
+    public function getByNames(array $names): array
+    {
+        $this->reload();
+
+        return parent::getByNames($names);
+    }
+
+    public function get(string $name): Permission|Role|null
+    {
+        $this->reload();
+
+        return parent::get($name);
+    }
+
+    public function exists(string $name): bool
+    {
+        $this->reload();
+
+        return parent::exists($name);
+    }
+
+    public function roleExists(string $name): bool
+    {
+        $this->reload();
+
+        return parent::roleExists($name);
     }
 
     public function add(Permission|Role $item): void
     {
+        $this->reload();
         parent::add($item);
-
         $this->save();
+    }
+
+    public function update(string $name, Permission|Role $item): void
+    {
+        $this->reload();
+        parent::update($name, $item);
+    }
+
+    public function remove(string $name): void
+    {
+        parent::remove($name);
+        $this->save();
+    }
+
+    public function getRoles(): array
+    {
+        $this->reload();
+
+        return parent::getRoles();
+    }
+
+    public function getRolesByNames(array $names): array
+    {
+        $this->reload();
+
+        return parent::getRolesByNames($names);
+    }
+
+    public function getRole(string $name): ?Role
+    {
+        $this->reload();
+
+        return parent::getRole($name);
+    }
+
+    public function clearRoles(): void
+    {
+        $this->reload();
+
+        parent::clearRoles();
+    }
+
+    public function getPermissions(): array
+    {
+        $this->reload();
+
+        return parent::getPermissions();
+    }
+
+    public function getPermissionsByNames(array $names): array
+    {
+        $this->reload();
+
+        return parent::getPermissionsByNames($names);
+    }
+
+    public function getPermission(string $name): ?Permission
+    {
+        $this->reload();
+
+        return parent::getPermission($name);
+    }
+
+    public function clearPermissions(): void
+    {
+        $this->reload();
+
+        parent::clearPermissions();
     }
 
     public function addChild(string $parentName, string $childName): void
@@ -76,18 +182,78 @@ final class ItemsStorage extends SimpleItemsStorage
         $this->save();
     }
 
-    public function remove(string $name): void
+    public function getParents(string $name): array
     {
-        parent::remove($name);
+        $this->reload();
 
-        $this->save();
+        return parent::getParents($name);
     }
 
-    public function clear(): void
+    public function getAccessTree(string $name): array
     {
-        parent::clear();
+        $this->reload();
 
-        $this->save();
+        return parent::getAccessTree($name);
+    }
+
+    public function getDirectChildren(string $name): array
+    {
+        $this->reload();
+
+        return parent::getDirectChildren($name);
+    }
+
+    public function getAllChildren(string|array $names): array
+    {
+        $this->reload();;
+
+        return parent::getAllChildren($names);
+    }
+
+    public function getAllChildRoles(string|array $names): array
+    {
+        $this->reload();
+
+        return parent::getAllChildRoles($names);
+    }
+
+    public function getAllChildPermissions(string|array $names): array
+    {
+        $this->reload();
+
+        return parent::getAllChildPermissions($names);
+    }
+
+    public function hasChildren(string $name): bool
+    {
+        $this->reload();
+
+        return parent::hasChildren($name);
+    }
+
+    public function hasChild(string $parentName, string $childName): bool
+    {
+        $this->reload();
+
+        return parent::hasChild($parentName, $childName);
+    }
+
+    public function hasDirectChild(string $parentName, string $childName): bool
+    {
+        $this->reload();
+
+        return parent::hasDirectChild($parentName, $childName);
+    }
+
+    /**
+     * @return static
+     */
+    final public function withEnableConcurrencyHandling(bool $enableConcurrencyHandling): self
+    {
+        $new = clone $this;
+        $new->enableConcurrencyHandling = $enableConcurrencyHandling;
+        $new->previousEnableConcurrencyHandling = $enableConcurrencyHandling;
+        return $new;
     }
 
     private function save(): void
@@ -104,26 +270,25 @@ final class ItemsStorage extends SimpleItemsStorage
             $items[] = $data;
         }
 
-        $this->saveToFile($items, $this->itemFile);
+        $this->saveToFile($items, $this->filePath);
     }
 
     private function load(): void
     {
         parent::clear();
 
-        $this->loadItems();
-    }
-
-    private function loadItems(): void
-    {
         /** @psalm-var array<string, RawItem> $items */
-        $items = $this->loadFromFile($this->itemFile);
-        $itemsMtime = @filemtime($this->itemFile);
+        $items = $this->loadFromFile($this->filePath);
+        if (empty($items)) {
+            return;
+        }
+
+        $fileUpdatedAt = $this->getFileUpdatedAt();
         foreach ($items as $item) {
             $this->items[$item['name']] = $this
                 ->getInstanceFromAttributes($item)
-                ->withCreatedAt($item['created_at'] ?? $itemsMtime)
-                ->withUpdatedAt($item['updated_at'] ?? $itemsMtime);
+                ->withCreatedAt($item['created_at'] ?? $fileUpdatedAt)
+                ->withUpdatedAt($item['updated_at'] ?? $fileUpdatedAt);
         }
 
         foreach ($items as $item) {
