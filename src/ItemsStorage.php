@@ -31,8 +31,7 @@ final class ItemsStorage extends SimpleItemsStorage
         string $itemFile = 'items.php',
         ?callable $getFileUpdatedAt = null,
         bool $enableConcurrencyHandling = false,
-    )
-    {
+    ) {
         $this->initFileProperties($directory, $itemFile, $getFileUpdatedAt, $enableConcurrencyHandling);
         $this->load();
     }
@@ -205,7 +204,7 @@ final class ItemsStorage extends SimpleItemsStorage
 
     public function getAllChildren(string|array $names): array
     {
-        $this->reload();;
+        $this->reload();
 
         return parent::getAllChildren($names);
     }
@@ -248,7 +247,7 @@ final class ItemsStorage extends SimpleItemsStorage
     /**
      * @return static
      */
-    final public function withEnableConcurrencyHandling(bool $enableConcurrencyHandling): self
+    public function withEnableConcurrencyHandling(bool $enableConcurrencyHandling): self
     {
         $new = clone $this;
         $new->enableConcurrencyHandling = $enableConcurrencyHandling;

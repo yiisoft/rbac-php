@@ -93,8 +93,7 @@ trait FileStorageTrait
         string $filename,
         ?callable $getFileUpdatedAt,
         bool $enableConcurrencyHandling,
-    ): void
-    {
+    ): void {
         $this->filePath = $directory . DIRECTORY_SEPARATOR . $filename;
         $this->getFileUpdatedAt = $getFileUpdatedAt ?? static fn (string $filename): int|false => @filemtime($filename);
         $this->enableConcurrencyHandling = $enableConcurrencyHandling;
