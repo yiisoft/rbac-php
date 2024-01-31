@@ -14,10 +14,10 @@ use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
 final class ItemsStorageTest extends TestCase
 {
-    use StorageFilePathTrait;
     use ItemsStorageTestTrait {
         setUp as protected traitSetUp;
     }
+    use StorageFilePathTrait;
 
     protected function setUp(): void
     {
