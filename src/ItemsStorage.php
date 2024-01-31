@@ -50,13 +50,6 @@ final class ItemsStorage extends SimpleItemsStorage
         return parent::getAll();
     }
 
-    public function getByNames(array $names): array
-    {
-        $this->reload();
-
-        return parent::getByNames($names);
-    }
-
     public function get(string $name): Permission|Role|null
     {
         $this->reload();
@@ -71,13 +64,6 @@ final class ItemsStorage extends SimpleItemsStorage
         return parent::exists($name);
     }
 
-    public function roleExists(string $name): bool
-    {
-        $this->reload();
-
-        return parent::roleExists($name);
-    }
-
     public function add(Permission|Role $item): void
     {
         $this->reload();
@@ -85,72 +71,10 @@ final class ItemsStorage extends SimpleItemsStorage
         $this->save();
     }
 
-    public function update(string $name, Permission|Role $item): void
-    {
-        $this->reload();
-        parent::update($name, $item);
-    }
-
     public function remove(string $name): void
     {
         parent::remove($name);
         $this->save();
-    }
-
-    public function getRoles(): array
-    {
-        $this->reload();
-
-        return parent::getRoles();
-    }
-
-    public function getRolesByNames(array $names): array
-    {
-        $this->reload();
-
-        return parent::getRolesByNames($names);
-    }
-
-    public function getRole(string $name): ?Role
-    {
-        $this->reload();
-
-        return parent::getRole($name);
-    }
-
-    public function clearRoles(): void
-    {
-        $this->reload();
-
-        parent::clearRoles();
-    }
-
-    public function getPermissions(): array
-    {
-        $this->reload();
-
-        return parent::getPermissions();
-    }
-
-    public function getPermissionsByNames(array $names): array
-    {
-        $this->reload();
-
-        return parent::getPermissionsByNames($names);
-    }
-
-    public function getPermission(string $name): ?Permission
-    {
-        $this->reload();
-
-        return parent::getPermission($name);
-    }
-
-    public function clearPermissions(): void
-    {
-        $this->reload();
-
-        parent::clearPermissions();
     }
 
     public function addChild(string $parentName, string $childName): void
@@ -182,20 +106,6 @@ final class ItemsStorage extends SimpleItemsStorage
         $this->save();
     }
 
-    public function getParents(string $name): array
-    {
-        $this->reload();
-
-        return parent::getParents($name);
-    }
-
-    public function getAccessTree(string $name): array
-    {
-        $this->reload();
-
-        return parent::getAccessTree($name);
-    }
-
     public function getDirectChildren(string $name): array
     {
         $this->reload();
@@ -210,32 +120,11 @@ final class ItemsStorage extends SimpleItemsStorage
         return parent::getAllChildren($names);
     }
 
-    public function getAllChildRoles(string|array $names): array
-    {
-        $this->reload();
-
-        return parent::getAllChildRoles($names);
-    }
-
-    public function getAllChildPermissions(string|array $names): array
-    {
-        $this->reload();
-
-        return parent::getAllChildPermissions($names);
-    }
-
     public function hasChildren(string $name): bool
     {
         $this->reload();
 
         return parent::hasChildren($name);
-    }
-
-    public function hasChild(string $parentName, string $childName): bool
-    {
-        $this->reload();
-
-        return parent::hasChild($parentName, $childName);
     }
 
     public function hasDirectChild(string $parentName, string $childName): bool

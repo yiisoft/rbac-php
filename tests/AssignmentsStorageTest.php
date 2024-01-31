@@ -16,7 +16,7 @@ final class AssignmentsStorageTest extends TestCase
     use AssignmentsStorageTestTrait {
         setUp as protected traitSetUp;
     }
-    use FixtureTrait;
+    use StorageFilePathTrait;
 
     protected function setUp(): void
     {

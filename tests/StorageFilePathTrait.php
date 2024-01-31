@@ -6,7 +6,7 @@ namespace Yiisoft\Rbac\Php\Tests;
 
 use Yiisoft\Files\FileHelper;
 
-trait FixtureTrait
+trait StorageFilePathTrait
 {
     private ?string $dataPath = null;
 
