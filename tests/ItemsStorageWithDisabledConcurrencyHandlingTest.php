@@ -28,182 +28,102 @@ final class ItemsStorageWithDisabledConcurrencyHandlingTest extends TestCase
 
     public function testGetAllWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getAll());
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getAll());
     }
 
     public function testGetByNamesWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getByNames(['posts.view']));
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getByNames(['posts.view']));
     }
 
     public function testGetWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotNull($testStorage->get('posts.view'));
+        $this->assertNotNull($this->getEmptyConcurrentItemsStorage()->get('posts.view'));
     }
 
     public function testExistsWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertTrue($testStorage->exists('posts.view'));
+        $this->assertTrue($this->getEmptyConcurrentItemsStorage()->exists('posts.view'));
     }
 
     public function testRoleExistsWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertTrue($testStorage->roleExists('posts.viewer'));
+        $this->assertTrue($this->getEmptyConcurrentItemsStorage()->roleExists('posts.viewer'));
     }
 
     public function testGetRolesWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getRoles());
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getRoles());
     }
 
     public function testGetRolesByNamesWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getRolesByNames(['posts.viewer']));
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getRolesByNames(['posts.viewer']));
     }
 
     public function testGetRoleWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getRole('posts.viewer'));
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getRole('posts.viewer'));
     }
 
     public function testGetPermissionsWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getPermissions());
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getPermissions());
     }
 
     public function testGetPermissionsByNamesWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getPermissionsByNames(['posts.view']));
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getPermissionsByNames(['posts.view']));
     }
 
     public function testGetPermissionWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getPermission('posts.view'));
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getPermission('posts.view'));
     }
 
     public function testGetParentsWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getParents('posts.view'));
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getParents('posts.view'));
     }
 
     public function testGetAccessTreeWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getAccessTree('posts.view'));
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getAccessTree('posts.view'));
     }
 
     public function testGetDirectChildrenWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getDirectChildren('posts.viewer'));
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getDirectChildren('posts.viewer'));
     }
 
     public function testGetAllChildrenWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getAllChildren('posts.viewer'));
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getAllChildren('posts.viewer'));
     }
 
     public function testGetAllChildRolesWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getAllChildRoles('posts.redactor'));
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getAllChildRoles('posts.redactor'));
     }
 
     public function testGetAllChildPermissionsWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertNotEmpty($testStorage->getAllChildPermissions('posts.viewer'));
+        $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getAllChildPermissions('posts.viewer'));
     }
 
     public function testHasChildrenWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertTrue($testStorage->hasChildren('posts.viewer'));
+        $this->assertTrue($this->getEmptyConcurrentItemsStorage()->hasChildren('posts.viewer'));
     }
 
     public function testHasChildWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertTrue($testStorage->hasChild('posts.viewer', 'posts.view'));
+        $this->assertTrue($this->getEmptyConcurrentItemsStorage()->hasChild('posts.viewer', 'posts.view'));
     }
 
     public function testHasDirectChildWithConcurrency(): void
     {
-        $testStorage = $this->getItemsStorageForModificationAssertions();
-        $actionStorage = $this->getItemsStorage();
-        $actionStorage->clear();
-
-        $this->assertTrue($testStorage->hasDirectChild('posts.viewer', 'posts.view'));
+        $this->assertTrue($this->getEmptyConcurrentItemsStorage()->hasDirectChild('posts.viewer', 'posts.view'));
     }
 
     protected function createItemsStorage(): ItemsStorageInterface
@@ -214,5 +134,13 @@ final class ItemsStorageWithDisabledConcurrencyHandlingTest extends TestCase
     protected function getItemsStorageForModificationAssertions(): ItemsStorageInterface
     {
         return str_ends_with($this->name(), 'WithConcurrency') ? $this->createItemsStorage() : $this->getItemsStorage();
+    }
+
+    private function getEmptyConcurrentItemsStorage(): ItemsStorageInterface
+    {
+        $storage = $this->getItemsStorageForModificationAssertions();
+        $this->getItemsStorage()->clear();
+
+        return $storage;
     }
 }
