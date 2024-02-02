@@ -35,7 +35,7 @@
     },
     "require-dev": {
         "ext-uopz": "*",
-        "phpunit/phpunit": "^10.5.2",
+        "phpunit/phpunit": "^10.5.x-dev",
         "psr/log": "^1.1.3",
         "roave/infection-static-analysis-plugin": "^1.18",
         "slope-it/clock-mock": "0.4.0",
