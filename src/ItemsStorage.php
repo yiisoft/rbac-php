@@ -17,7 +17,7 @@ use Yiisoft\Rbac\SimpleItemsStorage;
  *
  * @psalm-import-type RawItem from SimpleItemsStorage
  */
-final class ItemsStorage extends SimpleItemsStorage
+final class ItemsStorage extends SimpleItemsStorage implements FileStorageInterface
 {
     use FileStorageTrait;
 
@@ -30,9 +30,8 @@ final class ItemsStorage extends SimpleItemsStorage
         string $directory,
         string $itemFile = 'items.php',
         ?callable $getFileUpdatedAt = null,
-        bool $enableConcurrencyHandling = false,
     ) {
-        $this->initFileProperties($directory, $itemFile, $getFileUpdatedAt, $enableConcurrencyHandling);
+        $this->initFileProperties($directory, $itemFile, $getFileUpdatedAt);
         $this->load();
     }
 
@@ -42,30 +41,8 @@ final class ItemsStorage extends SimpleItemsStorage
         $this->save();
     }
 
-    public function getAll(): array
-    {
-        $this->reload();
-
-        return parent::getAll();
-    }
-
-    public function get(string $name): Permission|Role|null
-    {
-        $this->reload();
-
-        return parent::get($name);
-    }
-
-    public function exists(string $name): bool
-    {
-        $this->reload();
-
-        return parent::exists($name);
-    }
-
     public function add(Permission|Role $item): void
     {
-        $this->reload();
         parent::add($item);
         $this->save();
     }
@@ -79,7 +56,6 @@ final class ItemsStorage extends SimpleItemsStorage
     public function addChild(string $parentName, string $childName): void
     {
         parent::addChild($parentName, $childName);
-
         $this->save();
     }
 
@@ -105,63 +81,7 @@ final class ItemsStorage extends SimpleItemsStorage
         $this->save();
     }
 
-    public function getDirectChildren(string $name): array
-    {
-        $this->reload();
-
-        return parent::getDirectChildren($name);
-    }
-
-    public function getAllChildren(string|array $names): array
-    {
-        $this->reload();
-
-        return parent::getAllChildren($names);
-    }
-
-    public function hasChildren(string $name): bool
-    {
-        $this->reload();
-
-        return parent::hasChildren($name);
-    }
-
-    public function hasDirectChild(string $parentName, string $childName): bool
-    {
-        $this->reload();
-
-        return parent::hasDirectChild($parentName, $childName);
-    }
-
-    /**
-     * @return static
-     */
-    public function withEnableConcurrencyHandling(bool $enableConcurrencyHandling): self
-    {
-        $new = clone $this;
-        $new->enableConcurrencyHandling = $enableConcurrencyHandling;
-        $new->previousEnableConcurrencyHandling = $enableConcurrencyHandling;
-        return $new;
-    }
-
-    private function save(): void
-    {
-        $items = [];
-        foreach ($this->getAll() as $name => $item) {
-            $data = array_filter($item->getAttributes());
-            if ($this->hasChildren($name)) {
-                foreach ($this->getDirectChildren($name) as $child) {
-                    $data['children'][] = $child->getName();
-                }
-            }
-
-            $items[] = $data;
-        }
-
-        $this->saveToFile($items, $this->filePath);
-    }
-
-    private function load(): void
+    public function load(): void
     {
         parent::clear();
 
@@ -186,6 +106,23 @@ final class ItemsStorage extends SimpleItemsStorage
                 }
             }
         }
+    }
+
+    private function save(): void
+    {
+        $items = [];
+        foreach ($this->items as $name => $item) {
+            $data = array_filter($item->getAttributes());
+            if ($this->hasChildren($name)) {
+                foreach ($this->getDirectChildren($name) as $child) {
+                    $data['children'][] = $child->getName();
+                }
+            }
+
+            $items[] = $data;
+        }
+
+        $this->saveToFile($items, $this->filePath);
     }
 
     private function hasItem(string $name): bool

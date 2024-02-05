@@ -9,7 +9,9 @@ use RuntimeException;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
+use Yiisoft\Rbac\Php\ConcurrentItemsStorageDecorator;
 use Yiisoft\Rbac\Php\ItemsStorage;
+use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
 final class ItemsStorageTest extends TestCase
@@ -86,6 +88,49 @@ final class ItemsStorageTest extends TestCase
         $this->assertFalse($this->getEmptyConcurrentItemsStorage()->roleExists('posts.viewer'));
     }
 
+    public function testAddWithConcurrency(): void
+    {
+        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
+        $actionStorage = $this->getItemsStorage();
+
+        $count = count($actionStorage->getAll());
+        $actionStorage->add(new Permission('test1'));
+        $actionStorage->add(new Permission('test2'));
+
+        $testStorage->add(new Permission('test1'));
+        $this->assertCount($count + 2, $innerTestStorage->getAll());
+    }
+
+    public function testUpdateWithConcurrency(): void
+    {
+        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
+        $actionStorage = $this->getItemsStorage();
+
+        $commonUpdatedItem = $actionStorage->get('posts.view')->withName('posts.view1');
+        $actionStorage->update('posts.view', $commonUpdatedItem);
+        $actionStorage->update('posts.create', $actionStorage->get('posts.create')->withName('posts.create1'));
+
+        $testStorage->update('posts.view', $commonUpdatedItem);
+        $this->assertTrue($innerTestStorage->exists('posts.view1'));
+        $this->assertTrue($innerTestStorage->exists('posts.create1'));
+    }
+
+    public function testRemoveWithConcurrency(): void
+    {
+        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
+        $actionStorage = $this->getItemsStorage();
+
+        $count = count($actionStorage->getAll());
+        $actionStorage->remove('posts.view');
+        $actionStorage->remove('posts.create');
+
+        $testStorage->remove('posts.view');
+        $this->assertCount($count - 2, $innerTestStorage->getAll());
+    }
+
     public function testGetRolesWithConcurrency(): void
     {
         $this->assertEmpty($this->getEmptyConcurrentItemsStorage()->getRoles());
@@ -99,6 +144,22 @@ final class ItemsStorageTest extends TestCase
     public function testGetRoleWithConcurrency(): void
     {
         $this->assertEmpty($this->getEmptyConcurrentItemsStorage()->getRole('posts.viewer'));
+    }
+
+    public function testClearPermissionsWithConcurrency(): void
+    {
+        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
+        $actionStorage = $this->getItemsStorage();
+
+        $actionStorage->add(new Role('test1'));
+        $rolesCount = count($actionStorage->getRoles());
+
+        $testStorage->clearPermissions();
+
+        $all = $innerTestStorage->getAll();
+        $this->assertCount($rolesCount, $all);
+        $this->assertContainsOnlyInstancesOf(Role::class, $all);
     }
 
     public function testGetPermissionsWithConcurrency(): void
@@ -167,9 +228,36 @@ final class ItemsStorageTest extends TestCase
         $this->assertFalse($this->getEmptyConcurrentItemsStorage()->hasDirectChild('posts.viewer', 'posts.view'));
     }
 
+    public function testAddChildWithConcurrency(): void
+    {
+        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
+        $actionStorage = $this->getItemsStorage();
+
+        $actionStorage->addChild('posts.viewer', 'posts.create');
+        $actionStorage->addChild('posts.viewer', 'posts.update');
+
+        $testStorage->addChild('posts.viewer', 'posts.create');
+        $this->assertTrue($innerTestStorage->hasChild('posts.viewer', 'posts.create'));
+        $this->assertTrue($innerTestStorage->hasChild('posts.viewer', 'posts.update'));
+    }
+
+    public function testMultipleCallsWithConcurrency(): void
+    {
+        $testStorage = $this->getItemsStorageForModificationAssertions();
+        $actionStorage = $this->getItemsStorage();
+        $count = count($actionStorage->getAll());
+
+        $actionStorage->add(new Permission('test1'));
+        $this->assertCount($count + 1, $testStorage->getAll());
+
+        $actionStorage->add(new Permission('test2'));
+        $this->assertCount($count + 2, $testStorage->getAll());
+    }
+
     protected function createItemsStorage(): ItemsStorageInterface
     {
-        return new ItemsStorage($this->getDataPath(), enableConcurrencyHandling: true);
+        return new ConcurrentItemsStorageDecorator(new ItemsStorage($this->getDataPath()));
     }
 
     protected function getItemsStorageForModificationAssertions(): ItemsStorageInterface

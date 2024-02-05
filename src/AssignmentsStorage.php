@@ -29,11 +29,39 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage
         $this->load();
     }
 
+    public function getAll(): array
+    {
+        $this->reload();
+
+        return parent::getAll();
+    }
+
+    public function getByUserId(string $userId): array
+    {
+        $this->reload();
+
+        return parent::getByUserId($userId);
+    }
+
+    public function getByItemNames(array $itemNames): array
+    {
+        $this->reload();
+
+        return parent::getByItemNames($itemNames);
+    }
+
     public function add(Assignment $assignment): void
     {
         parent::add($assignment);
 
         $this->save();
+    }
+
+    public function hasItem(string $name): bool
+    {
+        $this->reload();
+
+        return parent::hasItem($name);
     }
 
     public function renameItem(string $oldName, string $newName): void
@@ -43,7 +71,6 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage
         }
 
         parent::renameItem($oldName, $newName);
-
         $this->save();
     }
 
@@ -81,6 +108,8 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage
 
     private function load(): void
     {
+        parent::clear();
+
         /** @psalm-var list<RawAssignment> $assignments */
         $assignments = $this->loadFromFile($this->filePath);
         if (empty($assignments)) {
@@ -96,8 +125,6 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage
                 createdAt: $assignment['created_at'] ?? $fileUpdatedAt,
             );
         }
-
-        $this->currentFileUpdatedAt = $fileUpdatedAt;
     }
 
     private function save(): void
@@ -110,5 +137,9 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage
         }
 
         $this->saveToFile($assignmentData, $this->filePath);
+    }
+
+    private function reload(): void
+    {
     }
 }

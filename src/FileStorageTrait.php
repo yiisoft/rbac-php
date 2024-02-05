@@ -17,9 +17,17 @@ trait FileStorageTrait
      * @var callable
      */
     private $getFileUpdatedAt;
-    private ?int $currentFileUpdatedAt = null;
-    private bool $enableConcurrencyHandling;
-    private bool $previousEnableConcurrencyHandling;
+
+    public function getFileUpdatedAt(): int
+    {
+        $getFileUpdatedAt = $this->getFileUpdatedAt;
+        $fileUpdatedAt = $getFileUpdatedAt($this->filePath);
+        if (!is_int($fileUpdatedAt)) {
+            throw new RuntimeException('getFileUpdatedAt callable must return a UNIX timestamp.');
+        }
+
+        return $fileUpdatedAt;
+    }
 
     /**
      * Loads the authorization data from a PHP script file.
@@ -49,13 +57,13 @@ trait FileStorageTrait
      * Saves the authorization data to a PHP script file.
      *
      * @param array $data The authorization data.
-     * @param string $file The file path.
+     * @param string $filePath The file path.
      *
      * @see loadFromFile()
      */
-    private function saveToFile(array $data, string $filePath): void
+    private function saveToFile(array $data): void
     {
-        $directory = dirname($filePath);
+        $directory = dirname($this->filePath);
 
         if (!is_dir($directory)) {
             set_error_handler(static function (int $errorNumber, string $errorString) use ($directory): bool {
@@ -72,64 +80,23 @@ trait FileStorageTrait
             restore_error_handler();
         }
 
-        file_put_contents($filePath, "<?php\n\nreturn " . VarDumper::create($data)->export() . ";\n", LOCK_EX);
-        $this->invalidateScriptCache($filePath);
+        file_put_contents($this->filePath, "<?php\n\nreturn " . VarDumper::create($data)->export() . ";\n", LOCK_EX);
+        $this->invalidateScriptCache();
     }
 
     /**
      * Invalidates precompiled script cache (such as OPCache) for the given file.
-     *
-     * @param string $file The file path.
      */
-    private function invalidateScriptCache(string $file): void
+    private function invalidateScriptCache(): void
     {
         if (function_exists('opcache_invalidate')) {
-            opcache_invalidate($file, true);
+            opcache_invalidate($this->filePath, force: true);
         }
     }
 
-    private function initFileProperties(
-        string $directory,
-        string $filename,
-        ?callable $getFileUpdatedAt,
-        bool $enableConcurrencyHandling,
-    ): void {
+    private function initFileProperties(string $directory, string $filename, ?callable $getFileUpdatedAt): void
+    {
         $this->filePath = $directory . DIRECTORY_SEPARATOR . $filename;
         $this->getFileUpdatedAt = $getFileUpdatedAt ?? static fn (string $filename): int|false => @filemtime($filename);
-        $this->enableConcurrencyHandling = $enableConcurrencyHandling;
-        $this->previousEnableConcurrencyHandling = $enableConcurrencyHandling;
-    }
-
-    private function getFileUpdatedAt(): int
-    {
-        $getFileUpdatedAt = $this->getFileUpdatedAt;
-        $fileUpdatedAt = $getFileUpdatedAt($this->filePath);
-        if (!is_int($fileUpdatedAt)) {
-            throw new RuntimeException('getFileUpdatedAt callable must return a UNIX timestamp.');
-        }
-
-        return $fileUpdatedAt;
-    }
-
-    private function reload(): void
-    {
-        $this->enableConcurrencyHandling = $this->previousEnableConcurrencyHandling;
-        if (!$this->enableConcurrencyHandling) {
-            return;
-        }
-
-        try {
-            $fileUpdatedAt = $this->getFileUpdatedAt();
-        } catch (RuntimeException) {
-            return;
-        }
-
-        if ($this->currentFileUpdatedAt === $fileUpdatedAt) {
-            return;
-        }
-
-        $this->load();
-        $this->enableConcurrencyHandling = false;
-        $this->previousEnableConcurrencyHandling = $this->enableConcurrencyHandling;
     }
 }
