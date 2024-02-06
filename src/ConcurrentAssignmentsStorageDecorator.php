@@ -71,6 +71,7 @@ final class ConcurrentAssignmentsStorageDecorator implements AssignmentsStorageI
     {
         $this->load();
         $this->storage->add($assignment);
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function hasItem(string $name): bool
@@ -84,38 +85,38 @@ final class ConcurrentAssignmentsStorageDecorator implements AssignmentsStorageI
     {
         $this->load();
         $this->storage->renameItem($oldName, $newName);
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function remove(string $itemName, string $userId): void
     {
         $this->load();
         $this->storage->remove($itemName, $userId);
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function removeByUserId(string $userId): void
     {
         $this->load();
         $this->storage->removeByUserId($userId);
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function removeByItemName(string $itemName): void
     {
         $this->load();
         $this->storage->removeByItemName($itemName);
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function clear(): void
     {
         $this->storage->clear();
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function load(): void
     {
         $this->loadInternal($this->storage);
-    }
-
-    public function getFileUpdatedAt(): int
-    {
-        return $this->storage->getFileUpdatedAt();
     }
 }
