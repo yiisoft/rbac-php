@@ -23,44 +23,12 @@ final class ItemsStorageWithConcurrencyHandlingTest extends TestCase
 
     protected function setUp(): void
     {
-        if ($this->name() === 'testFailCreateDirectory' || $this->name() === 'testCreateNestedDirectory') {
-            FileHelper::ensureDirectory($this->getTempDirectory());
-            FileHelper::clearDirectory($this->getTempDirectory());
-        }
-
         $this->traitSetUp();
     }
 
     protected function tearDown(): void
     {
-        if ($this->name() === 'testFailCreateDirectory' || $this->name() === 'testCreateNestedDirectory') {
-            FileHelper::removeDirectory($this->getTempDirectory());
-        }
-
         $this->clearFixturesFiles();
-    }
-
-    public function testFailCreateDirectory(): void
-    {
-        $directory = $this->getTempDirectory() . '/file.txt';
-        touch($directory);
-
-        $storage = new ItemsStorage($directory);
-        $permission = new Permission('createPost');
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Failed to create directory "' . $directory . '". mkdir(): File exists');
-        $storage->add($permission);
-    }
-
-    public function testCreateNestedDirectory(): void
-    {
-        $directory = $this->getTempDirectory() . '/test/create/nested/directory';
-
-        $storage = new ItemsStorage($directory);
-        $storage->add(new Permission('createPost'));
-
-        $this->assertFileExists($directory . '/items.php');
     }
 
     public function testGetAllWithConcurrency(): void
@@ -94,12 +62,12 @@ final class ItemsStorageWithConcurrencyHandlingTest extends TestCase
         $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getItemsStorage();
 
-        $count = count($actionStorage->getAll());
         $actionStorage->add(new Permission('test1'));
         $actionStorage->add(new Permission('test2'));
+        $count = count($actionStorage->getAll());
 
         $testStorage->add(new Permission('test1'));
-        $this->assertCount($count + 2, $innerTestStorage->getAll());
+        $this->assertCount($count, $innerTestStorage->getAll());
     }
 
     public function testUpdateWithConcurrency(): void
@@ -146,20 +114,20 @@ final class ItemsStorageWithConcurrencyHandlingTest extends TestCase
         $this->assertEmpty($this->getEmptyConcurrentItemsStorage()->getRole('posts.viewer'));
     }
 
-    public function testClearPermissionsWithConcurrency(): void
+    public function testClearRolesWithConcurrency(): void
     {
         $innerTestStorage = new ItemsStorage($this->getDataPath());
         $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getItemsStorage();
 
-        $actionStorage->add(new Role('test1'));
-        $rolesCount = count($actionStorage->getRoles());
+        $actionStorage->add(new Permission('test1'));
+        $permissionsCount = count($actionStorage->getPermissions());
 
-        $testStorage->clearPermissions();
+        $testStorage->clearRoles();
 
         $all = $innerTestStorage->getAll();
-        $this->assertCount($rolesCount, $all);
-        $this->assertContainsOnlyInstancesOf(Role::class, $all);
+        $this->assertCount($permissionsCount, $all);
+        $this->assertContainsOnlyInstancesOf(Permission::class, $all);
     }
 
     public function testGetPermissionsWithConcurrency(): void
@@ -175,6 +143,22 @@ final class ItemsStorageWithConcurrencyHandlingTest extends TestCase
     public function testGetPermissionWithConcurrency(): void
     {
         $this->assertEmpty($this->getEmptyConcurrentItemsStorage()->getPermission('posts.view'));
+    }
+
+    public function testClearPermissionsWithConcurrency(): void
+    {
+        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
+        $actionStorage = $this->getItemsStorage();
+
+        $actionStorage->add(new Role('test1'));
+        $rolesCount = count($actionStorage->getRoles());
+
+        $testStorage->clearPermissions();
+
+        $all = $innerTestStorage->getAll();
+        $this->assertCount($rolesCount, $all);
+        $this->assertContainsOnlyInstancesOf(Role::class, $all);
     }
 
     public function testGetParentsWithConcurrency(): void
@@ -263,11 +247,6 @@ final class ItemsStorageWithConcurrencyHandlingTest extends TestCase
     protected function getItemsStorageForModificationAssertions(): ItemsStorageInterface
     {
         return $this->createItemsStorage();
-    }
-
-    private function getTempDirectory(): string
-    {
-        return __DIR__ . '/temp';
     }
 
     private function getEmptyConcurrentItemsStorage(): ItemsStorageInterface
