@@ -12,7 +12,7 @@ final class ConcurrentAssignmentsStorageDecorator implements AssignmentsStorageI
     use ConcurrentStorageTrait;
 
     /**
-     * @param AssignmentsStorageInterface & FileStorageInterface $storage
+     * @param AssignmentsStorageInterface&FileStorageInterface $storage
      */
     public function __construct(private AssignmentsStorageInterface|FileStorageInterface $storage)
     {
