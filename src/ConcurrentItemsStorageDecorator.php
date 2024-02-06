@@ -13,7 +13,7 @@ final class ConcurrentItemsStorageDecorator implements ItemsStorageInterface, Fi
     use ConcurrentStorageTrait;
 
     /**
-     * @param ItemsStorageInterface & FileStorageInterface $storage
+     * @param FileStorageInterface&ItemsStorageInterface $storage
      */
     public function __construct(private ItemsStorageInterface|FileStorageInterface $storage)
     {
