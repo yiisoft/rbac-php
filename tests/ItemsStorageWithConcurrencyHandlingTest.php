@@ -6,7 +6,6 @@ namespace Yiisoft\Rbac\Php\Tests;
 
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use Yiisoft\Files\FileHelper;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Php\ConcurrentItemsStorageDecorator;
