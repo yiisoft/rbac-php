@@ -226,6 +226,34 @@ final class ItemsStorageWithConcurrencyHandlingTest extends TestCase
         $this->assertTrue($innerTestStorage->hasChild('posts.viewer', 'posts.update'));
     }
 
+    public function testRemoveChildWithConcurrency(): void
+    {
+        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
+        $actionStorage = $this->getItemsStorage();
+
+        $actionStorage->removeChild(parentName: 'posts.redactor', childName: 'posts.create');
+        $actionStorage->removeChild(parentName: 'posts.redactor', childName: 'posts.update');
+
+        $testStorage->removeChild(parentName: 'posts.redactor', childName: 'posts.create');
+        $this->assertFalse($innerTestStorage->hasChild(parentName: 'posts.redactor', childName: 'posts.create'));
+        $this->assertFalse($innerTestStorage->hasChild(parentName: 'posts.redactor', childName: 'posts.update'));
+    }
+
+    public function testRemoveChildrenWithConcurrency(): void
+    {
+        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
+        $actionStorage = $this->getItemsStorage();
+
+        $actionStorage->removeChildren('posts.viewer');
+        $actionStorage->removeChildren('posts.redactor');
+
+        $testStorage->removeChildren('posts.viewer');
+        $this->assertFalse($innerTestStorage->hasChildren('posts.viewer'));
+        $this->assertFalse($innerTestStorage->hasChildren('posts.redactor'));
+    }
+
     public function testMultipleCallsWithConcurrency(): void
     {
         $testStorage = $this->getItemsStorageForModificationAssertions();
