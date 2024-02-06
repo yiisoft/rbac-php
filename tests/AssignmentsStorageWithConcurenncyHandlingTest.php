@@ -13,7 +13,7 @@ use Yiisoft\Rbac\Php\ConcurrentItemsStorageDecorator;
 use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\Tests\Common\AssignmentsStorageTestTrait;
 
-final class AssignmentsStorageTest extends TestCase
+final class AssignmentsStorageWithConcurenncyHandlingTest extends TestCase
 {
     use AssignmentsStorageTestTrait {
         setUp as protected traitSetUp;
