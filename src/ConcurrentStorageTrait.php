@@ -10,11 +10,6 @@ trait ConcurrentStorageTrait
 {
     private ?int $currentFileUpdatedAt = null;
 
-    public function getFileUpdatedAt(): int
-    {
-        return $this->storage->getFileUpdatedAt();
-    }
-
     private function loadInternal(FileStorageInterface $storage): void
     {
         try {
