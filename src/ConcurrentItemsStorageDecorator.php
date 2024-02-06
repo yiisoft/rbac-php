@@ -22,7 +22,7 @@ final class ConcurrentItemsStorageDecorator implements ItemsStorageInterface, Fi
     public function clear(): void
     {
         $this->storage->clear();
-        $this->currentFileUpdatedAt = $this->storage->getFileUpdatedAt();
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function getAll(): array
@@ -64,21 +64,21 @@ final class ConcurrentItemsStorageDecorator implements ItemsStorageInterface, Fi
     {
         $this->load();
         $this->storage->add($item);
-        $this->currentFileUpdatedAt = $this->storage->getFileUpdatedAt();
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function update(string $name, Permission|Role $item): void
     {
         $this->load();
         $this->storage->update($name, $item);
-        $this->currentFileUpdatedAt = $this->storage->getFileUpdatedAt();
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function remove(string $name): void
     {
         $this->load();
         $this->storage->remove($name);
-        $this->currentFileUpdatedAt = $this->storage->getFileUpdatedAt();
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function getRoles(): array
@@ -106,7 +106,7 @@ final class ConcurrentItemsStorageDecorator implements ItemsStorageInterface, Fi
     {
         $this->load();
         $this->storage->clearRoles();
-        $this->currentFileUpdatedAt = $this->storage->getFileUpdatedAt();
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function getPermissions(): array
@@ -134,7 +134,7 @@ final class ConcurrentItemsStorageDecorator implements ItemsStorageInterface, Fi
     {
         $this->load();
         $this->storage->clearPermissions();
-        $this->currentFileUpdatedAt = $this->storage->getFileUpdatedAt();
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function getParents(string $name): array
@@ -204,21 +204,21 @@ final class ConcurrentItemsStorageDecorator implements ItemsStorageInterface, Fi
     {
         $this->load();
         $this->storage->addChild($parentName, $childName);
-        $this->currentFileUpdatedAt = $this->storage->getFileUpdatedAt();
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function removeChild(string $parentName, string $childName): void
     {
         $this->load();
         $this->storage->removeChild($parentName, $childName);
-        $this->currentFileUpdatedAt = $this->storage->getFileUpdatedAt();
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function removeChildren(string $parentName): void
     {
         $this->load();
         $this->storage->removeChildren($parentName);
-        $this->currentFileUpdatedAt = $this->storage->getFileUpdatedAt();
+        $this->currentFileUpdatedAt = $this->getFileUpdatedAt();
     }
 
     public function load(): void

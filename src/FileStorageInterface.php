@@ -7,4 +7,6 @@ namespace Yiisoft\Rbac\Php;
 interface FileStorageInterface
 {
     public function load(): void;
+
+    public function getFileUpdatedAt(): int;
 }
