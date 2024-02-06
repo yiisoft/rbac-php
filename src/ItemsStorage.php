@@ -122,7 +122,7 @@ final class ItemsStorage extends SimpleItemsStorage implements FileStorageInterf
             $items[] = $data;
         }
 
-        $this->saveToFile($items, $this->filePath);
+        $this->saveToFile($items);
     }
 
     private function hasItem(string $name): bool

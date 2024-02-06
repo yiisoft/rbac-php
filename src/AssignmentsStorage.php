@@ -15,7 +15,7 @@ use Yiisoft\Rbac\SimpleAssignmentsStorage;
  *
  * @psalm-import-type RawAssignment from SimpleAssignmentsStorage
  */
-final class AssignmentsStorage extends SimpleAssignmentsStorage
+final class AssignmentsStorage extends SimpleAssignmentsStorage implements FileStorageInterface
 {
     use FileStorageTrait;
 
@@ -23,45 +23,15 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage
         string $directory,
         string $assignmentFile = 'assignments.php',
         ?callable $getFileUpdatedAt = null,
-        bool $enableConcurrencyHandling = false,
     ) {
-        $this->initFileProperties($directory, $assignmentFile, $getFileUpdatedAt, $enableConcurrencyHandling);
+        $this->initFileProperties($directory, $assignmentFile, $getFileUpdatedAt);
         $this->load();
-    }
-
-    public function getAll(): array
-    {
-        $this->reload();
-
-        return parent::getAll();
-    }
-
-    public function getByUserId(string $userId): array
-    {
-        $this->reload();
-
-        return parent::getByUserId($userId);
-    }
-
-    public function getByItemNames(array $itemNames): array
-    {
-        $this->reload();
-
-        return parent::getByItemNames($itemNames);
     }
 
     public function add(Assignment $assignment): void
     {
         parent::add($assignment);
-
         $this->save();
-    }
-
-    public function hasItem(string $name): bool
-    {
-        $this->reload();
-
-        return parent::hasItem($name);
     }
 
     public function renameItem(string $oldName, string $newName): void
@@ -81,32 +51,28 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage
         }
 
         parent::remove($itemName, $userId);
-
         $this->save();
     }
 
     public function removeByUserId(string $userId): void
     {
         parent::removeByUserId($userId);
-
         $this->save();
     }
 
     public function removeByItemName(string $itemName): void
     {
         parent::removeByItemName($itemName);
-
         $this->save();
     }
 
     public function clear(): void
     {
         parent::clear();
-
         $this->save();
     }
 
-    private function load(): void
+    public function load(): void
     {
         parent::clear();
 
@@ -136,10 +102,6 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage
             }
         }
 
-        $this->saveToFile($assignmentData, $this->filePath);
-    }
-
-    private function reload(): void
-    {
+        $this->saveToFile($assignmentData);
     }
 }

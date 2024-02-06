@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Php;
 
-use RuntimeException;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 
 final class ConcurrentItemsStorageDecorator implements ItemsStorageInterface, FileStorageInterface
 {
-    private ?int $currentFileUpdatedAt = null;
+    use ConcurrentStorageTrait;
 
+    /**
+     * @param ItemsStorageInterface & FileStorageInterface $storage
+     */
     public function __construct(private ItemsStorageInterface|FileStorageInterface $storage)
     {
     }
@@ -221,21 +223,6 @@ final class ConcurrentItemsStorageDecorator implements ItemsStorageInterface, Fi
 
     public function load(): void
     {
-        try {
-            $fileUpdatedAt = $this->storage->getFileUpdatedAt();
-        } catch (RuntimeException) {
-            return;
-        }
-
-        if ($this->currentFileUpdatedAt === $fileUpdatedAt) {
-            return;
-        }
-
-        $this->storage->load();
-    }
-
-    public function getFileUpdatedAt(): int
-    {
-        return $this->storage->getFileUpdatedAt();
+        $this->loadInternal($this->storage);
     }
 }
