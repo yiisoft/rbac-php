@@ -11,7 +11,7 @@ use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
-final class ItemsStorageWithConcurenncyNotHandledTest extends TestCase
+final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
 {
     use ItemsStorageTestTrait {
         setUp as protected traitSetUp;

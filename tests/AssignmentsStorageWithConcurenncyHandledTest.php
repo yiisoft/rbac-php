@@ -14,7 +14,7 @@ use Yiisoft\Rbac\Php\ConcurrentItemsStorageDecorator;
 use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\Tests\Common\AssignmentsStorageTestTrait;
 
-final class AssignmentsStorageWithConcurenncyHandlingTest extends TestCase
+final class AssignmentsStorageWithConcurenncyHandledTest extends TestCase
 {
     use AssignmentsStorageTestTrait {
         setUp as protected traitSetUp;
@@ -31,41 +31,41 @@ final class AssignmentsStorageWithConcurenncyHandlingTest extends TestCase
         $this->clearFixturesFiles();
     }
 
-    public function testGetAllWithConcurrency(): void
+    public function testGetAll(): void
     {
         $this->assertEmpty($this->getEmptyConcurrentAssignmentsStorage()->getAll());
     }
 
-    public function testGetByUserIdWithConcurrency(): void
+    public function testGetByUserId(): void
     {
         $this->assertEmpty($this->getEmptyConcurrentAssignmentsStorage()->getByUserId('john'));
     }
 
-    public function testGetByItemNamesWithConcurrency(): void
+    public function testGetByItemNames(): void
     {
         $this->assertEmpty($this->getEmptyConcurrentAssignmentsStorage()->getByItemNames(['Researcher']));
     }
 
-    public function testGetWithConcurrency(): void
+    public function testGet(): void
     {
         $this->assertEmpty($this->getEmptyConcurrentAssignmentsStorage()->get(itemName: 'Researcher', userId: 'john'));
     }
 
-    public function testExistsWithConcurrency(): void
+    public function testExists(): void
     {
         $this->assertFalse(
             $this->getEmptyConcurrentAssignmentsStorage()->exists(itemName: 'Researcher', userId: 'john'),
         );
     }
 
-    public function testUserHasItemWithConcurrency(): void
+    public function testUserHasItem(): void
     {
         $this->assertFalse(
             $this->getEmptyConcurrentAssignmentsStorage()->userHasItem(userId: 'john', itemNames: ['Researcher']),
         );
     }
 
-    public function testFilterUserItemNamesWithConcurrency(): void
+    public function testFilterUserItemNames(): void
     {
         $this->assertEmpty(
             $this->getEmptyConcurrentAssignmentsStorage()->filterUserItemNames(
@@ -75,7 +75,7 @@ final class AssignmentsStorageWithConcurenncyHandlingTest extends TestCase
         );
     }
 
-    public function testAddWithConcurrency(): void
+    public function testAdd(): void
     {
         $innerTestStorage = new AssignmentsStorage($this->getDataPath());
         $testStorage = new ConcurrentAssignmentsStorageDecorator($innerTestStorage);
@@ -90,12 +90,12 @@ final class AssignmentsStorageWithConcurenncyHandlingTest extends TestCase
         $this->assertCount($count, $innerTestStorage->getByItemNames(['Researcher']));
     }
 
-    public function testHasItemWithConcurrency(): void
+    public function testHasItem(): void
     {
         $this->assertFalse($this->getEmptyConcurrentAssignmentsStorage()->hasItem('Researcher'));
     }
 
-    public function testRenameItemWithConcurrency(): void
+    public function testRenameItem(): void
     {
         $innerTestStorage = new AssignmentsStorage($this->getDataPath());
         $testStorage = new ConcurrentAssignmentsStorageDecorator($innerTestStorage);
@@ -108,7 +108,7 @@ final class AssignmentsStorageWithConcurenncyHandlingTest extends TestCase
         $this->assertTrue($innerTestStorage->hasItem('Accountant1'));
     }
 
-    public function testRemoveWithConcurrency(): void
+    public function testRemove(): void
     {
         $innerTestStorage = new AssignmentsStorage($this->getDataPath());
         $testStorage = new ConcurrentAssignmentsStorageDecorator($innerTestStorage);
@@ -122,7 +122,7 @@ final class AssignmentsStorageWithConcurenncyHandlingTest extends TestCase
         $this->assertCount($count, $innerTestStorage->getByUserId('john'));
     }
 
-    public function testRemoveByUserIdWithConcurrency(): void
+    public function testRemoveByUserId(): void
     {
         $innerTestStorage = new AssignmentsStorage($this->getDataPath());
         $testStorage = new ConcurrentAssignmentsStorageDecorator($innerTestStorage);
@@ -135,7 +135,7 @@ final class AssignmentsStorageWithConcurenncyHandlingTest extends TestCase
         $this->assertEmpty($innerTestStorage->getByUserId('jack'));
     }
 
-    public function testRemoveByItemNameWithConcurrency(): void
+    public function testRemoveByItemName(): void
     {
         $innerTestStorage = new AssignmentsStorage($this->getDataPath());
         $testStorage = new ConcurrentAssignmentsStorageDecorator($innerTestStorage);
