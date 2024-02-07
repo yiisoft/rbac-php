@@ -28,6 +28,11 @@ final class AssignmentsStorageTest extends TestCase
         $this->clearFixturesFiles();
     }
 
+    public function testLoad(): void
+    {
+        $this->assertNotEmpty($this->createAssignmentsStorage()->getAll());
+    }
+
     protected function createItemsStorage(): ItemsStorageInterface
     {
         return new ItemsStorage($this->getDataPath());

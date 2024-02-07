@@ -25,6 +25,7 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage implements FileS
         ?callable $getFileUpdatedAt = null,
     ) {
         $this->initFileProperties($directory, $assignmentFile, $getFileUpdatedAt);
+        $this->load();
     }
 
     public function add(Assignment $assignment): void
