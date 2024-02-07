@@ -10,6 +10,10 @@
   `getAllChildPermissions()` methods in `ItemsStorage` (@arogachev)
 - Enh #76: Use simple storages for items and assignments from the base `rbac` package (@arogachev)
 - Chg #76: Raise PHP version to 8.1 (@arogachev)
+- Enh #77: Use snake case for item attribute names (ease migration from Yii 2) (@arogachev)
+- Enh #51: Save `Item::$createdAt` and `Item::$updatedAt` (@arogachev)
+- Enh #50: Save `Assignment::$createdAt` (@arogachev)
+- Enh #52: Handle concurrency when working with storages (@arogachev)
 
 ## 1.0.0 April 08, 2022
 

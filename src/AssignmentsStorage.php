@@ -15,32 +15,23 @@ use Yiisoft\Rbac\SimpleAssignmentsStorage;
  *
  * @psalm-import-type RawAssignment from SimpleAssignmentsStorage
  */
-final class AssignmentsStorage extends SimpleAssignmentsStorage
+final class AssignmentsStorage extends SimpleAssignmentsStorage implements FileStorageInterface
 {
     use FileStorageTrait;
 
-    /**
-     * @var string The path of the PHP script that contains the authorization assignments. Make sure this file is
-     * writable by the web server process if the authorization needs to be changed online.
-     *
-     * @see loadFromFile()
-     * @see saveToFile()
-     */
-    private string $assignmentFile;
-
     public function __construct(
         string $directory,
-        string $assignmentFile = 'assignments.php'
+        string $assignmentFile = 'assignments.php',
+        ?callable $getFileUpdatedAt = null,
     ) {
-        $this->assignmentFile = $directory . DIRECTORY_SEPARATOR . $assignmentFile;
-        $this->loadAssignments();
+        $this->initFileProperties($directory, $assignmentFile, $getFileUpdatedAt);
+        $this->load();
     }
 
     public function add(Assignment $assignment): void
     {
         parent::add($assignment);
-
-        $this->saveAssignments();
+        $this->save();
     }
 
     public function renameItem(string $oldName, string $newName): void
@@ -50,8 +41,7 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage
         }
 
         parent::renameItem($oldName, $newName);
-
-        $this->saveAssignments();
+        $this->save();
     }
 
     public function remove(string $itemName, string $userId): void
@@ -61,47 +51,49 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage
         }
 
         parent::remove($itemName, $userId);
-
-        $this->saveAssignments();
+        $this->save();
     }
 
     public function removeByUserId(string $userId): void
     {
         parent::removeByUserId($userId);
-
-        $this->saveAssignments();
+        $this->save();
     }
 
     public function removeByItemName(string $itemName): void
     {
         parent::removeByItemName($itemName);
-
-        $this->saveAssignments();
+        $this->save();
     }
 
     public function clear(): void
     {
         parent::clear();
-
-        $this->saveAssignments();
+        $this->save();
     }
 
-    private function loadAssignments(): void
+    public function load(): void
     {
+        parent::clear();
+
         /** @psalm-var list<RawAssignment> $assignments */
-        $assignments = $this->loadFromFile($this->assignmentFile);
-        $modifiedTime = @filemtime($this->assignmentFile);
+        $assignments = $this->loadFromFile($this->filePath);
+        if (empty($assignments)) {
+            return;
+        }
+
+        $fileUpdatedAt = $this->getFileUpdatedAt();
         foreach ($assignments as $assignment) {
             /** @psalm-suppress InvalidPropertyAssignmentValue */
             $this->assignments[$assignment['user_id']][$assignment['item_name']] = new Assignment(
                 userId: $assignment['user_id'],
                 itemName: $assignment['item_name'],
-                createdAt: $assignment['created_at'] ?? $modifiedTime
+                createdAt: $assignment['created_at'] ?? $fileUpdatedAt,
             );
         }
     }
 
-    private function saveAssignments(): void
+    private function save(): void
     {
         $assignmentData = [];
         foreach ($this->assignments as $userAssignments) {
@@ -110,6 +102,6 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage
             }
         }
 
-        $this->saveToFile($assignmentData, $this->assignmentFile);
+        $this->saveToFile($assignmentData);
     }
 }

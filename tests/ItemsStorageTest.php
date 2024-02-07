@@ -14,10 +14,10 @@ use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
 final class ItemsStorageTest extends TestCase
 {
-    use FixtureTrait;
     use ItemsStorageTestTrait {
         setUp as protected traitSetUp;
     }
+    use StorageFilePathTrait;
 
     protected function setUp(): void
     {
@@ -68,7 +68,7 @@ final class ItemsStorageTest extends TestCase
 
     protected function getItemsStorageForModificationAssertions(): ItemsStorageInterface
     {
-        return $this->createItemsStorage();
+        return $this->getItemsStorage();
     }
 
     private function getTempDirectory(): string

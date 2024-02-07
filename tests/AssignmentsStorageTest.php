@@ -16,7 +16,7 @@ final class AssignmentsStorageTest extends TestCase
     use AssignmentsStorageTestTrait {
         setUp as protected traitSetUp;
     }
-    use FixtureTrait;
+    use StorageFilePathTrait;
 
     protected function setUp(): void
     {
@@ -26,6 +26,11 @@ final class AssignmentsStorageTest extends TestCase
     protected function tearDown(): void
     {
         $this->clearFixturesFiles();
+    }
+
+    public function testLoad(): void
+    {
+        $this->assertNotEmpty($this->createAssignmentsStorage()->getAll());
     }
 
     protected function createItemsStorage(): ItemsStorageInterface
@@ -40,6 +45,6 @@ final class AssignmentsStorageTest extends TestCase
 
     protected function getAssignmentsStorageForModificationAssertions(): AssignmentsStorageInterface
     {
-        return $this->createAssignmentsStorage();
+        return $this->getAssignmentsStorage();
     }
 }

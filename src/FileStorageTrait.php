@@ -12,6 +12,23 @@ use function function_exists;
 
 trait FileStorageTrait
 {
+    private string $filePath;
+    /**
+     * @var callable
+     */
+    private $getFileUpdatedAt;
+
+    public function getFileUpdatedAt(): int
+    {
+        $getFileUpdatedAt = $this->getFileUpdatedAt;
+        $fileUpdatedAt = $getFileUpdatedAt($this->filePath);
+        if (!is_int($fileUpdatedAt)) {
+            throw new RuntimeException('getFileUpdatedAt callable must return a UNIX timestamp.');
+        }
+
+        return $fileUpdatedAt;
+    }
+
     /**
      * Loads the authorization data from a PHP script file.
      *
@@ -23,14 +40,14 @@ trait FileStorageTrait
      *
      * @see saveToFile()
      */
-    protected function loadFromFile(string $file): array
+    private function loadFromFile(string $filePath): array
     {
-        if (is_file($file)) {
+        if (is_file($filePath)) {
             /**
              * @psalm-suppress MixedReturnStatement
              * @link https://github.com/yiisoft/rbac-php/issues/72
              */
-            return require $file;
+            return require $filePath;
         }
 
         return [];
@@ -40,13 +57,13 @@ trait FileStorageTrait
      * Saves the authorization data to a PHP script file.
      *
      * @param array $data The authorization data.
-     * @param string $file The file path.
+     * @param string $filePath The file path.
      *
      * @see loadFromFile()
      */
-    protected function saveToFile(array $data, string $file): void
+    private function saveToFile(array $data): void
     {
-        $directory = dirname($file);
+        $directory = dirname($this->filePath);
 
         if (!is_dir($directory)) {
             set_error_handler(static function (int $errorNumber, string $errorString) use ($directory): bool {
@@ -63,19 +80,23 @@ trait FileStorageTrait
             restore_error_handler();
         }
 
-        file_put_contents($file, "<?php\n\nreturn " . VarDumper::create($data)->export() . ";\n", LOCK_EX);
-        $this->invalidateScriptCache($file);
+        file_put_contents($this->filePath, "<?php\n\nreturn " . VarDumper::create($data)->export() . ";\n", LOCK_EX);
+        $this->invalidateScriptCache();
     }
 
     /**
      * Invalidates precompiled script cache (such as OPCache) for the given file.
-     *
-     * @param string $file The file path.
      */
-    protected function invalidateScriptCache(string $file): void
+    private function invalidateScriptCache(): void
     {
         if (function_exists('opcache_invalidate')) {
-            opcache_invalidate($file, true);
+            opcache_invalidate($this->filePath, force: true);
         }
+    }
+
+    private function initFileProperties(string $directory, string $filename, ?callable $getFileUpdatedAt): void
+    {
+        $this->filePath = $directory . DIRECTORY_SEPARATOR . $filename;
+        $this->getFileUpdatedAt = $getFileUpdatedAt ?? static fn (string $filename): int|false => @filemtime($filename);
     }
 }

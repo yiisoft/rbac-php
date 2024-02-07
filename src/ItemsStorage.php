@@ -17,40 +17,45 @@ use Yiisoft\Rbac\SimpleItemsStorage;
  *
  * @psalm-import-type RawItem from SimpleItemsStorage
  */
-final class ItemsStorage extends SimpleItemsStorage
+final class ItemsStorage extends SimpleItemsStorage implements FileStorageInterface
 {
     use FileStorageTrait;
-
-    /**
-     * @var string The path of the PHP script that contains the authorization items.
-     *
-     * @see loadFromFile()
-     * @see saveToFile()
-     */
-    private string $itemFile;
 
     /**
      * @param string $directory Base directory to append to `$itemFile`.
      * @param string $itemFile The path of the PHP script that contains the authorization items. Make sure this file is
      * writable by the Web server process if the authorization needs to be changed online.
      */
-    public function __construct(string $directory, string $itemFile = 'items.php')
-    {
-        $this->itemFile = $directory . DIRECTORY_SEPARATOR . $itemFile;
+    public function __construct(
+        string $directory,
+        string $itemFile = 'items.php',
+        ?callable $getFileUpdatedAt = null,
+    ) {
+        $this->initFileProperties($directory, $itemFile, $getFileUpdatedAt);
         $this->load();
+    }
+
+    public function clear(): void
+    {
+        parent::clear();
+        $this->save();
     }
 
     public function add(Permission|Role $item): void
     {
         parent::add($item);
+        $this->save();
+    }
 
+    public function remove(string $name): void
+    {
+        parent::remove($name);
         $this->save();
     }
 
     public function addChild(string $parentName, string $childName): void
     {
         parent::addChild($parentName, $childName);
-
         $this->save();
     }
 
@@ -76,24 +81,37 @@ final class ItemsStorage extends SimpleItemsStorage
         $this->save();
     }
 
-    public function remove(string $name): void
-    {
-        parent::remove($name);
-
-        $this->save();
-    }
-
-    public function clear(): void
+    public function load(): void
     {
         parent::clear();
 
-        $this->save();
+        /** @psalm-var array<string, RawItem> $items */
+        $items = $this->loadFromFile($this->filePath);
+        if (empty($items)) {
+            return;
+        }
+
+        $fileUpdatedAt = $this->getFileUpdatedAt();
+        foreach ($items as $item) {
+            $this->items[$item['name']] = $this
+                ->getInstanceFromAttributes($item)
+                ->withCreatedAt($item['created_at'] ?? $fileUpdatedAt)
+                ->withUpdatedAt($item['updated_at'] ?? $fileUpdatedAt);
+        }
+
+        foreach ($items as $item) {
+            foreach ($item['children'] ?? [] as $childName) {
+                if ($this->hasItem($childName)) {
+                    $this->children[$item['name']][$childName] = $this->items[$childName];
+                }
+            }
+        }
     }
 
     private function save(): void
     {
         $items = [];
-        foreach ($this->getAll() as $name => $item) {
+        foreach ($this->items as $name => $item) {
             $data = array_filter($item->getAttributes());
             if ($this->hasChildren($name)) {
                 foreach ($this->getDirectChildren($name) as $child) {
@@ -104,35 +122,7 @@ final class ItemsStorage extends SimpleItemsStorage
             $items[] = $data;
         }
 
-        $this->saveToFile($items, $this->itemFile);
-    }
-
-    private function load(): void
-    {
-        parent::clear();
-
-        $this->loadItems();
-    }
-
-    private function loadItems(): void
-    {
-        /** @psalm-var array<string, RawItem> $items */
-        $items = $this->loadFromFile($this->itemFile);
-        $itemsMtime = @filemtime($this->itemFile);
-        foreach ($items as $item) {
-            $this->items[$item['name']] = $this
-                ->getInstanceFromAttributes($item)
-                ->withCreatedAt($item['created_at'] ?? $itemsMtime)
-                ->withUpdatedAt($item['updated_at'] ?? $itemsMtime);
-        }
-
-        foreach ($items as $item) {
-            foreach ($item['children'] ?? [] as $childName) {
-                if ($this->hasItem($childName)) {
-                    $this->children[$item['name']][$childName] = $this->items[$childName];
-                }
-            }
-        }
+        $this->saveToFile($items);
     }
 
     private function hasItem(string $name): bool
