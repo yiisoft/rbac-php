@@ -10,7 +10,6 @@ use Yiisoft\Files\FileHelper;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Php\ItemsStorage;
-use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
 final class ItemsStorageTest extends TestCase
