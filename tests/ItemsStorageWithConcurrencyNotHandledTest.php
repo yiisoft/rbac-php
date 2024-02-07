@@ -63,12 +63,12 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
         $testStorage = new ItemsStorage($this->getDataPath());
         $actionStorage = $this->getItemsStorage();
 
-        $actionStorage->add(new Permission('test1'));
         $count = count($actionStorage->getAll());
+        $actionStorage->add(new Permission('test1'));
         $actionStorage->add(new Permission('test2'));
 
         $testStorage->add(new Permission('test1'));
-        $this->assertCount($count, $testStorage->getAll());
+        $this->assertCount($count + 1, $testStorage->getAll());
     }
 
     public function testAddWithPastTimestamps(): void
@@ -95,12 +95,12 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
         $testStorage = new ItemsStorage($this->getDataPath());
         $actionStorage = $this->getItemsStorage();
 
-        $actionStorage->remove('posts.view');
         $count = count($actionStorage->getAll());
+        $actionStorage->remove('posts.view');
         $actionStorage->remove('posts.create');
 
         $testStorage->remove('posts.view');
-        $this->assertCount($count, $testStorage->getAll());
+        $this->assertCount($count - 1, $testStorage->getAll());
     }
 
     public function testGetRoles(): void

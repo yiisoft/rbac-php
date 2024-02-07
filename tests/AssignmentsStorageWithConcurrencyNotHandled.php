@@ -79,12 +79,12 @@ final class AssignmentsStorageWithConcurrencyNotHandled extends TestCase
         $actionStorage = $this->getAssignmentsStorage();
 
         $time = time();
-        $actionStorage->add(new Assignment(userId: 'jack', itemName: 'Researcher', createdAt: $time));
         $count = count($actionStorage->getByItemNames(['Researcher']));
+        $actionStorage->add(new Assignment(userId: 'jack', itemName: 'Researcher', createdAt: $time));
         $actionStorage->add(new Assignment(userId: 'jeff', itemName: 'Researcher', createdAt: $time));
 
         $testStorage->add(new Assignment(userId: 'jack', itemName: 'Researcher', createdAt: $time));
-        $this->assertCount($count, $testStorage->getByItemNames(['Researcher']));
+        $this->assertCount($count + 1, $testStorage->getByItemNames(['Researcher']));
     }
 
     public function testHasItem(): void
@@ -109,12 +109,12 @@ final class AssignmentsStorageWithConcurrencyNotHandled extends TestCase
         $testStorage = new AssignmentsStorage($this->getDataPath());
         $actionStorage = $this->getAssignmentsStorage();
 
-        $actionStorage->remove(itemName: 'Researcher', userId: 'john');
         $count = count($actionStorage->getByUserId('john'));
+        $actionStorage->remove(itemName: 'Researcher', userId: 'john');
         $actionStorage->remove(itemName: 'Accountant', userId: 'john');
 
         $testStorage->remove(itemName: 'Researcher', userId: 'john');
-        $this->assertCount($count, $testStorage->getByUserId('john'));
+        $this->assertCount($count - 1, $testStorage->getByUserId('john'));
     }
 
     public function testRemoveByUserId(): void

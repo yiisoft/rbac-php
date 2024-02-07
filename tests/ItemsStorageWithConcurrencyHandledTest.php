@@ -61,12 +61,12 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
         $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getItemsStorage();
 
+        $count = count($actionStorage->getAll());
         $actionStorage->add(new Permission('test1'));
         $actionStorage->add(new Permission('test2'));
-        $count = count($actionStorage->getAll());
 
         $testStorage->add(new Permission('test1'));
-        $this->assertCount($count, $innerTestStorage->getAll());
+        $this->assertCount($count + 2, $innerTestStorage->getAll());
     }
 
     public function testUpdate(): void
