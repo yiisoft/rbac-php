@@ -146,6 +146,7 @@ final class ItemsStorageTest extends TestCase
         $storage->add(new Permission('createPost'));
 
         $this->assertFileExists($directory . '/items.php');
+        // 509 - int transformation for 0775
         $this->assertSame(509, $this->directoryPermissions);
         $this->assertTrue($this->errorHandlerRestored);
     }
