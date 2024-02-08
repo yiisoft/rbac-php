@@ -70,13 +70,13 @@ trait FileStorageTrait
                 if (!is_dir($directory)) {
                     throw new RuntimeException(
                         sprintf('Failed to create directory "%s". ', $directory) . $errorString,
-                        $errorNumber
+                        $errorNumber,
                     );
                 }
 
                 return true;
             });
-            mkdir($directory, 0775, true);
+            mkdir($directory, permissions: 0775, recursive: true);
             restore_error_handler();
         }
 
