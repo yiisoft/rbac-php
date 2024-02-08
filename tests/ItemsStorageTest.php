@@ -19,8 +19,9 @@ final class ItemsStorageTest extends TestCase
     }
     use StorageFilePathTrait;
 
-    public $opcacheInvalidated = false;
-    public $errorHandlerRestored = false;
+    public bool $opcacheInvalidated = false;
+    public bool $errorHandlerRestored = false;
+    public ?int $directoryPermissions = null;
     private const EMPTY_STORAGE_TESTS = [
         'testSaveWithNullAttributes',
         'testSaveWithAllAttributes',
@@ -38,6 +39,19 @@ final class ItemsStorageTest extends TestCase
 
         if ($this->name() === 'testCreateNestedDirectory') {
             $storage = $this;
+            uopz_set_return(
+                'mkdir',
+                static function (
+                    string $directory,
+                    int $permissions = 0777,
+                    bool $recursive = false,
+                ) use ($storage): bool {
+                    $storage->directoryPermissions = $permissions;
+
+                    return mkdir($directory, $permissions, $recursive);
+                },
+                true,
+            );
             uopz_set_return(
                 'restore_error_handler',
                 static function () use ($storage): bool {
@@ -92,7 +106,9 @@ final class ItemsStorageTest extends TestCase
         }
 
         if ($this->name() === 'testCreateNestedDirectory') {
+            uopz_unset_return('mkdir');
             uopz_unset_return('restore_error_handler');
+            $this->directoryPermissions = null;
             $this->errorHandlerRestored = false;
         }
 
@@ -130,7 +146,7 @@ final class ItemsStorageTest extends TestCase
         $storage->add(new Permission('createPost'));
 
         $this->assertFileExists($directory . '/items.php');
-        $this->assertContains(substr(sprintf('%o', fileperms($directory)), -4), ['0775', '0755']);
+        $this->assertSame(509, $this->directoryPermissions);
         $this->assertTrue($this->errorHandlerRestored);
     }
 
