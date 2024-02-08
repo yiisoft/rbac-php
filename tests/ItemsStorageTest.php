@@ -20,6 +20,7 @@ final class ItemsStorageTest extends TestCase
     use StorageFilePathTrait;
 
     public $opcacheInvalidated = false;
+    public $errorHandlerRestored = false;
     private const EMPTY_STORAGE_TESTS = [
         'testSaveWithNullAttributes',
         'testLoadWithCustomGetFileUpdatedAt',
@@ -29,9 +30,22 @@ final class ItemsStorageTest extends TestCase
 
     protected function setUp(): void
     {
-        if ($this->name() === 'testFailCreateDirectory' || $this->name() === 'testCreateNestedDirectory') {
+        if ($this->name() === 'testCreateDirectoryException' || $this->name() === 'testCreateNestedDirectory') {
             FileHelper::ensureDirectory($this->getTempDirectory());
             FileHelper::clearDirectory($this->getTempDirectory());
+        }
+
+        if ($this->name() === 'testCreateNestedDirectory') {
+            $storage = $this;
+            uopz_set_return(
+                'restore_error_handler',
+                static function () use ($storage): bool {
+                    $storage->errorHandlerRestored = true;
+
+                    return true;
+                },
+                true,
+            );
         }
 
         if ($this->name() === 'testSaveAndInvalidateOpcacheWithExtension') {
@@ -72,8 +86,13 @@ final class ItemsStorageTest extends TestCase
 
     protected function tearDown(): void
     {
-        if ($this->name() === 'testFailCreateDirectory' || $this->name() === 'testCreateNestedDirectory') {
+        if ($this->name() === 'testCreateDirectoryException' || $this->name() === 'testCreateNestedDirectory') {
             FileHelper::removeDirectory($this->getTempDirectory());
+        }
+
+        if ($this->name() === 'testCreateNestedDirectory') {
+            uopz_unset_return('restore_error_handler');
+            $this->errorHandlerRestored = false;
         }
 
         if ($this->name() === 'testSaveAndInvalidateOpcacheWithExtension') {
@@ -89,7 +108,7 @@ final class ItemsStorageTest extends TestCase
         $this->clearFixturesFiles();
     }
 
-    public function testFailCreateDirectory(): void
+    public function testCreateDirectoryException(): void
     {
         $directory = $this->getTempDirectory() . '/file.txt';
         touch($directory);
@@ -110,6 +129,8 @@ final class ItemsStorageTest extends TestCase
         $storage->add(new Permission('createPost'));
 
         $this->assertFileExists($directory . '/items.php');
+        $this->assertSame('0775', substr(sprintf('%o', fileperms($directory)), -4));
+        $this->assertTrue($this->errorHandlerRestored);
     }
 
     public function testSaveWithNullAttributes(): void
