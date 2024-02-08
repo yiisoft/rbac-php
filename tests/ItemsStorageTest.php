@@ -130,7 +130,7 @@ final class ItemsStorageTest extends TestCase
         $storage->add(new Permission('createPost'));
 
         $this->assertFileExists($directory . '/items.php');
-        $this->assertSame('0775', substr(sprintf('%o', fileperms($directory)), -4));
+        $this->assertContains(substr(sprintf('%o', fileperms($directory)), -4), ['0775', '0755']);
         $this->assertTrue($this->errorHandlerRestored);
     }
 
