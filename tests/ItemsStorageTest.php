@@ -23,6 +23,7 @@ final class ItemsStorageTest extends TestCase
     public $errorHandlerRestored = false;
     private const EMPTY_STORAGE_TESTS = [
         'testSaveWithNullAttributes',
+        'testSaveWithAllAttributes',
         'testLoadWithCustomGetFileUpdatedAt',
         'testSaveAndInvalidateOpcacheWithExtension',
         'testSaveAndInvalidateOpcacheWithoutExtension',
@@ -141,16 +142,31 @@ final class ItemsStorageTest extends TestCase
         $this->assertSame([['name' => 'test', 'type' => 'permission']], $data);
     }
 
+    public function testSaveAndLoadWithAllAttributes(): void
+    {
+        $time = time();
+        $permission = (new Permission('testName'))
+            ->withDescription('testDescription')
+            ->withRuleName('testRule')
+            ->withCreatedAt($time)
+            ->withUpdatedAt($time);
+        $storage = $this->createItemsStorage();
+        $storage->add($permission);
+        $storage = $this->createItemsStorage();
+
+        $this->assertEquals($permission, $storage->get('testName'));
+    }
+
     public function testLoadWithCustomGetFileUpdatedAt(): void
     {
         $time = 1683707079;
+        $storage = $this->createItemsStorage();
+        $storage->add(new Permission('test'));
+
         $storage = new ItemsStorage(
             $this->getDataPath(),
             getFileUpdatedAt: static fn (string $filename): int|false => $time,
         );
-        $storage->add(new Permission('test'));
-        $storage->load();
-
         $this->assertSame($time, $storage->get('test')->getCreatedAt());
     }
 
