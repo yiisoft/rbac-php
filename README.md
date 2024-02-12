@@ -37,8 +37,8 @@ See [yiisoft/rbac](https://github.com/yiisoft/rbac) for RBAC package installatio
 The storage is suitable for authorization data that is not too big (for example, the authorization data for a personal 
 blog system) or for fairly static RBAC hierarchy.
 
-PHP should be able to read and write these files. Non-existing files will be created automatically on any write 
-operation.
+Authorization data is stored in PHP files. PHP should be able to read and write these files. Non-existing files will be 
+created automatically on any write operation.
 
 ### Using storages
 
