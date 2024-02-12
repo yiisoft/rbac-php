@@ -74,6 +74,144 @@ $manager->addPermission(new Permission('posts.create'));
 
 More examples can be found in [Yii RBAC](https://github.com/yiisoft/rbac) documentation.
 
+### File structure
+
+In case you decide to manually edit the files, make sure to keep the following structure.
+
+#### Items
+
+Required and optional fields:
+
+```php
+<?php
+
+return [
+    [
+        'name' => 'posts.update',
+        'description' => 'Update a post', // Optional
+        'rule_name' => 'is_author', // Optional
+        'type' => 'permission', // or 'role'        
+        'created_at' => 1683707079, // UNIX timestamp, optional
+        'updated_at' => 1683707079, // UNIX timestamp, optional
+    ],
+];
+```
+
+While it's recommended to maintain created and updated timestamps, if any is missing, the file modification time will 
+be used instead.
+
+The structure for an item with children:
+
+```php
+<?php
+
+return [
+    [
+        'name' => 'posts.redactor',
+        'type' => 'role',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+        'children' => [
+            'posts.viewer',
+            'posts.create',
+            'posts.update',
+        ],
+    ],
+];
+```
+
+The complete example for managing posts:
+
+```php
+<?php
+
+return [
+    [
+        'name' => 'posts.admin',        
+        'type' => 'role',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+        'children' => [
+            'posts.redactor',
+            'posts.delete',
+            'posts.update.all',
+        ],
+    ],
+    [
+        'name' => 'posts.redactor',
+        'type' => 'role',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+        'children' => [
+            'posts.viewer',
+            'posts.create',
+            'posts.update',
+        ],
+    ],
+    [
+        'name' => 'posts.viewer',
+        'type' => 'role',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+        'children' => [
+            'posts.view',
+        ],
+    ],
+    [
+        'name' => 'posts.view',
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+    [
+        'name' => 'posts.create',
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+    [
+        'name' => 'posts.update',
+        'rule_name' => 'is_author',
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+    [
+        'name' => 'posts.delete',        
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+    [
+        'name' => 'posts.update.all',
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+];
+```
+
+#### Assignments
+
+```php
+return [
+    [
+        'item_name' => 'posts.redactor',
+        'user_id' => 'john',
+        'created_at' => 1683707079, // Optional
+    ],
+    // ...
+    [
+        'item_name' => 'posts.admin',
+        'user_id' => 'jack',
+        'created_at' => 1683707079,
+    ],
+];
+```
+
+While it's recommended to maintain created timestamps, if it is missing, the file modification time will be used 
+instead.
+
 ## Testing
 
 ### Unit testing
