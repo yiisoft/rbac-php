@@ -34,14 +34,44 @@ See [yiisoft/rbac](https://github.com/yiisoft/rbac) for RBAC package installatio
 
 ## General usage
 
-The storage is suitable for authorization data that is not too big (for example, the authorization data for
-a personal blog system) or for fairly static RBAC hierarchy.
+The storage is suitable for authorization data that is not too big (for example, the authorization data for a personal 
+blog system) or for fairly static RBAC hierarchy.
 
-Authorization data is stored in three PHP files specified by `Storage::$itemFile`, `Storage::$assignmentFile`,
-and `Storage::$ruleFile`.
+Authorization data is stored in two PHP files specified by `Storage::$itemFile`, and `Storage::$assignmentFile`.
 
-PHP should be able to read and write these files. Non-existing files will be created automatically on any write
+PHP should be able to read and write these files. Non-existing files will be created automatically on any write 
 operation.
+
+### Using storages
+
+The storages are not intended to be used directly. Instead, use them with `Manager` from
+[Yii RBAC](https://github.com/yiisoft/rbac) package:
+
+```php
+use Yiisoft\Rbac\Manager;
+use Yiisoft\Rbac\Permission;
+use Yiisoft\Rbac\Php\AssignmentsStorage;
+use Yiisoft\Rbac\Php\ItemsStorage;
+use Yiisoft\Rbac\RuleFactoryInterface;
+
+$itemsStorage = new ItemsStorage('');
+$assignmentsStorage = new AssignmentsStorage($database);
+/** @var RuleFactoryInterface $rulesContainer */
+$manager = new Manager(
+    itemsStorage: $itemsStorage, 
+    assignmentsStorage: $assignmentsStorage,
+    // Requires https://github.com/yiisoft/rbac-rules-container or other compatible factory.
+    ruleFactory: $rulesContainer,
+),
+$manager->addPermission(new Permission('posts.create'));
+```
+
+> Note that it's not necessary to use both PHP storages. Combining different implementations is possible. A quite
+> popular case is to manage items via PHP file while store assignments in database (see 
+> [Cycle](https://github.com/yiisoft/rbac-cycle-db) and [Yiisoft DB](https://github.com/yiisoft/rbac-db) 
+> implementations).
+
+More examples can be found in [Yii RBAC](https://github.com/yiisoft/rbac) documentation.
 
 ## Testing
 
