@@ -205,6 +205,16 @@ final class ItemsStorageTest extends TestCase
         $this->assertFalse($this->opcacheInvalidated);
     }
 
+    public function testGetFileUpdatedAtException(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('getFileUpdatedAt callable must return a UNIX timestamp.');
+        new ItemsStorage(
+            $this->getDataPath(),
+            getFileUpdatedAt: static fn (string $filename): string => 'test',
+        );
+    }
+
     protected function createItemsStorage(): ItemsStorageInterface
     {
         return new ItemsStorage($this->getDataPath());

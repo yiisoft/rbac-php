@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Php\Tests;
 
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Php\AssignmentsStorage;
@@ -31,6 +32,16 @@ final class AssignmentsStorageTest extends TestCase
     public function testLoad(): void
     {
         $this->assertNotEmpty($this->createAssignmentsStorage()->getAll());
+    }
+
+    public function testGetFileUpdatedAtException(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('getFileUpdatedAt callable must return a UNIX timestamp.');
+        new AssignmentsStorage(
+            $this->getDataPath(),
+            getFileUpdatedAt: static fn (string $filename): string => 'test',
+        );
     }
 
     protected function createItemsStorage(): ItemsStorageInterface
