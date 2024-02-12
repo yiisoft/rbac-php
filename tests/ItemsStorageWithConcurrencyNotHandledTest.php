@@ -170,8 +170,6 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
 
     public function testGetAccessTree(): void
     {
-        $this->markTestSkipped();
-
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getAccessTree('posts.view'));
     }
 
