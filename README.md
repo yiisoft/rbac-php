@@ -222,12 +222,14 @@ do not use the storage directly - use the decorator instead:
 use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Php\AssignmentsStorage;
-use Yiisoft\Rbac\Php\ConcurrentItemsStorageDecorator;use Yiisoft\Rbac\Php\ItemsStorage;
+use Yiisoft\Rbac\Php\ConcurrentAssignmentsStorageDecorator;
+use Yiisoft\Rbac\Php\ConcurrentItemsStorageDecorator;
+use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\RuleFactoryInterface;
 
 $directory = __DIR__ . DIRECTORY_SEPARATOR . 'rbac';
 $itemsSstorage = new ConcurrentItemsStorageDecorator(ItemsStorage($directory));
-$assignmentsStorage = new Concur AssignmentsStorage($directory);
+$assignmentsStorage = new ConcurrentAssignmentsStorageDecorator(AssignmentsStorage($directory));
 /** @var RuleFactoryInterface $rulesContainer */
 $manager = new Manager(
     itemsStorage: $itemsStorage, 
@@ -236,6 +238,32 @@ $manager = new Manager(
     ruleFactory: $rulesContainer,
 ),
 ```
+
+#### Configuring file updated time
+
+A closure can be used to customize getting file modification time:
+
+```php
+use Yiisoft\Rbac\Php\AssignmentsStorage;
+use Yiisoft\Rbac\Php\ItemsStorage;
+
+$directory = __DIR__ . DIRECTORY_SEPARATOR . 'rbac',
+$getFileUpdatedAt = static fn (string $filename): int|false => @filemtime($filename)
+$itemsStorage = new ItemsStorage(
+    $directory,
+    getFileUpdatedAt: static fn (string $filename): int|false => @filemtime($filename),
+);
+$itemsStorage = new AssignmentsStorage(
+    $directory,
+    getFileUpdatedAt: static fn (string $filename): int|false => @filemtime($filename),
+);
+```
+
+This is useful for 2 things:
+
+- Using for empty timestamps when files are edited manually.
+- Detection of file changes when concurrency is enabled. This helps to optimize perfomance by preventing of unnecessary
+loads (when file contents has not been changed).
 
 ## Testing
 
