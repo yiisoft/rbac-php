@@ -36,10 +36,6 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage implements FileS
 
     public function renameItem(string $oldName, string $newName): void
     {
-        if ($oldName === $newName) {
-            return;
-        }
-
         parent::renameItem($oldName, $newName);
         $this->save();
     }

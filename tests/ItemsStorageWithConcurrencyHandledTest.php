@@ -167,13 +167,7 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testGetAccessTree(): void
     {
-        $this->markTestSkipped();
-
-        $storage = $this->getEmptyConcurrentItemsStorage();
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Base item not found.');
-        $storage->getAccessTree('posts.view');
+        $this->assertEmpty($this->getEmptyConcurrentItemsStorage()->getAccessTree('posts.view'));
     }
 
     public function testGetDirectChildren(): void
