@@ -66,15 +66,13 @@ trait FileStorageTrait
         $directory = dirname($this->filePath);
 
         if (!is_dir($directory)) {
-            set_error_handler(static function (int $errorNumber, string $errorString) use ($directory): bool {
+            set_error_handler(static function (int $errorNumber, string $errorString) use ($directory): void {
                 if (!is_dir($directory)) {
                     throw new RuntimeException(
                         sprintf('Failed to create directory "%s". ', $directory) . $errorString,
                         $errorNumber,
                     );
                 }
-
-                return true;
             });
             mkdir($directory, permissions: 0775, recursive: true);
             restore_error_handler();
