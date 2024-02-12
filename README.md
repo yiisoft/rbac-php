@@ -239,6 +239,8 @@ $manager = new Manager(
 ),
 ```
 
+> Note that it will have an impact on performance so don't use it unless you really have to.
+
 #### Configuring file updated time
 
 A closure can be used to customize getting file modification time:
