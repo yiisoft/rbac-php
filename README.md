@@ -212,6 +212,31 @@ return [
 While it's recommended to maintain created timestamps, if it is missing, the file modification time will be used 
 instead.
 
+### Concurrency
+
+By default, working with PHP storage does not support concurrency. This might be OK if you store its files under VCS for
+example. If your scenario is different and, let's say, some kind of web interface is used - then, to enable concurrency, 
+do not use the storage directly - use the decorator instead:
+
+```php
+use Yiisoft\Rbac\Manager;
+use Yiisoft\Rbac\Permission;
+use Yiisoft\Rbac\Php\AssignmentsStorage;
+use Yiisoft\Rbac\Php\ConcurrentItemsStorageDecorator;use Yiisoft\Rbac\Php\ItemsStorage;
+use Yiisoft\Rbac\RuleFactoryInterface;
+
+$directory = __DIR__ . DIRECTORY_SEPARATOR . 'rbac';
+$itemsSstorage = new ConcurrentItemsStorageDecorator(ItemsStorage($directory));
+$assignmentsStorage = new Concur AssignmentsStorage($directory);
+/** @var RuleFactoryInterface $rulesContainer */
+$manager = new Manager(
+    itemsStorage: $itemsStorage, 
+    assignmentsStorage: $assignmentsStorage,
+    // Requires https://github.com/yiisoft/rbac-rules-container or other compatible factory.
+    ruleFactory: $rulesContainer,
+),
+```
+
 ## Testing
 
 ### Unit testing
