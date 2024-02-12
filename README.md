@@ -34,14 +34,238 @@ See [yiisoft/rbac](https://github.com/yiisoft/rbac) for RBAC package installatio
 
 ## General usage
 
-The storage is suitable for authorization data that is not too big (for example, the authorization data for
-a personal blog system) or for fairly static RBAC hierarchy.
+The storage is suitable for authorization data that is not too big (for example, the authorization data for a personal 
+blog system) or for fairly static RBAC hierarchy.
 
-Authorization data is stored in three PHP files specified by `Storage::$itemFile`, `Storage::$assignmentFile`,
-and `Storage::$ruleFile`.
+Authorization data is stored in two PHP files specified by `Storage::$itemFile`, and `Storage::$assignmentFile`.
 
-PHP should be able to read and write these files. Non-existing files will be created automatically on any write
+PHP should be able to read and write these files. Non-existing files will be created automatically on any write 
 operation.
+
+### Using storages
+
+The storages are not intended to be used directly. Instead, use them with `Manager` from
+[Yii RBAC](https://github.com/yiisoft/rbac) package:
+
+```php
+use Yiisoft\Rbac\Manager;
+use Yiisoft\Rbac\Permission;
+use Yiisoft\Rbac\Php\AssignmentsStorage;
+use Yiisoft\Rbac\Php\ItemsStorage;
+use Yiisoft\Rbac\RuleFactoryInterface;
+
+$directory = __DIR__ . DIRECTORY_SEPARATOR . 'rbac';
+$itemsStorage = new ItemsStorage($directory);
+$assignmentsStorage = new AssignmentsStorage($directory);
+/** @var RuleFactoryInterface $rulesContainer */
+$manager = new Manager(
+    itemsStorage: $itemsStorage, 
+    assignmentsStorage: $assignmentsStorage,
+    // Requires https://github.com/yiisoft/rbac-rules-container or other compatible factory.
+    ruleFactory: $rulesContainer,
+),
+$manager->addPermission(new Permission('posts.create'));
+```
+
+> Note that it's not necessary to use both PHP storages. Combining different implementations is possible. A quite
+> popular case is to manage items via PHP file while store assignments in database (see 
+> [Cycle](https://github.com/yiisoft/rbac-cycle-db) and [Yiisoft DB](https://github.com/yiisoft/rbac-db) 
+> implementations).
+
+More examples can be found in [Yii RBAC](https://github.com/yiisoft/rbac) documentation.
+
+### File structure
+
+In case you decide to manually edit the files, make sure to keep the following structure.
+
+#### Items
+
+Required and optional fields:
+
+```php
+<?php
+
+return [
+    [
+        'name' => 'posts.update',
+        'description' => 'Update a post', // Optional
+        'rule_name' => 'is_author', // Optional
+        'type' => 'permission', // or 'role'        
+        'created_at' => 1683707079, // UNIX timestamp, optional
+        'updated_at' => 1683707079, // UNIX timestamp, optional
+    ],
+];
+```
+
+While it's recommended to maintain created and updated timestamps, if any is missing, the file modification time will 
+be used instead.
+
+The structure for an item with children:
+
+```php
+<?php
+
+return [
+    [
+        'name' => 'posts.redactor',
+        'type' => 'role',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+        'children' => [
+            'posts.viewer',
+            'posts.create',
+            'posts.update',
+        ],
+    ],
+];
+```
+
+The complete example for managing posts:
+
+```php
+<?php
+
+return [
+    [
+        'name' => 'posts.admin',        
+        'type' => 'role',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+        'children' => [
+            'posts.redactor',
+            'posts.delete',
+            'posts.update.all',
+        ],
+    ],
+    [
+        'name' => 'posts.redactor',
+        'type' => 'role',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+        'children' => [
+            'posts.viewer',
+            'posts.create',
+            'posts.update',
+        ],
+    ],
+    [
+        'name' => 'posts.viewer',
+        'type' => 'role',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+        'children' => [
+            'posts.view',
+        ],
+    ],
+    [
+        'name' => 'posts.view',
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+    [
+        'name' => 'posts.create',
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+    [
+        'name' => 'posts.update',
+        'rule_name' => 'is_author',
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+    [
+        'name' => 'posts.delete',        
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+    [
+        'name' => 'posts.update.all',
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+];
+```
+
+#### Assignments
+
+```php
+return [
+    [
+        'item_name' => 'posts.redactor',
+        'user_id' => 'john',
+        'created_at' => 1683707079, // Optional
+    ],
+    // ...
+    [
+        'item_name' => 'posts.admin',
+        'user_id' => 'jack',
+        'created_at' => 1683707079,
+    ],
+];
+```
+
+While it's recommended to maintain created timestamps, if it is missing, the file modification time will be used 
+instead.
+
+### Concurrency
+
+By default, working with PHP storage does not support concurrency. This might be OK if you store its files under VCS for
+example. If your scenario is different and, let's say, some kind of web interface is used - then, to enable concurrency, 
+do not use the storage directly - use the decorator instead:
+
+```php
+use Yiisoft\Rbac\Manager;
+use Yiisoft\Rbac\Permission;
+use Yiisoft\Rbac\Php\AssignmentsStorage;
+use Yiisoft\Rbac\Php\ConcurrentAssignmentsStorageDecorator;
+use Yiisoft\Rbac\Php\ConcurrentItemsStorageDecorator;
+use Yiisoft\Rbac\Php\ItemsStorage;
+use Yiisoft\Rbac\RuleFactoryInterface;
+
+$directory = __DIR__ . DIRECTORY_SEPARATOR . 'rbac';
+$itemsSstorage = new ConcurrentItemsStorageDecorator(ItemsStorage($directory));
+$assignmentsStorage = new ConcurrentAssignmentsStorageDecorator(AssignmentsStorage($directory));
+/** @var RuleFactoryInterface $rulesContainer */
+$manager = new Manager(
+    itemsStorage: $itemsStorage, 
+    assignmentsStorage: $assignmentsStorage,
+    // Requires https://github.com/yiisoft/rbac-rules-container or other compatible factory.
+    ruleFactory: $rulesContainer,
+),
+```
+
+> Note that it will have an impact on performance so don't use it unless you really have to.
+
+#### Configuring file updated time
+
+A closure can be used to customize getting file modification time:
+
+```php
+use Yiisoft\Rbac\Php\AssignmentsStorage;
+use Yiisoft\Rbac\Php\ItemsStorage;
+
+$directory = __DIR__ . DIRECTORY_SEPARATOR . 'rbac',
+$getFileUpdatedAt = static fn (string $filename): int|false => @filemtime($filename)
+$itemsStorage = new ItemsStorage(
+    $directory,
+    getFileUpdatedAt: static fn (string $filename): int|false => @filemtime($filename),
+);
+$itemsStorage = new AssignmentsStorage(
+    $directory,
+    getFileUpdatedAt: static fn (string $filename): int|false => @filemtime($filename),
+);
+```
+
+This is useful for 2 things:
+
+- Using for empty timestamps when files are edited manually.
+- Detection of file changes when concurrency is enabled. This helps to optimize perfomance by preventing of unnecessary
+loads (when file contents has not been changed).
 
 ## Testing
 
