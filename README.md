@@ -54,8 +54,9 @@ use Yiisoft\Rbac\Php\AssignmentsStorage;
 use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\RuleFactoryInterface;
 
-$itemsStorage = new ItemsStorage('');
-$assignmentsStorage = new AssignmentsStorage($database);
+$directory = __DIR__ . DIRECTORY_SEPARATOR . 'rbac';
+$itemsStorage = new ItemsStorage($directory);
+$assignmentsStorage = new AssignmentsStorage($directory);
 /** @var RuleFactoryInterface $rulesContainer */
 $manager = new Manager(
     itemsStorage: $itemsStorage, 
