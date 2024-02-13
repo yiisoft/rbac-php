@@ -15,6 +15,7 @@
 - Enh #50: Save `Assignment::$createdAt` (@arogachev)
 - Enh #52: Handle concurrency when working with storages (@arogachev)
 - Enh #87: Move handling same names during renaming item in `AssignmentsStorage` to base package (@arogachev)
+- Chg #90: Adjust naming for storages' file name (@arogachev)
 
 ## 1.0.0 April 08, 2022
 
