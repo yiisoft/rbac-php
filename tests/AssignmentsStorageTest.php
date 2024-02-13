@@ -40,7 +40,7 @@ final class AssignmentsStorageTest extends TestCase
         $this->expectExceptionMessage('getFileUpdatedAt callable must return a UNIX timestamp.');
         new AssignmentsStorage(
             $this->getDataPath(),
-            getFileUpdatedAt: static fn (string $filename): string => 'test',
+            getFileUpdatedAt: static fn (string $filePath): string => 'test',
         );
     }
 

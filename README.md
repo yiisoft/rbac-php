@@ -248,14 +248,14 @@ use Yiisoft\Rbac\Php\AssignmentsStorage;
 use Yiisoft\Rbac\Php\ItemsStorage;
 
 $directory = __DIR__ . DIRECTORY_SEPARATOR . 'rbac',
-$getFileUpdatedAt = static fn (string $filename): int|false => @filemtime($filename)
+$getFileUpdatedAt = static fn (string $filePath): int|false => @filemtime($filePath)
 $itemsStorage = new ItemsStorage(
     $directory,
-    getFileUpdatedAt: static fn (string $filename): int|false => @filemtime($filename),
+    getFileUpdatedAt: static fn (string $filePath): int|false => @filemtime($filePath),
 );
 $itemsStorage = new AssignmentsStorage(
     $directory,
-    getFileUpdatedAt: static fn (string $filename): int|false => @filemtime($filename),
+    getFileUpdatedAt: static fn (string $filePath): int|false => @filemtime($filePath),
 );
 ```
 

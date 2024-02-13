@@ -182,7 +182,7 @@ final class ItemsStorageTest extends TestCase
 
         $storage = new ItemsStorage(
             $this->getDataPath(),
-            getFileUpdatedAt: static fn (string $filename): int|false => $time,
+            getFileUpdatedAt: static fn (string $filePath): int|false => $time,
         );
         $this->assertSame($time, $storage->get('test')->getCreatedAt());
     }
@@ -211,7 +211,7 @@ final class ItemsStorageTest extends TestCase
         $this->expectExceptionMessage('getFileUpdatedAt callable must return a UNIX timestamp.');
         new ItemsStorage(
             $this->getDataPath(),
-            getFileUpdatedAt: static fn (string $filename): string => 'test',
+            getFileUpdatedAt: static fn (string $filePath): string => 'test',
         );
     }
 
