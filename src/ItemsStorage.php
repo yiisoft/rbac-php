@@ -22,16 +22,16 @@ final class ItemsStorage extends SimpleItemsStorage implements FileStorageInterf
     use FileStorageTrait;
 
     /**
-     * @param string $directory Base directory to append to `$itemFile`.
-     * @param string $itemFile The path of the PHP script that contains the authorization items. Make sure this file is
+     * @param string $directory Base directory to prepend to `$fileName`.
+     * @param string $fileName The name of the PHP file that contains the authorization items. Make sure this file is
      * writable by the Web server process if the authorization needs to be changed online.
      */
     public function __construct(
         string $directory,
-        string $itemFile = 'items.php',
+        string $fileName = 'items.php',
         ?callable $getFileUpdatedAt = null,
     ) {
-        $this->initFileProperties($directory, $itemFile, $getFileUpdatedAt);
+        $this->initFileProperties($directory, $fileName, $getFileUpdatedAt);
         $this->load();
     }
 
