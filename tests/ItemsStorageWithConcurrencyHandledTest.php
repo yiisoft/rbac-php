@@ -164,9 +164,9 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
         $this->assertEmpty($this->getEmptyConcurrentItemsStorage()->getParents('posts.view'));
     }
 
-    public function testGetAccessTree(): void
+    public function testGetHierarchy(): void
     {
-        $this->assertEmpty($this->getEmptyConcurrentItemsStorage()->getAccessTree('posts.view'));
+        $this->assertEmpty($this->getEmptyConcurrentItemsStorage()->getHierarchy('posts.view'));
     }
 
     public function testGetDirectChildren(): void

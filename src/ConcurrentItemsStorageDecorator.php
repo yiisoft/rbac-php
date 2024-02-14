@@ -144,11 +144,11 @@ final class ConcurrentItemsStorageDecorator implements ItemsStorageInterface, Fi
         return $this->storage->getParents($name);
     }
 
-    public function getAccessTree(string $name): array
+    public function getHierarchy(string $name): array
     {
         $this->load();
 
-        return $this->storage->getAccessTree($name);
+        return $this->storage->getHierarchy($name);
     }
 
     public function getDirectChildren(string $name): array
