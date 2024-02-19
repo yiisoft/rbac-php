@@ -26,7 +26,7 @@ final class AssignmentsStorageTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->clearFixturesFiles();
+        $this->clearStoragesFiles();
     }
 
     public function testLoad(): void
@@ -39,19 +39,19 @@ final class AssignmentsStorageTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('getFileUpdatedAt callable must return a UNIX timestamp.');
         new AssignmentsStorage(
-            $this->getDataPath(),
+            $this->getAssignmentsStorageFilePath(),
             getFileUpdatedAt: static fn (string $filePath): string => 'test',
         );
     }
 
     protected function createItemsStorage(): ItemsStorageInterface
     {
-        return new ItemsStorage($this->getDataPath());
+        return new ItemsStorage($this->getItemsStorageFilePath());
     }
 
     protected function createAssignmentsStorage(): AssignmentsStorageInterface
     {
-        return new AssignmentsStorage($this->getDataPath());
+        return new AssignmentsStorage($this->getAssignmentsStorageFilePath());
     }
 
     protected function getAssignmentsStorageForModificationAssertions(): AssignmentsStorageInterface

@@ -9,6 +9,7 @@ use Yiisoft\Rbac\AssignmentsStorageInterface;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Php\AssignmentsStorage;
 use Yiisoft\Rbac\Php\ItemsStorage;
+use Yiisoft\Rbac\Php\Tests\StorageFilePathTrait;
 use Yiisoft\Rbac\Tests\Common\ManagerConfigurationTestTrait;
 use Yiisoft\Rbac\Tests\Common\ManagerLogicTestTrait;
 
@@ -16,19 +17,15 @@ class ManagerTest extends TestCase
 {
     use ManagerConfigurationTestTrait;
     use ManagerLogicTestTrait;
+    use StorageFilePathTrait;
 
     protected function createItemsStorage(): ItemsStorageInterface
     {
-        return new ItemsStorage($this->getDataPath());
+        return new ItemsStorage($this->getItemsStorageFilePath());
     }
 
     protected function createAssignmentsStorage(): AssignmentsStorageInterface
     {
-        return new AssignmentsStorage($this->getDataPath());
-    }
-
-    private function getDataPath(): string
-    {
-        return sys_get_temp_dir() . '/' . str_replace('\\', '_', static::class) . uniqid('', more_entropy: false);
+        return new AssignmentsStorage($this->getAssignmentsStorageFilePath());
     }
 }

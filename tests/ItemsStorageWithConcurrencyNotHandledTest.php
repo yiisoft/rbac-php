@@ -25,7 +25,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->clearFixturesFiles();
+        $this->clearStoragesFiles();
     }
 
     public function testClear(): void
@@ -60,7 +60,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
 
     public function testAddWithCurrentTimestamps(): void
     {
-        $testStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $actionStorage = $this->getItemsStorage();
 
         $count = count($actionStorage->getAll());
@@ -78,7 +78,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
 
     public function testUpdate(): void
     {
-        $testStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $actionStorage = $this->getItemsStorage();
 
         $commonUpdatedItem = $actionStorage->get('posts.view')->withName('posts.view1');
@@ -92,7 +92,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
 
     public function testRemove(): void
     {
-        $testStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $actionStorage = $this->getItemsStorage();
 
         $count = count($actionStorage->getAll());
@@ -120,7 +120,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
 
     public function testClearRoles(): void
     {
-        $testStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $actionStorage = $this->getItemsStorage();
 
         $permissionsCount = count($actionStorage->getPermissions());
@@ -150,7 +150,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
 
     public function testClearPermissions(): void
     {
-        $testStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $actionStorage = $this->getItemsStorage();
 
         $rolesCount = count($actionStorage->getRoles());
@@ -210,7 +210,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
 
     public function testAddChild(): void
     {
-        $testStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $actionStorage = $this->getItemsStorage();
 
         $actionStorage->addChild('posts.viewer', 'posts.create');
@@ -223,7 +223,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
 
     public function testRemoveChild(): void
     {
-        $testStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $actionStorage = $this->getItemsStorage();
 
         $actionStorage->removeChild(parentName: 'posts.redactor', childName: 'posts.create');
@@ -236,7 +236,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
 
     public function testRemoveChildren(): void
     {
-        $testStorage = new ItemsStorage($this->getDataPath());
+        $testStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $actionStorage = $this->getItemsStorage();
 
         $actionStorage->removeChildren('posts.viewer');
@@ -262,7 +262,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
 
     protected function createItemsStorage(): ItemsStorageInterface
     {
-        return new ItemsStorage($this->getDataPath());
+        return new ItemsStorage($this->getItemsStorageFilePath());
     }
 
     protected function getItemsStorageForModificationAssertions(): ItemsStorageInterface

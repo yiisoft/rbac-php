@@ -51,9 +51,9 @@ use Yiisoft\Rbac\Php\AssignmentsStorage;
 use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\RuleFactoryInterface;
 
-$directory = __DIR__ . DIRECTORY_SEPARATOR . 'rbac';
-$itemsStorage = new ItemsStorage($directory);
-$assignmentsStorage = new AssignmentsStorage($directory);
+$filePath = __DIR__ . '/rbac/items.php';
+$itemsStorage = new ItemsStorage($filePath);
+$assignmentsStorage = new AssignmentsStorage($filePath);
 /** @var RuleFactoryInterface $rulesContainer */
 $manager = new Manager(
     itemsStorage: $itemsStorage, 
@@ -95,7 +95,7 @@ return [
 ```
 
 While it's recommended to maintain created and updated timestamps, if any is missing, the file modification time will 
-be used instead.
+be used instead as a fallback.
 
 The structure for an item with children:
 
@@ -207,13 +207,13 @@ return [
 ```
 
 While it's recommended to maintain created timestamps, if it is missing, the file modification time will be used 
-instead.
+instead as a fallback.
 
 ### Concurrency
 
 By default, working with PHP storage does not support concurrency. This might be OK if you store its files under VCS for
 example. If your scenario is different and, let's say, some kind of web interface is used - then, to enable concurrency, 
-do not use the storage directly - use the decorator instead:
+do not use the storage directly - wrap it with decorator instead:
 
 ```php
 use Yiisoft\Rbac\Manager;
@@ -246,14 +246,14 @@ A closure can be used to customize getting file modification time:
 use Yiisoft\Rbac\Php\AssignmentsStorage;
 use Yiisoft\Rbac\Php\ItemsStorage;
 
-$directory = __DIR__ . DIRECTORY_SEPARATOR . 'rbac',
+$directory = __DIR__ . '/rbac',
 $getFileUpdatedAt = static fn (string $filePath): int|false => @filemtime($filePath)
 $itemsStorage = new ItemsStorage(
-    $directory,
+    $directory . '/items.php',
     getFileUpdatedAt: static fn (string $filePath): int|false => @filemtime($filePath),
 );
 $itemsStorage = new AssignmentsStorage(
-    $directory,
+    $directory . '/assignments.php',
     getFileUpdatedAt: static fn (string $filePath): int|false => @filemtime($filePath),
 );
 ```
