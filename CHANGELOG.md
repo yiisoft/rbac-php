@@ -17,6 +17,7 @@
 - Enh #87: Move handling same names during renaming item in `AssignmentsStorage` to base package (@arogachev)
 - Chg #90: Adjust naming for storages' file name (@arogachev)
 - Chg #94: Rename `getAccessTree()` to `getHierarchy()` in `ItemsStorageInterface` implementations (@arogachev)
+- Enh #91: Use 1 file path argument for storages (@arogachev)
 
 ## 1.0.0 April 08, 2022
 

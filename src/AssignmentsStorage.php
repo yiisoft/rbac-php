@@ -19,12 +19,9 @@ final class AssignmentsStorage extends SimpleAssignmentsStorage implements FileS
 {
     use FileStorageTrait;
 
-    public function __construct(
-        string $directory,
-        string $fileName = 'assignments.php',
-        ?callable $getFileUpdatedAt = null,
-    ) {
-        $this->initFileProperties($directory, $fileName, $getFileUpdatedAt);
+    public function __construct(string $filePath, ?callable $getFileUpdatedAt = null)
+    {
+        $this->initFileProperties($filePath, $getFileUpdatedAt);
         $this->load();
     }
 

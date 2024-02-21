@@ -122,7 +122,7 @@ final class ItemsStorageTest extends TestCase
             uopz_unset_return('function_exists');
         }
 
-        $this->clearFixturesFiles();
+        $this->clearStoragesFiles();
     }
 
     public function testCreateDirectoryException(): void
@@ -130,7 +130,7 @@ final class ItemsStorageTest extends TestCase
         $directory = $this->getTempDirectory() . '/file.txt';
         touch($directory);
 
-        $storage = new ItemsStorage($directory);
+        $storage = new ItemsStorage($directory . '/items.php');
         $permission = new Permission('createPost');
 
         $this->expectException(RuntimeException::class);
@@ -142,7 +142,7 @@ final class ItemsStorageTest extends TestCase
     {
         $directory = $this->getTempDirectory() . '/test/create/nested/directory';
 
-        $storage = new ItemsStorage($directory);
+        $storage = new ItemsStorage($directory . '/items.php');
         $storage->add(new Permission('createPost'));
 
         $this->assertFileExists($directory . '/items.php');
@@ -155,7 +155,7 @@ final class ItemsStorageTest extends TestCase
     {
         $this->createItemsStorage()->add(new Permission('test'));
 
-        $data = require $this->getDataPath() . DIRECTORY_SEPARATOR . 'items.php';
+        $data = require $this->getStoragesDirectory() . DIRECTORY_SEPARATOR . 'items.php';
         $this->assertSame([['name' => 'test', 'type' => 'permission']], $data);
     }
 
@@ -181,7 +181,7 @@ final class ItemsStorageTest extends TestCase
         $storage->add(new Permission('test'));
 
         $storage = new ItemsStorage(
-            $this->getDataPath(),
+            $this->getItemsStorageFilePath(),
             getFileUpdatedAt: static fn (string $filePath): int|false => $time,
         );
         $this->assertSame($time, $storage->get('test')->getCreatedAt());
@@ -210,14 +210,14 @@ final class ItemsStorageTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('getFileUpdatedAt callable must return a UNIX timestamp.');
         new ItemsStorage(
-            $this->getDataPath(),
+            $this->getItemsStorageFilePath(),
             getFileUpdatedAt: static fn (string $filePath): string => 'test',
         );
     }
 
     protected function createItemsStorage(): ItemsStorageInterface
     {
-        return new ItemsStorage($this->getDataPath());
+        return new ItemsStorage($this->getItemsStorageFilePath());
     }
 
     protected function getItemsStorageForModificationAssertions(): ItemsStorageInterface

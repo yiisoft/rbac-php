@@ -28,7 +28,7 @@ final class AssignmentsStorageWithConcurrencyHandledTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->clearFixturesFiles();
+        $this->clearStoragesFiles();
     }
 
     public function testGetAll(): void
@@ -77,7 +77,7 @@ final class AssignmentsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testAdd(): void
     {
-        $innerTestStorage = new AssignmentsStorage($this->getDataPath());
+        $innerTestStorage = new AssignmentsStorage($this->getAssignmentsStorageFilePath());
         $testStorage = new ConcurrentAssignmentsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getAssignmentsStorage();
 
@@ -97,7 +97,7 @@ final class AssignmentsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testRenameItem(): void
     {
-        $innerTestStorage = new AssignmentsStorage($this->getDataPath());
+        $innerTestStorage = new AssignmentsStorage($this->getAssignmentsStorageFilePath());
         $testStorage = new ConcurrentAssignmentsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getAssignmentsStorage();
 
@@ -110,7 +110,7 @@ final class AssignmentsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testRemove(): void
     {
-        $innerTestStorage = new AssignmentsStorage($this->getDataPath());
+        $innerTestStorage = new AssignmentsStorage($this->getAssignmentsStorageFilePath());
         $testStorage = new ConcurrentAssignmentsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getAssignmentsStorage();
 
@@ -124,7 +124,7 @@ final class AssignmentsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testRemoveByUserId(): void
     {
-        $innerTestStorage = new AssignmentsStorage($this->getDataPath());
+        $innerTestStorage = new AssignmentsStorage($this->getAssignmentsStorageFilePath());
         $testStorage = new ConcurrentAssignmentsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getAssignmentsStorage();
 
@@ -137,7 +137,7 @@ final class AssignmentsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testRemoveByItemName(): void
     {
-        $innerTestStorage = new AssignmentsStorage($this->getDataPath());
+        $innerTestStorage = new AssignmentsStorage($this->getAssignmentsStorageFilePath());
         $testStorage = new ConcurrentAssignmentsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getAssignmentsStorage();
 
@@ -150,12 +150,12 @@ final class AssignmentsStorageWithConcurrencyHandledTest extends TestCase
 
     protected function createItemsStorage(): ItemsStorageInterface
     {
-        return new ConcurrentItemsStorageDecorator(new ItemsStorage($this->getDataPath()));
+        return new ConcurrentItemsStorageDecorator(new ItemsStorage($this->getItemsStorageFilePath()));
     }
 
     protected function createAssignmentsStorage(): AssignmentsStorageInterface
     {
-        return new ConcurrentAssignmentsStorageDecorator(new AssignmentsStorage($this->getDataPath()));
+        return new ConcurrentAssignmentsStorageDecorator(new AssignmentsStorage($this->getAssignmentsStorageFilePath()));
     }
 
     protected function getAssignmentsStorageForModificationAssertions(): AssignmentsStorageInterface

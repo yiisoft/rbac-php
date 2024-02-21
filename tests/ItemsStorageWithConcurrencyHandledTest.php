@@ -26,7 +26,7 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->clearFixturesFiles();
+        $this->clearStoragesFiles();
     }
 
     public function testGetAll(): void
@@ -56,7 +56,7 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testAddWithCurrentTimestamps(): void
     {
-        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $innerTestStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getItemsStorage();
 
@@ -70,7 +70,7 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testUpdate(): void
     {
-        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $innerTestStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getItemsStorage();
 
@@ -85,7 +85,7 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testRemove(): void
     {
-        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $innerTestStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getItemsStorage();
 
@@ -114,7 +114,7 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testClearRoles(): void
     {
-        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $innerTestStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getItemsStorage();
 
@@ -145,7 +145,7 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testClearPermissions(): void
     {
-        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $innerTestStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getItemsStorage();
 
@@ -206,7 +206,7 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testAddChild(): void
     {
-        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $innerTestStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getItemsStorage();
 
@@ -220,7 +220,7 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testRemoveChild(): void
     {
-        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $innerTestStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getItemsStorage();
 
@@ -234,7 +234,7 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
 
     public function testRemoveChildren(): void
     {
-        $innerTestStorage = new ItemsStorage($this->getDataPath());
+        $innerTestStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $testStorage = new ConcurrentItemsStorageDecorator($innerTestStorage);
         $actionStorage = $this->getItemsStorage();
 
@@ -261,7 +261,7 @@ final class ItemsStorageWithConcurrencyHandledTest extends TestCase
 
     protected function createItemsStorage(): ItemsStorageInterface
     {
-        return new ConcurrentItemsStorageDecorator(new ItemsStorage($this->getDataPath()));
+        return new ConcurrentItemsStorageDecorator(new ItemsStorage($this->getItemsStorageFilePath()));
     }
 
     protected function getItemsStorageForModificationAssertions(): ItemsStorageInterface

@@ -92,9 +92,9 @@ trait FileStorageTrait
         }
     }
 
-    private function initFileProperties(string $directory, string $fileName, ?callable $getFileUpdatedAt): void
+    private function initFileProperties(string $filePath, ?callable $getFileUpdatedAt): void
     {
-        $this->filePath = $directory . DIRECTORY_SEPARATOR . $fileName;
+        $this->filePath = $filePath;
         $this->getFileUpdatedAt = $getFileUpdatedAt ?? static fn (string $filePath): int|false => @filemtime($filePath);
     }
 }

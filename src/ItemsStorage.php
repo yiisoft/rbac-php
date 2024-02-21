@@ -26,12 +26,9 @@ final class ItemsStorage extends SimpleItemsStorage implements FileStorageInterf
      * @param string $fileName The name of the PHP file that contains the authorization items. Make sure this file is
      * writable by the Web server process if the authorization needs to be changed online.
      */
-    public function __construct(
-        string $directory,
-        string $fileName = 'items.php',
-        ?callable $getFileUpdatedAt = null,
-    ) {
-        $this->initFileProperties($directory, $fileName, $getFileUpdatedAt);
+    public function __construct(string $filePath, ?callable $getFileUpdatedAt = null)
+    {
+        $this->initFileProperties($filePath, $getFileUpdatedAt);
         $this->load();
     }
 

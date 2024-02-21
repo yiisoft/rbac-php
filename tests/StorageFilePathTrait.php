@@ -10,18 +10,27 @@ trait StorageFilePathTrait
 {
     private ?string $dataPath = null;
 
-    private function getDataPath(): string
+    private function getStoragesDirectory(): string
     {
         if ($this->dataPath === null) {
-            $uniqueId = uniqid('', more_entropy: false);
-            $this->dataPath = sys_get_temp_dir() . '/' . str_replace('\\', '_', static::class) . $uniqueId;
+            $this->dataPath = sys_get_temp_dir() . '/' . str_replace('\\', '_', static::class) . uniqid('');
         }
 
         return $this->dataPath;
     }
 
-    private function clearFixturesFiles(): void
+    private function getItemsStorageFilePath(): string
     {
-        FileHelper::removeDirectory($this->getDataPath());
+        return $this->getStoragesDirectory() . DIRECTORY_SEPARATOR . 'items.php';
+    }
+
+    private function getAssignmentsStorageFilePath(): string
+    {
+        return $this->getStoragesDirectory() . DIRECTORY_SEPARATOR . 'assignments.php';
+    }
+
+    private function clearStoragesFiles(): void
+    {
+        FileHelper::removeDirectory($this->getStoragesDirectory());
     }
 }
