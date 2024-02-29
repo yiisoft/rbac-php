@@ -284,17 +284,17 @@ return [
             'posts.update.all',
         ],
     ],
--    [
--        'name' => 'posts.redactor',
--        'type' => 'role',        
--        'created_at' => 1683707079,
--        'updated_at' => 1683707079,
--        'children' => [
--            'posts.viewer',
--            'posts.create',
--            'posts.update',
--        ],
--    ],
+-   [
+-       'name' => 'posts.redactor',
+-       'type' => 'role',        
+-       'created_at' => 1683707079,
+-       'updated_at' => 1683707079,
+-       'children' => [
+-           'posts.viewer',
+-           'posts.create',
+-           'posts.update',
+-       ],
+-   ],
     [
         'name' => 'posts.viewer',
         'type' => 'role',        
@@ -316,13 +316,13 @@ return [
         'created_at' => 1683707079,
         'updated_at' => 1683707079,
     ],
--    [
--        'name' => 'posts.update',
--        'rule_name' => 'is_author',
--        'type' => 'permission',
--        'created_at' => 1683707079,
--        'updated_at' => 1683707079,
--    ],
+-   [
+-       'name' => 'posts.update',
+-       'rule_name' => 'is_author',
+-       'type' => 'permission',
+-       'created_at' => 1683707079,
+-       'updated_at' => 1683707079,
+-   ],
     [
         'name' => 'posts.delete',        
         'type' => 'permission',        
@@ -342,11 +342,11 @@ Then related entries in assignments storage needs to be deleted as well:
 
 ```diff
 return [
--    [
--        'item_name' => 'posts.redactor',
--        'user_id' => 'john',
--        'created_at' => 1683707079,
--    ],
+-   [
+-       'item_name' => 'posts.redactor',
+-       'user_id' => 'john',
+-       'created_at' => 1683707079,
+-   ],
     [
         'item_name' => 'posts.admin',
         'user_id' => 'jack',
