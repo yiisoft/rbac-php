@@ -264,6 +264,101 @@ This is useful for 2 things:
 - Detection of file changes when concurrency is enabled. This helps to optimize perfomance by preventing of unnecessary
 loads (when file contents has not been changed).
 
+### Syncing storages manually
+
+The storages stay synced thanks to manager, but there can be situations where you need to sync them manually. One of
+them is [editing storage manually](https://github.com/yiisoft/rbac-php/?tab=readme-ov-file#file-structure).
+
+Let's say PHP files are used for both items and assignments and some items were deleted.
+
+```diff
+return [
+    [
+        'name' => 'posts.admin',        
+        'type' => 'role',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+        'children' => [
+            'posts.redactor',
+            'posts.delete',
+            'posts.update.all',
+        ],
+    ],
+-    [
+-        'name' => 'posts.redactor',
+-        'type' => 'role',        
+-        'created_at' => 1683707079,
+-        'updated_at' => 1683707079,
+-        'children' => [
+-            'posts.viewer',
+-            'posts.create',
+-            'posts.update',
+-        ],
+-    ],
+    [
+        'name' => 'posts.viewer',
+        'type' => 'role',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+        'children' => [
+            'posts.view',
+        ],
+    ],
+    [
+        'name' => 'posts.view',
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+    [
+        'name' => 'posts.create',
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+-    [
+-        'name' => 'posts.update',
+-        'rule_name' => 'is_author',
+-        'type' => 'permission',
+-        'created_at' => 1683707079,
+-        'updated_at' => 1683707079,
+-    ],
+    [
+        'name' => 'posts.delete',        
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+    [
+        'name' => 'posts.update.all',
+        'type' => 'permission',        
+        'created_at' => 1683707079,
+        'updated_at' => 1683707079,
+    ],
+];
+```
+
+Then related entries in assignments storage needs to be deleted as well:
+
+```diff
+return [
+-    [
+-        'item_name' => 'posts.redactor',
+-        'user_id' => 'john',
+-        'created_at' => 1683707079,
+-    ],
+    [
+        'item_name' => 'posts.admin',
+        'user_id' => 'jack',
+        'created_at' => 1683707079,
+    ],
+];
+```
+
+When using database as a second storage, this can be done within a migration. Depending on chosen implementation, refer
+to either [RBAC Cycle example](https://github.com/yiisoft/rbac-cycle-db?tab=readme-ov-file#syncing-storages-manually) or 
+[RBAC DB example](https://github.com/yiisoft/rbac-db?tab=readme-ov-file#syncing-storages-manually).
+
 ## Testing
 
 ### Unit testing
