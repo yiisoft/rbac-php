@@ -6,10 +6,10 @@
     <br>
 </p>
 
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/rbac-php/v/stable.png)](https://packagist.org/packages/yiisoft/rbac-php)
-[![Total Downloads](https://poser.pugx.org/yiisoft/rbac-php/downloads.png)](https://packagist.org/packages/yiisoft/rbac-php)
-[![Build status](https://github.com/yiisoft/rbac-php/workflows/build/badge.svg)](https://github.com/yiisoft/rbac-php/actions?query=workflow%3Abuild)
-[![codecov](https://codecov.io/gh/yiisoft/rbac-db/graph/badge.svg?token=YU8LVBNCQ8)](https://codecov.io/gh/yiisoft/rbac-db)
+[![Latest Stable Version](https://poser.pugx.org/yiisoft/rbac-php/v)](https://packagist.org/packages/yiisoft/rbac-php)
+[![Total Downloads](https://poser.pugx.org/yiisoft/rbac-php/downloads)](https://packagist.org/packages/yiisoft/rbac-php)
+[![Build status](https://github.com/yiisoft/rbac-php/actions/workflows/build.yml/badge.svg)](https://github.com/yiisoft/rbac-php/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/yiisoft/rbac-php/graph/badge.svg?token=YU8LVBNCQ8)](https://codecov.io/gh/yiisoft/rbac-php)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Frbac-php%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/rbac-php/master)
 [![static analysis](https://github.com/yiisoft/rbac-php/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/rbac-php/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yiisoft/rbac-php/coverage.svg)](https://shepherd.dev/github/yiisoft/rbac-php)
