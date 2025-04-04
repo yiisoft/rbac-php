@@ -39,7 +39,7 @@ final class AssignmentsStorageWithConcurrencyNotHandled extends TestCase
         $this->assertNotEmpty($this->getEmptyConcurrentAssignmentsStorage()->getByUserId('john'));
     }
 
-    public function testGetByItemNames(array $itemNames, array $expectedAssignments): void
+    public function testGetByItemNames(): void
     {
         $this->assertNotEmpty($this->getEmptyConcurrentAssignmentsStorage()->getByItemNames(['Researcher']));
     }
@@ -49,21 +49,21 @@ final class AssignmentsStorageWithConcurrencyNotHandled extends TestCase
         $this->assertNotEmpty($this->getEmptyConcurrentAssignmentsStorage()->get(itemName: 'Researcher', userId: 'john'));
     }
 
-    public function testExists(string $itemName, string $userId, bool $expectedExists): void
+    public function testExists(): void
     {
         $this->assertTrue(
             $this->getEmptyConcurrentAssignmentsStorage()->exists(itemName: 'Researcher', userId: 'john'),
         );
     }
 
-    public function testUserHasItem(string $userId, array $itemNames, bool $expectedUserHasItem): void
+    public function testUserHasItem(): void
     {
         $this->assertTrue(
             $this->getEmptyConcurrentAssignmentsStorage()->userHasItem(userId: 'john', itemNames: ['Researcher']),
         );
     }
 
-    public function testFilterUserItemNames(string $userId, array $itemNames, array $expectedUserItemNames): void
+    public function testFilterUserItemNames(): void
     {
         $this->assertNotEmpty(
             $this->getEmptyConcurrentAssignmentsStorage()->filterUserItemNames(
