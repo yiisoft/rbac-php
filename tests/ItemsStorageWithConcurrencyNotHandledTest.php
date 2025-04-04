@@ -38,7 +38,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getAll());
     }
 
-    public function testGetByNames(): void
+    public function testGetByNames(array $names, array $expectedItemNames): void
     {
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getByNames(['posts.view']));
     }
@@ -48,12 +48,12 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
         $this->assertNotNull($this->getEmptyConcurrentItemsStorage()->get('posts.view'));
     }
 
-    public function testExists(): void
+    public function testExists(string $name, bool $expectedExists): void
     {
         $this->assertTrue($this->getEmptyConcurrentItemsStorage()->exists('posts.view'));
     }
 
-    public function testRoleExists(): void
+    public function testRoleExists(string $name, bool $expectedRoleExists): void
     {
         $this->assertTrue($this->getEmptyConcurrentItemsStorage()->roleExists('posts.viewer'));
     }
@@ -76,7 +76,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
         $this->markTestSkipped();
     }
 
-    public function testUpdate(): void
+    public function testUpdate(string $itemName, string $parentNameForChildrenCheck, bool $expectedHasChildren): void
     {
         $testStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $actionStorage = $this->getItemsStorage();
@@ -90,7 +90,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
         $this->assertFalse($testStorage->exists('posts.create1'));
     }
 
-    public function testRemove(): void
+    public function testRemove(string $name): void
     {
         $testStorage = new ItemsStorage($this->getItemsStorageFilePath());
         $actionStorage = $this->getItemsStorage();
@@ -108,7 +108,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getRoles());
     }
 
-    public function testGetRolesByNames(): void
+    public function testGetRolesByNames(array $names, array $expectedRoleNames): void
     {
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getRolesByNames(['posts.viewer']));
     }
@@ -138,7 +138,7 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getPermissions());
     }
 
-    public function testGetPermissionsByNames(): void
+    public function testGetPermissionsByNames(array $names, array $expectedPermissionNames): void
     {
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getPermissionsByNames(['posts.view']));
     }
@@ -163,32 +163,32 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
         $this->assertContainsOnlyInstancesOf(Role::class, $all);
     }
 
-    public function testGetParents(): void
+    public function testGetParents(string $childName, array $expectedParents): void
     {
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getParents('posts.view'));
     }
 
-    public function testGetHierarchy(): void
+    public function testGetHierarchy(string $name, array $expectedHierarchy): void
     {
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getHierarchy('posts.view'));
     }
 
-    public function testGetDirectChildren(): void
+    public function testGetDirectChildren(string $parentName, array $expectedChildren): void
     {
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getDirectChildren('posts.viewer'));
     }
 
-    public function testGetAllChildren(): void
+    public function testGetAllChildren(string|array $parentNames, array $expectedChildren): void
     {
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getAllChildren('posts.viewer'));
     }
 
-    public function testGetAllChildRoles(): void
+    public function testGetAllChildRoles(string|array $parentNames, array $expectedChildren): void
     {
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getAllChildRoles('posts.redactor'));
     }
 
-    public function testGetAllChildPermissions(): void
+    public function testGetAllChildPermissions(string|array $parentNames, array $expectedChildren): void
     {
         $this->assertNotEmpty($this->getEmptyConcurrentItemsStorage()->getAllChildPermissions('posts.viewer'));
     }
@@ -198,12 +198,12 @@ final class ItemsStorageWithConcurrencyNotHandledTest extends TestCase
         $this->assertTrue($this->getEmptyConcurrentItemsStorage()->hasChildren('posts.viewer'));
     }
 
-    public function testHasChild(): void
+    public function testHasChild(string $parentName, string $childName, bool $expectedHasChild): void
     {
         $this->assertTrue($this->getEmptyConcurrentItemsStorage()->hasChild('posts.viewer', 'posts.view'));
     }
 
-    public function testHasDirectChild(): void
+    public function testHasDirectChild(string $parentName, string $childName, bool $expectedHasDirectChild): void
     {
         $this->assertTrue($this->getEmptyConcurrentItemsStorage()->hasDirectChild('posts.viewer', 'posts.view'));
     }
