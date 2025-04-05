@@ -84,6 +84,8 @@ trait FileStorageTrait
 
     /**
      * Invalidates precompiled script cache (such as OPCache) for the given file.
+     *
+     * @infection-ignore-all
      */
     private function invalidateScriptCache(): void
     {
