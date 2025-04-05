@@ -51,10 +51,7 @@
         "psr-4": {
             "Yiisoft\\Rbac\\Php\\Tests\\": "tests",
             "Yiisoft\\Rbac\\Tests\\": "vendor/yiisoft/rbac/tests"
-        },
-        "files": [
-            "tests/bootstrap.php"
-        ]
+        }
     },
     "config": {
         "sort-packages": true,
