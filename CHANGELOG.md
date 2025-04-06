@@ -3,6 +3,7 @@
 ## 2.0.1 under development
 
 - Enh #110: Bump `yiisoft/rbac` version to `^2.1` (@vjik)
+- Chg #111: Change PHP constraint in `composer.json` to `8.1 - 8.4` (@vjik)
 
 ## 2.0.0 March 07, 2024
 
