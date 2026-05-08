@@ -14,6 +14,8 @@ use Yiisoft\Rbac\Php\ConcurrentItemsStorageDecorator;
 use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\Tests\Common\AssignmentsStorageTestTrait;
 
+use function count;
+
 final class AssignmentsStorageWithConcurrencyHandledTest extends TestCase
 {
     use AssignmentsStorageTestTrait {

@@ -6,6 +6,8 @@ namespace Yiisoft\Rbac\Php\Tests;
 
 use Yiisoft\Files\FileHelper;
 
+use const DIRECTORY_SEPARATOR;
+
 trait StorageFilePathTrait
 {
     private ?string $dataPath = null;

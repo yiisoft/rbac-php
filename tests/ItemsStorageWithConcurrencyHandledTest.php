@@ -12,6 +12,8 @@ use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
+use function count;
+
 final class ItemsStorageWithConcurrencyHandledTest extends TestCase
 {
     use ItemsStorageTestTrait {
