@@ -15,9 +15,9 @@ final class ConcurrentItemsStorageDecorator implements ItemsStorageInterface, Fi
     /**
      * @param FileStorageInterface&ItemsStorageInterface $storage
      */
-    public function __construct(private ItemsStorageInterface|FileStorageInterface $storage)
-    {
-    }
+    public function __construct(
+        private ItemsStorageInterface|FileStorageInterface $storage,
+    ) {}
 
     public function clear(): void
     {

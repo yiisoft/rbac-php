@@ -9,6 +9,10 @@ use Yiisoft\VarDumper\VarDumper;
 
 use function dirname;
 use function function_exists;
+use function is_int;
+use function sprintf;
+
+use const LOCK_EX;
 
 trait FileStorageTrait
 {
@@ -97,6 +101,6 @@ trait FileStorageTrait
     private function initFileProperties(string $filePath, ?callable $getFileUpdatedAt): void
     {
         $this->filePath = $filePath;
-        $this->getFileUpdatedAt = $getFileUpdatedAt ?? static fn (string $filePath): int|false => @filemtime($filePath);
+        $this->getFileUpdatedAt = $getFileUpdatedAt ?? static fn(string $filePath): int|false => @filemtime($filePath);
     }
 }
