@@ -65,6 +65,6 @@ final class CreateNestedDirectoryTest extends TestCase
         $storage = new ItemsStorage($directory . '/items.php');
         $storage->add(new Permission('createPost'));
 
-        $this->assertSame(0755, TestHelper::getDirectoryPermissions($directory));
+        $this->assertSame(0775, TestHelper::getDirectoryPermissions($directory));
     }
 }

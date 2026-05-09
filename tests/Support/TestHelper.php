@@ -19,6 +19,6 @@ final class TestHelper
 
     public static function getDirectoryPermissions(string $path): int
     {
-        return octdec(substr(sprintf('%o', fileperms($path)), -4));
+        return octdec(substr(sprintf('%o', fileperms($path)), -4)) & ~umask();
     }
 }
