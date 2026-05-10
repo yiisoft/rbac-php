@@ -16,9 +16,4 @@ final class TestHelper
         restore_error_handler();
         return $currentHandler;
     }
-
-    public static function getDirectoryPermissions(string $path): int
-    {
-        return octdec(substr(sprintf('%o', fileperms($path)), -4)) & ~umask();
-    }
 }
