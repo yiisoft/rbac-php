@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Php\Tests\Support;
 
-use function sprintf;
-
 final class TestHelper
 {
     private function __construct() {}
