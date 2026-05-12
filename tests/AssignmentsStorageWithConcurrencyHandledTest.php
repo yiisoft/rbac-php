@@ -150,6 +150,21 @@ final class AssignmentsStorageWithConcurrencyHandledTest extends TestCase
         $this->assertEmpty($innerTestStorage->getByItemNames(['Accountant']));
     }
 
+    public function testNoReloadWhenTimestampIsUnchanged(): void
+    {
+        $filePath = $this->getAssignmentsStorageFilePath();
+        $innerStorage = new AssignmentsStorage($filePath, getFileUpdatedAt: static fn(): int => 12345);
+        $decorator = new ConcurrentAssignmentsStorageDecorator($innerStorage);
+
+        $decorator->add(new Assignment(userId: 'testUser', itemName: 'Researcher', createdAt: time()));
+
+        (new AssignmentsStorage($filePath))->add(
+            new Assignment(userId: 'testUser', itemName: 'Accountant', createdAt: time()),
+        );
+
+        $this->assertArrayNotHasKey('Accountant', $decorator->getByUserId('testUser'));
+    }
+
     protected function createItemsStorage(): ItemsStorageInterface
     {
         return new ConcurrentItemsStorageDecorator(new ItemsStorage($this->getItemsStorageFilePath()));
