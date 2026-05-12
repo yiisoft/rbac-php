@@ -16,6 +16,16 @@
             "ignoreSourceCodeByRegex": [
                 "\\$this->invalidateScriptCache.*"
             ]
+        },
+        "DecrementInteger": {
+            "ignoreSourceCodeByRegex": [
+                "mkdir\\(.*permissions: 0775.*"
+            ]
+        },
+        "IncrementInteger": {
+            "ignoreSourceCodeByRegex": [
+                "mkdir\\(.*permissions: 0775.*"
+            ]
         }
     }
 }

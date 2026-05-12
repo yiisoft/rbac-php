@@ -44,6 +44,21 @@ final class AssignmentsStorageTest extends TestCase
         );
     }
 
+    public function testRemoveNonExistingDoesNotSaveFile(): void
+    {
+        $filePath = $this->getAssignmentsStorageFilePath();
+        $storage = new AssignmentsStorage($filePath);
+
+        touch($filePath, time() - 100);
+        clearstatcache();
+        $modifiedTimeBefore = filemtime($filePath);
+
+        $storage->remove(itemName: 'Operator', userId: 'john');
+
+        clearstatcache();
+        $this->assertSame($modifiedTimeBefore, filemtime($filePath));
+    }
+
     protected function createItemsStorage(): ItemsStorageInterface
     {
         return new ItemsStorage($this->getItemsStorageFilePath());

@@ -64,6 +64,7 @@
     },
     "scripts": {
         "cs-fix": "php-cs-fixer fix",
+        "mutation": "roave-infection-static-analysis-plugin --min-msi=100",
         "rector": "rector",
         "test": "phpunit",
         "test-watch": "phpunit-watcher watch"

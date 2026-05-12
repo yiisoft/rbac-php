@@ -100,6 +100,36 @@ final class ItemsStorageTest extends TestCase
         $this->assertSame($time, $storage->get('test')->getCreatedAt());
     }
 
+    public function testRemoveChildNonExistingDoesNotSaveFile(): void
+    {
+        $filePath = $this->getItemsStorageFilePath();
+        $storage = new ItemsStorage($filePath);
+
+        touch($filePath, time() - 100);
+        clearstatcache();
+        $mtimeBefore = filemtime($filePath);
+
+        $storage->removeChild('posts.viewer', 'non-existing');
+
+        clearstatcache();
+        $this->assertSame($mtimeBefore, filemtime($filePath));
+    }
+
+    public function testRemoveChildrenNonExistingDoesNotSaveFile(): void
+    {
+        $filePath = $this->getItemsStorageFilePath();
+        $storage = new ItemsStorage($filePath);
+
+        touch($filePath, time() - 100);
+        clearstatcache();
+        $mtimeBefore = filemtime($filePath);
+
+        $storage->removeChildren('posts.view');
+
+        clearstatcache();
+        $this->assertSame($mtimeBefore, filemtime($filePath));
+    }
+
     public function testGetFileUpdatedAtException(): void
     {
         $this->expectException(RuntimeException::class);
