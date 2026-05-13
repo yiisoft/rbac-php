@@ -14,9 +14,9 @@ final class ConcurrentAssignmentsStorageDecorator implements AssignmentsStorageI
     /**
      * @param AssignmentsStorageInterface&FileStorageInterface $storage
      */
-    public function __construct(private AssignmentsStorageInterface|FileStorageInterface $storage)
-    {
-    }
+    public function __construct(
+        private AssignmentsStorageInterface|FileStorageInterface $storage,
+    ) {}
 
     public function getAll(): array
     {

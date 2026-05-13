@@ -14,6 +14,8 @@ use Yiisoft\Rbac\Php\ConcurrentItemsStorageDecorator;
 use Yiisoft\Rbac\Php\ItemsStorage;
 use Yiisoft\Rbac\Tests\Common\AssignmentsStorageTestTrait;
 
+use function count;
+
 final class AssignmentsStorageWithConcurrencyHandledTest extends TestCase
 {
     use AssignmentsStorageTestTrait {
@@ -146,6 +148,21 @@ final class AssignmentsStorageWithConcurrencyHandledTest extends TestCase
 
         $testStorage->removeByItemName('Researcher');
         $this->assertEmpty($innerTestStorage->getByItemNames(['Accountant']));
+    }
+
+    public function testNoReloadWhenTimestampIsUnchanged(): void
+    {
+        $filePath = $this->getAssignmentsStorageFilePath();
+        $innerStorage = new AssignmentsStorage($filePath, getFileUpdatedAt: static fn(): int => 12345);
+        $decorator = new ConcurrentAssignmentsStorageDecorator($innerStorage);
+
+        $decorator->add(new Assignment(userId: 'testUser', itemName: 'Researcher', createdAt: time()));
+
+        (new AssignmentsStorage($filePath))->add(
+            new Assignment(userId: 'testUser', itemName: 'Accountant', createdAt: time()),
+        );
+
+        $this->assertArrayNotHasKey('Accountant', $decorator->getByUserId('testUser'));
     }
 
     protected function createItemsStorage(): ItemsStorageInterface

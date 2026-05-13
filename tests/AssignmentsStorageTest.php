@@ -40,8 +40,23 @@ final class AssignmentsStorageTest extends TestCase
         $this->expectExceptionMessage('getFileUpdatedAt callable must return a UNIX timestamp.');
         new AssignmentsStorage(
             $this->getAssignmentsStorageFilePath(),
-            getFileUpdatedAt: static fn (string $filePath): string => 'test',
+            getFileUpdatedAt: static fn(string $filePath): string => 'test',
         );
+    }
+
+    public function testRemoveNonExistingDoesNotSaveFile(): void
+    {
+        $filePath = $this->getAssignmentsStorageFilePath();
+        $storage = new AssignmentsStorage($filePath);
+
+        touch($filePath, time() - 100);
+        clearstatcache();
+        $modifiedTimeBefore = filemtime($filePath);
+
+        $storage->remove(itemName: 'Operator', userId: 'john');
+
+        clearstatcache();
+        $this->assertSame($modifiedTimeBefore, filemtime($filePath));
     }
 
     protected function createItemsStorage(): ItemsStorageInterface

@@ -33,6 +33,7 @@
         "yiisoft/var-dumper": "^1.7"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.95",
         "maglnet/composer-require-checker": "^4.7.1",
         "phpunit/phpunit": "^10.5.45",
         "psr/clock": "^1.0",
@@ -40,6 +41,7 @@
         "roave/infection-static-analysis-plugin": "^1.35",
         "spatie/phpunit-watcher": "^1.24",
         "vimeo/psalm": "^5.26.1 || ^6.10",
+        "yiisoft/code-style": "^1.0",
         "yiisoft/files": "^2.1.0"
     },
     "autoload": {
@@ -61,7 +63,10 @@
         }
     },
     "scripts": {
-        "test": "phpunit --testdox --no-interaction",
+        "cs-fix": "php-cs-fixer fix",
+        "mutation": "roave-infection-static-analysis-plugin --min-msi=100",
+        "rector": "rector",
+        "test": "phpunit",
         "test-watch": "phpunit-watcher watch"
     }
 }
