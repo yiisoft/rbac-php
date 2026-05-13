@@ -3,7 +3,7 @@
 ## 2.0.1 under development
 
 - Enh #110: Bump `yiisoft/rbac` version to `^2.1` (@vjik)
-- Chg #111: Change PHP constraint in `composer.json` to `8.1 - 8.4` (@vjik)
+- Chg #111, #119: Change PHP constraint in `composer.json` to `8.1 - 8.5` (@vjik)
 - Enh #115: Apply code style fixes (@vjik)
 - Enh #115: Explicitly import functions and constants in "use" section (@vjik)
 
