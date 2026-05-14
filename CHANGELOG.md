@@ -1,5 +1,9 @@
 # Yii RBAC PHP File Storage Change Log
 
+## 2.1.1 under development
+
+- no changes in this release.
+
 ## 2.1.0 May 14, 2026
 
 - Chg #111, #119: Change PHP constraint in `composer.json` to `8.1 - 8.5` (@vjik)
