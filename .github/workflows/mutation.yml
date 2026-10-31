@@ -22,13 +22,13 @@ concurrency:
 
 jobs:
   mutation:
-    uses: yiisoft/actions/.github/workflows/roave-infection.yml@master
+    uses: yiisoft/actions/.github/workflows/infection.yml@master
     with:
       os: >-
         ['ubuntu-latest']
       php: >-
         ['8.3']
       min-msi: 100
-      threads: 1
+      infection-args: --ignore-msi-with-no-mutations --threads=1
     secrets:
       STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
