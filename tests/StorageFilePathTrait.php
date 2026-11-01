@@ -14,9 +14,7 @@ trait StorageFilePathTrait
 
     private function getStoragesDirectory(): string
     {
-        if ($this->dataPath === null) {
-            $this->dataPath = sys_get_temp_dir() . '/' . str_replace('\\', '_', static::class) . uniqid('');
-        }
+        $this->dataPath ??= sys_get_temp_dir() . '/' . str_replace('\\', '_', static::class) . uniqid('');
 
         return $this->dataPath;
     }
